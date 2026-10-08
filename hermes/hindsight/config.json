@@ -1,0 +1,12 @@
+{
+  "mode": "local_external",
+  "api_url": "http://hindsight:8888",
+  "bank_id": "jarbas",
+  "bank_id_template": "jarbas-{user}",
+  "auto_recall": true,
+  "auto_retain": true,
+  "recall_types": "observation",
+  "recall_budget": "mid",
+  "recall_indicator": false,
+  "retain_indicator": false
+}

@@ -1,0 +1,59 @@
+# Configuração do Hermes para o Jarbas (fase 0).
+# Este arquivo é a fonte da verdade: o scripts/deploy.sh copia ele para
+# runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
+# Segredos NÃO entram aqui: ficam em .env.hermes.
+
+model:
+  provider: nous
+  default: anthropic/claude-sonnet-4.6   # trocar por um modelo maior com /model se precisar
+  base_url: https://inference-api.nousresearch.com/v1
+
+# Ferramentas da Nous Portal (busca na web). Navegador fica para a fase 4.
+web:
+  backend: nous
+
+# A política do Jarbas: ligar só o necessário.
+# Ficam ligados: web, memory, session_search, cronjob, todo, clarify, skills,
+# vision, tts, file e terminal.
+agent:
+  disabled_toolsets:
+    - browser          # entra na fase 4, com o cofre do 1Password
+    - computer_use
+    - desktop_ui
+    - project
+    - start_chat
+    - setup
+    - image_gen
+    - video_gen
+    - video
+    - kanban
+    - delegation       # sem subagentes por enquanto
+    - code_execution   # o terminal já cobre; uma forma a menos de rodar código
+    - x_search
+    - spotify
+    - discord
+    - discord_admin
+    - feishu_doc
+    - feishu_drive
+    - yuanbao
+
+# O Hermes já roda dentro de um contêiner Docker isolado do VPS,
+# então o terminal roda "local" dentro desse contêiner.
+terminal:
+  backend: local
+  timeout: 180
+
+# Comandos perigosos sempre pedem aprovação.
+approvals:
+  mode: manual
+
+# Memória embutida (perfil curto, sempre no prompt) + Hindsight (memória longa).
+memory:
+  provider: hindsight
+  memory_enabled: true
+  user_profile_enabled: true
+  write_approval: false
+
+# Toda skill que o Jarbas criar ou alterar sozinho espera revisão humana.
+skills:
+  write_approval: true

@@ -1,0 +1,7 @@
+# Segredos
+.env
+.env.hermes
+.env.hindsight
+
+# Dados vivos do Hermes (sessões, memória, tokens de login)
+runtime/
