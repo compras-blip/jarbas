@@ -1,6 +1,6 @@
 # Fase 0: Atlas no ar pelo Telegram
 
-**Objetivo:** conversar com o Atlas pelo celular, inclusive por áudio, com o modelo da Nous Portal e a memória do Hindsight funcionando.
+**Objetivo:** conversar com o Atlas pelo celular, inclusive por áudio, com o ChatGPT como modelo e a memória do Hindsight funcionando.
 
 **Pronto quando:** você manda "oi" no Telegram e ele responde; conta algo sobre você, abre uma conversa nova (`/new`) e ele lembra.
 
@@ -12,7 +12,8 @@ Tudo roda em Docker no seu VPS, separado do OpenClaw. Nenhuma porta é aberta pa
 
 1. **Bot do Telegram:** no Telegram, fale com o **@BotFather**, mande `/newbot`, escolha nome e usuário e copie o **token**.
 2. **Seu ID do Telegram:** fale com o **@userinfobot** e copie o número (não é o @usuario).
-3. **Conta na Nous Portal:** crie em https://portal.nousresearch.com e assine o plano. Gere também uma **chave de API** lá, que vai para o Hindsight. *(Se o painel não oferecer chave de API, me avise que trocamos o Hindsight para outro provedor.)*
+3. **Modelo principal:** a sua assinatura do ChatGPT. O login é feito no servidor, no passo 4.
+4. **Memória longa (Hindsight):** conta na Nous Portal (https://portal.nousresearch.com) com crédito e uma **chave de API** gerada lá. Sem a chave, o Atlas sobe só com a memória embutida e o Hindsight entra depois.
 
 ## 1. No VPS: preparar
 
@@ -28,7 +29,7 @@ Baixe o repositório:
 
 ```bash
 cd ~
-git clone https://github.com/compras-blip/atlas.git
+git clone --branch fase-0 https://github.com/compras-blip/jarbas.git
 cd jarbas
 ```
 
@@ -43,19 +44,21 @@ nano .env.hermes      # token do bot e seu ID do Telegram
 nano .env.hindsight   # chave de API da Nous e uma senha para a interface
 ```
 
+Se o seu usuário não estiver no grupo `docker`, use `sudo` na frente dos comandos `docker` e do `./scripts/deploy.sh`.
+
 ## 3. Subir a memória e preparar o Hermes
 
 ```bash
 ./scripts/deploy.sh
 ```
 
-Na primeira vez o Hermes ainda não tem login na Nous Portal, então ele pode reiniciar em loop. É esperado. Siga para o passo 4.
+Na primeira vez o Hermes ainda não tem login no ChatGPT, então ele pode reiniciar em loop. É esperado. Siga para o passo 4.
 
-## 4. Login na Nous Portal e plugin do Hindsight
+## 4. Login no ChatGPT e plugin do Hindsight
 
 ```bash
-# Login na Nous Portal (código de dispositivo: abra o link que aparecer no navegador do celular e aprove)
-docker compose run --rm hermes auth add nous
+# Login no ChatGPT (código de dispositivo: abra o link que aparecer no navegador do celular e aprove)
+docker compose run --rm hermes auth add openai-codex
 
 # Instala o plugin de memória
 docker compose run --rm hermes plugins install hindsight

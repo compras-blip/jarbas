@@ -3,14 +3,16 @@
 # runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
 # Segredos NÃO entram aqui: ficam em .env.hermes.
 
+# Modelo principal: ChatGPT direto pelo Hermes (assinatura do usuário).
+# Login no servidor: `hermes auth add openai-codex` (código de dispositivo).
 model:
-  provider: nous
-  default: anthropic/claude-sonnet-4.6   # trocar por um modelo maior com /model se precisar
-  base_url: https://inference-api.nousresearch.com/v1
+  provider: openai-codex
+  default: gpt-5.5   # trocar com /model se precisar
 
-# Ferramentas da Nous Portal (busca na web). Navegador fica para a fase 4.
-web:
-  backend: nous
+# Busca na web: desligada até passar nos testes 1, 5 e 9 da fase 0.
+# Depois entra o Brave gratuito:
+# web:
+#   backend: brave-free
 
 # A política do Atlas: ligar só o necessário.
 # Ficam ligados: web, memory, session_search, cronjob, todo, clarify, skills,
