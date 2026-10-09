@@ -8,5 +8,8 @@
   "recall_types": "observation",
   "recall_budget": "mid",
   "recall_indicator": false,
-  "retain_indicator": false
+  "retain_indicator": false,
+  "retain_context": "Conversa pelo Telegram entre o Bruno e o Atlas, seu assessor pessoal",
+  "retain_user_prefix": "Bruno",
+  "retain_assistant_prefix": "Atlas"
 }

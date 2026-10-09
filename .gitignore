@@ -5,3 +5,8 @@
 
 # Dados vivos do Hermes (sessões, memória, tokens de login)
 runtime/
+
+# Estado e log do vigia da reserva
+vigia/
+# Backups dos arquivos de segredo (tem chave dentro)
+.env.*.bak-*

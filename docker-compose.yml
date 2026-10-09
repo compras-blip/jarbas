@@ -30,10 +30,12 @@ services:
       - "127.0.0.1:9999:9999"   # interface do Hindsight, só pelo túnel SSH
     volumes:
       - hindsight-data:/home/hindsight/.pg0
+      - hindsight-models:/home/hindsight/.cache/huggingface   # modelos baixados (bge-m3 etc.), para não baixar de novo a cada reinício
     networks: [atlas]
 
 volumes:
   hindsight-data:
+  hindsight-models:
 
 networks:
   atlas:

@@ -3,11 +3,18 @@
 # runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
 # Segredos NÃO entram aqui: ficam em .env.hermes.
 
-# Modelo principal: ChatGPT direto pelo Hermes (assinatura do usuário).
-# Login no servidor: `hermes auth add openai-codex` (código de dispositivo).
+# Modelo principal: ChatGPT pela Nous Portal (plano do ChatGPT conectado na Nous).
+# Login no servidor: `hermes auth add nous` (código de dispositivo).
 model:
-  provider: openai-codex
-  default: gpt-5.5   # trocar com /model se precisar
+  provider: nous
+  default: openai/gpt-5.5   # cobrado no plano do ChatGPT (billing_mode subscription); trocar com /model se precisar
+
+# Reserva automática: entra quando o principal falha (login/cobrança, limite, queda,
+# resposta vazia) e o Hermes volta a tentar o principal na mensagem seguinte.
+# Nunca modelo da OpenAI aqui: cairia junto com o plano do ChatGPT.
+fallback_model:
+  provider: nous
+  model: google/gemini-3.8-flash
 
 # Busca na web: desligada até passar nos testes 1, 5 e 9 da fase 0.
 # Depois entra o Brave gratuito:
