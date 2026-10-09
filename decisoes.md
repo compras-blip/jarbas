@@ -15,3 +15,5 @@ Cada mudança no harness entra aqui com o motivo e, quando houver, o placar dos 
 ## 09/10/2026
 
 - **Nome: Atlas.** O assistente passa a se chamar Atlas (SOUL, containers, banco de memória do Hindsight). O repositório continua `jarbas` no GitHub.
+- **Modelo: ChatGPT (assinatura Pro do usuário), direto pelo Hermes** com o provedor `openai-codex`. Substitui a Nous Portal como modelo principal: a cota do plano sobra para um assessor, e fica uma dependência só (Atlas → OpenAI). Não há troca automática se a OpenAI cair; uma reserva entra depois. A Nous Portal fica só como chave do Hindsight. OpenRouter descartado porque já deu problema antes.
+- **Busca na web desligada** até os testes 1, 5 e 9 passarem. Depois entra `brave-free`.
