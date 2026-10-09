@@ -1,4 +1,4 @@
-# Configuração do Hermes para o Jarbas (fase 0).
+# Configuração do Hermes para o Atlas (fase 0).
 # Este arquivo é a fonte da verdade: o scripts/deploy.sh copia ele para
 # runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
 # Segredos NÃO entram aqui: ficam em .env.hermes.
@@ -12,7 +12,7 @@ model:
 web:
   backend: nous
 
-# A política do Jarbas: ligar só o necessário.
+# A política do Atlas: ligar só o necessário.
 # Ficam ligados: web, memory, session_search, cronjob, todo, clarify, skills,
 # vision, tts, file e terminal.
 agent:
@@ -54,6 +54,6 @@ memory:
   user_profile_enabled: true
   write_approval: false
 
-# Toda skill que o Jarbas criar ou alterar sozinho espera revisão humana.
+# Toda skill que o Atlas criar ou alterar sozinho espera revisão humana.
 skills:
   write_approval: true

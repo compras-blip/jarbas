@@ -1,14 +1,14 @@
-# Jarbas no VPS: Hermes (o agente) + Hindsight (a memória longa).
+# Atlas no VPS: Hermes (o agente) + Hindsight (a memória longa).
 # Roda isolado do resto do servidor (inclusive do OpenClaw).
 # Nenhuma porta fica aberta para a internet: o Telegram funciona por conexão de saída,
 # e a interface do Hindsight só escuta em 127.0.0.1 (acesso por túnel SSH).
 
-name: jarbas
+name: atlas
 
 services:
   hermes:
     image: nousresearch/hermes-agent:${HERMES_VERSION:-latest}
-    container_name: jarbas-hermes
+    container_name: atlas-hermes
     restart: unless-stopped
     command: gateway run
     env_file: .env.hermes
@@ -16,24 +16,24 @@ services:
       - ./runtime/hermes:/opt/data
     depends_on:
       - hindsight
-    networks: [jarbas]
+    networks: [atlas]
 
   hindsight:
     image: ghcr.io/vectorize-io/hindsight:${HINDSIGHT_VERSION:-latest}
-    container_name: jarbas-hindsight
+    container_name: atlas-hindsight
     restart: unless-stopped
     shm_size: 1g
     env_file: .env.hindsight
     environment:
-      HINDSIGHT_API_WORKER_ID: jarbas-hindsight-1
+      HINDSIGHT_API_WORKER_ID: atlas-hindsight-1
     ports:
       - "127.0.0.1:9999:9999"   # interface do Hindsight, só pelo túnel SSH
     volumes:
       - hindsight-data:/home/hindsight/.pg0
-    networks: [jarbas]
+    networks: [atlas]
 
 volumes:
   hindsight-data:
 
 networks:
-  jarbas:
+  atlas:

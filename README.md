@@ -1,8 +1,8 @@
-# Jarbas
+# Atlas
 
 Assessor pessoal do Bruno, construído sobre o [Hermes Agent](https://hermes-agent.nousresearch.com/docs/) com memória de longo prazo no [Hindsight](https://hindsight.vectorize.io).
 
-Este repositório guarda **o harness do Jarbas**: tudo o que define o que ele vê, o que pode fazer, como lembra e como verificamos se ele está acertando. O código do Hermes em si não é editado.
+Este repositório guarda **o harness do Atlas**: tudo o que define o que ele vê, o que pode fazer, como lembra e como verificamos se ele está acertando. O código do Hermes em si não é editado.
 
 ## Estrutura
 

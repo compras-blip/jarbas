@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copia a configuração versionada para o diretório que o contêiner do Hermes lê
-# e (re)sobe o Jarbas. Rode da raiz do repositório: ./scripts/deploy.sh
+# e (re)sobe o Atlas. Rode da raiz do repositório: ./scripts/deploy.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

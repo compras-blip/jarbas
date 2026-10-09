@@ -1,6 +1,6 @@
-# Fase 0: Jarbas no ar pelo Telegram
+# Fase 0: Atlas no ar pelo Telegram
 
-**Objetivo:** conversar com o Jarbas pelo celular, inclusive por áudio, com o modelo da Nous Portal e a memória do Hindsight funcionando.
+**Objetivo:** conversar com o Atlas pelo celular, inclusive por áudio, com o modelo da Nous Portal e a memória do Hindsight funcionando.
 
 **Pronto quando:** você manda "oi" no Telegram e ele responde; conta algo sobre você, abre uma conversa nova (`/new`) e ele lembra.
 
@@ -28,7 +28,7 @@ Baixe o repositório:
 
 ```bash
 cd ~
-git clone https://github.com/compras-blip/jarbas.git
+git clone https://github.com/compras-blip/atlas.git
 cd jarbas
 ```
 
@@ -78,7 +78,7 @@ Mande "oi" para o seu bot no Telegram.
 
 ## 6. Fixar a versão
 
-Quando tudo estiver funcionando, descubra a versão e fixe para nenhuma atualização quebrar o Jarbas sem querer:
+Quando tudo estiver funcionando, descubra a versão e fixe para nenhuma atualização quebrar o Atlas sem querer:
 
 ```bash
 docker compose run --rm hermes --version
@@ -90,7 +90,7 @@ Crie um arquivo `.env` na raiz do repositório com `HERMES_VERSION=<versão>` (p
 
 Rode os cenários de [evals/fase-0.md](../evals/fase-0.md) e anote o resultado.
 
-## Ver a memória do Jarbas
+## Ver a memória do Atlas
 
 A interface do Hindsight escuta só dentro do servidor. Do seu computador:
 
