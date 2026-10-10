@@ -147,3 +147,19 @@ skills:
     - test-driven-development
     - weekly-review-planning
     - xurl
+
+# Fase 3: lugares e horários pelo Google Maps. Servidor MCP próprio (hermes/mcp/mapas), 4 ferramentas:
+# lugares_perto, lugar_horario, link_mapa, lugar_avaliacoes (o modelo vê como mcp_mapas_<nome>).
+# A chave GOOGLE_PLACES_API_KEY vem do .env.hermes. Desenho e testes: docs/fase-3-mapas.md, evals/fase-3.md.
+mcp_servers:
+  mapas:
+    command: node
+    args: ["/opt/data/mcp/mapas/server.mjs"]
+    env:
+      GOOGLE_PLACES_API_KEY: "${GOOGLE_PLACES_API_KEY}"
+      MAPAS_LIMITE_DIARIO: "300"
+    timeout: 25
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false

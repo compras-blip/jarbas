@@ -21,6 +21,11 @@ cp hermes/hindsight/config.json runtime/hermes/hindsight/config.json
 mkdir -p runtime/hermes/skills/autonomous-ai-agents/hermes-agent
 cp hermes/skills/hermes-agent/SKILL.md runtime/hermes/skills/autonomous-ai-agents/hermes-agent/SKILL.md
 
+# Servidor MCP de mapas (fase 3): código no repositório, dependências instaladas no volume.
+mkdir -p runtime/hermes/mcp/mapas
+cp hermes/mcp/mapas/*.mjs hermes/mcp/mapas/package.json hermes/mcp/mapas/package-lock.json runtime/hermes/mcp/mapas/
+(cd runtime/hermes/mcp/mapas && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
+
 docker compose pull
 docker compose up -d
 docker compose ps
