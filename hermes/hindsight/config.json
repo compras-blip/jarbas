@@ -1,8 +1,8 @@
 {
   "mode": "local_external",
   "api_url": "http://hindsight:8888",
-  "bank_id": "atlas",
-  "bank_id_template": "atlas-{user}",
+  "bank_id": "atlas-1890418170",
+  "bank_id_template": "",
   "auto_recall": true,
   "auto_retain": true,
   "recall_types": "observation",
