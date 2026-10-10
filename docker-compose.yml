@@ -16,7 +16,9 @@ services:
       - ./runtime/hermes:/opt/data
     depends_on:
       - hindsight
-    networks: [atlas]
+    # orbe-adapter-data: rede interna já existente do n8n/Postgres, só para o Atlas falar com o MCP do n8n
+    # (réplica webhook, porta 5678). Aprovado pelo Felipe em 10/10/2026. Nada muda no n8n; o Atlas não tem senha de banco.
+    networks: [atlas, orbe-adapter-data]
 
   hindsight:
     image: ghcr.io/vectorize-io/hindsight:${HINDSIGHT_VERSION:-latest}
@@ -40,3 +42,5 @@ volumes:
 
 networks:
   atlas:
+  orbe-adapter-data:
+    external: true

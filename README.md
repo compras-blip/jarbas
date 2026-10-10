@@ -28,4 +28,4 @@ docs/                       passo a passo de instalação
 | 3 | Mapas + web (restaurantes perto) | |
 | 4 | Navegador + 1Password | |
 | 5 | Dropbox (só leitura) | |
-| 6 | WhatsApp pela Z-API (o n8n do servidor já tem a integração usada pelo Jarbas) | ordem a decidir com o Felipe |
+| 6 | WhatsApp pelos MCP do n8n (arquivo + envio pela Z-API) | em andamento (10/10/2026), docs/fase-6-whatsapp.md |

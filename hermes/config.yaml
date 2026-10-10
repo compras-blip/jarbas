@@ -163,6 +163,36 @@ mcp_servers:
     tools:
       prompts: false
       resources: false
+  # Fase 6 (10/10/2026): WhatsApp do Bruno pelos servidores MCP do próprio n8n (réplica webhook, rede interna).
+  # Tokens no .env.hermes. Desenho: docs/fase-6-whatsapp.md. Nomes ao modelo: mcp__wa_consultas__whatsapp_read_conversation_v1 etc.
+  wa_consultas:
+    url: http://orbe-n8n-n8n-webhook-1:5678/mcp/orbe-archive-query-v1
+    headers:
+      Authorization: "Bearer ${ORBE_N8N_MCP_TOKEN}"
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  wa_envio:
+    url: http://orbe-n8n-n8n-webhook-1:5678/mcp/orbe-whatsapp-send-v1
+    headers:
+      Authorization: "Bearer ${ORBE_N8N_MCP_ENVIO_TOKEN}"
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+      exclude: [mail_send_text_v1]   # e-mail não é WhatsApp; entra em fase própria
+  wa_despacho:
+    url: http://orbe-n8n-n8n-webhook-1:5678/mcp/orbe-authorized-dispatch-v1
+    headers:
+      Authorization: "Bearer ${ORBE_N8N_MCP_DESPACHO_TOKEN}"
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
 
 # 10/10/2026: o Hermes esconde TODA ferramenta MCP atrás do tool_search (tools/tool_search.py: toolset "mcp-*" é sempre
 # adiável; não há lista de exceção). Com isso o modelo não veria as 4 ferramentas de mapas e tenderia a responder horário
