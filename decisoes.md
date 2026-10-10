@@ -36,3 +36,4 @@ Cada mudança no harness entra aqui com o motivo e, quando houver, o placar dos 
 - **Testes 6, 7, 8 e 10 passaram** (ver evals/fase-0.md). Faltam 2 (conta não autorizada), 3 (áudio, exige transcrição) e 4 (busca na web, desligada).
 - **Lembrete (teste 6):** chega, mas o Hermes embrulha a entrega do cron com cabeçalho "Cronjob Response: <nome> (job_id: ...)" e rodapé "To stop or manage this job..." em inglês (código em cron/scheduler_delivery.py). Pendente: ver se é configurável; senão, fica como limitação conhecida.
 - **Observação da memória:** com o Felipe testando pela conta dele, alguns fatos saíram como "Felipe Nóbrega pagou..." e outros como "Bruno pagou..." (o rótulo é Bruno, mas o nome do Telegram vai junto). Com o Bruno na conta dele isso se resolve.
+- **Lembretes limpos:** `cron.wrap_response: false` no config.yaml (chave lida em cron/scheduler_delivery.py). O lembrete passa a chegar só com o texto.

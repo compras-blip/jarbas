@@ -52,6 +52,11 @@ terminal:
   backend: local
   timeout: 180
 
+# Lembretes do agendador chegam limpos: sem cabeçalho "Cronjob Response (job_id)"
+# nem rodapé "To stop or manage this job..." em inglês (teste 6, 10/10/2026).
+cron:
+  wrap_response: false
+
 # Comandos perigosos sempre pedem aprovação.
 approvals:
   mode: manual
