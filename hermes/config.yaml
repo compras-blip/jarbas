@@ -81,11 +81,13 @@ stt:
 approvals:
   mode: manual
 
-# Memória embutida (perfil curto, sempre no prompt) + Hindsight (memória longa).
+# Só o Hindsight guarda fatos: ele separa a memória por pessoa (um banco por usuário do Telegram).
+# A memória embutida do Hermes (MEMORY.md/USER.md) é um arquivo único para todos e misturou os
+# testes do Felipe com fatos "do Bruno" em 10/10/2026; a documentação do plugin recomenda desligá-la.
 memory:
   provider: hindsight
-  memory_enabled: true
-  user_profile_enabled: true
+  memory_enabled: false
+  user_profile_enabled: false
   write_approval: false
 
 # Toda skill que o Atlas criar ou alterar sozinho espera revisão humana.
