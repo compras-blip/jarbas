@@ -82,5 +82,59 @@ memory:
   write_approval: false
 
 # Toda skill que o Atlas criar ou alterar sozinho espera revisão humana.
+# Skills embutidas do Hermes: só ficam as que as fases do Atlas usam (9):
+# google-workspace, email-inbox-triage, pdf, docx, xlsx, document-to-action-items, grounded-citations, blocked-page-recovery, youtube-content.
+# As outras 49 ficam escondidas (não aparecem no prompt nem para o agente):
+# menos tentação de ferramenta errada e menos tokens por mensagem. Decisão do Felipe em 10/10/2026.
 skills:
   write_approval: true
+  disabled:
+    - airtable
+    - apple-notes
+    - apple-reminders
+    - architecture-diagram
+    - arxiv
+    - ascii-video
+    - baoyu-infographic
+    - box
+    - claude-code
+    - claude-design
+    - codebase-inspection
+    - codex
+    - competitor-news-monitor
+    - computer-use
+    - design-md
+    - dogfood
+    - findmy
+    - gif-search
+    - github
+    - hermes-agent
+    - hermes-agent-skill-authoring
+    - himalaya
+    - humanizer
+    - imessage
+    - inspecting-hermes-desktop-dom
+    - llm-wiki
+    - manim-video
+    - maps
+    - meeting-action-items
+    - node-inspect-debugger
+    - notion
+    - obsidian
+    - opencode
+    - p5js
+    - popular-web-designs
+    - powerpoint
+    - product-price-monitor
+    - python-debugpy
+    - requesting-code-review
+    - sdlc-review
+    - simplify-code
+    - songsee
+    - songwriting-and-ai-music
+    - spike
+    - systematic-debugging
+    - teams-meeting-pipeline
+    - test-driven-development
+    - weekly-review-planning
+    - xurl
