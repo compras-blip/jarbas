@@ -16,10 +16,11 @@ fallback_model:
   provider: nous
   model: google/gemini-3.8-flash
 
-# Busca na web: desligada até passar nos testes 1, 5 e 9 da fase 0.
-# Depois entra o Brave gratuito:
-# web:
-#   backend: brave-free
+# Busca na web pela Nous (Tool Gateway): busca e leitura de página sem chave extra,
+# cobrada por uso nos créditos da Nous. Ligada em 10/10/2026 após os testes 1, 5 e 9.
+# Alternativa sem custo: brave-free (2.000 buscas/mês, só busca, precisa de chave do Brave).
+web:
+  backend: nous
 
 # A política do Atlas: ligar só o necessário.
 # Ficam ligados: web, memory, session_search, cronjob, todo, clarify, skills,
