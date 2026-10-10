@@ -67,6 +67,12 @@ compression:
 
 # Quem resume é o modelo principal ("auto"); raciocínio baixo evita resumo cortado (issue #135602).
 auxiliary:
+  # 10/10/2026: o Hermes roda, depois de cada tarefa, uma "revisão em segundo plano" (fork do modelo auxiliar)
+  # que pode criar ou editar skills sozinha via skill_manage. Vimos às 23:01 UTC: 4 chamadas extras à API
+  # (49 a 52 mil tokens de entrada cada) e uma tentativa de skill_manage sem ninguém pedir. O Atlas não escreve
+  # as próprias skills: quem escreve é o Felipe, no repositório. Desligado.
+  background_review:
+    enabled: false
   compression:
     reasoning_effort: low
 
@@ -201,3 +207,7 @@ mcp_servers:
 tools:
   tool_search:
     enabled: "off"
+
+# Curador de skills criadas pelo agente (manutenção em segundo plano): sem skills do agente, não há o que curar.
+curator:
+  enabled: false
