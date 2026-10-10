@@ -74,7 +74,7 @@ async function acharLugar(consulta, quantos = 3) {
   const places = await buscarTexto({ chave: chave(), texto: consulta, quantos, limiteDiario });
   if (!places.length) return { status: 'NÃO CONFIRMADO', texto: `NÃO CONFIRMADO: não achei "${limpa(consulta)}" no Google Maps.` };
   const p = places[0];
-  const conf = conferirNome(consulta, nome(p));
+  const conf = conferirNome(consulta, nome(p), p?.formattedAddress);
   if (!conf.ok) {
     const outros = places.slice(0, 3).map((x) => `${nome(x)} (${limpa(x.formattedAddress)})`).join('; ');
     return { status: 'OUTRO LUGAR', texto: `NÃO CONFIRMADO: o Google Maps não tem um lugar com o nome "${limpa(consulta)}". Devolveu outro(s): ${outros}. Não use o horário deles como se fosse do lugar pedido.` };

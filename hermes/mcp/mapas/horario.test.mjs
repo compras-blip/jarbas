@@ -85,4 +85,7 @@ test('conferencia de nome', () => {
   assert.equal(conferirNome('Ristorante Imperialino', 'Il Boccone del Prete').ok, false);
   assert.equal(conferirNome('Bodytech Ponta Negra', 'Bodytech - Ponta Negra').ok, true);
   assert.equal(conferirNome('Parque Ibirapuera', 'Parque Ibirapuera').ok, true);
+  assert.equal(conferirNome('Parque Ibirapuera, São Paulo', 'Parque Ibirapuera', 'Av. Pedro Álvares Cabral - Vila Mariana, São Paulo - SP').ok, true);
+  assert.equal(conferirNome('Bodytech Ponta Negra, Manaus', 'Bodytech Shopping Ponta Negra', 'Av. Coronel Teixeira, Manaus').ok, true);
+  assert.equal(conferirNome('Bem Brasil Milão', 'Il Boccone del Prete', 'Milano').ok, false);
 });

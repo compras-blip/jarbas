@@ -173,11 +173,18 @@ export const tokens = (s) => String(s ?? '')
   .normalize('NFD').replace(/[̀-ͯ]/g, '')
   .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter((t) => t && !GENERICOS.has(t));
 
-export function conferirNome(consulta, nome) {
+export function conferirNome(consulta, nome, endereco = '') {
+  // A consulta costuma trazer a cidade ("Parque Ibirapuera, São Paulo"); o nome do lugar não.
+  // Vale: todos os tokens do nome estão na consulta, OU metade dos tokens da consulta aparecem
+  // no nome ou no endereço (cidade, bairro). Nome sem nada em comum = outro lugar.
   const a = tokens(consulta);
-  const b = new Set(tokens(nome));
-  if (!a.length) return { ok: true, similaridade: 1 };
-  const comuns = a.filter((t) => b.has(t)).length;
-  const similaridade = comuns / a.length;
-  return { ok: similaridade >= 0.5, similaridade };
+  const n = tokens(nome);
+  const b = new Set(n);
+  const end = new Set(tokens(endereco));
+  if (!a.length || !n.length) return { ok: true, similaridade: 1 };
+  const noNome = a.filter((t) => b.has(t)).length;
+  const noNomeOuEndereco = a.filter((t) => b.has(t) || end.has(t)).length;
+  const nomeCoberto = n.filter((t) => a.includes(t)).length / n.length;
+  const similaridade = Math.max(nomeCoberto, noNomeOuEndereco / a.length);
+  return { ok: noNome > 0 && similaridade >= 0.5, similaridade };
 }
