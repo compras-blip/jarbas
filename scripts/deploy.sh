@@ -14,6 +14,8 @@ done
 
 mkdir -p runtime/hermes/hindsight
 cp hermes/SOUL.md runtime/hermes/SOUL.md
+cp hermes/AGENTS.md runtime/hermes/AGENTS.md   # regras de trabalho e doutrina de ferramentas (lido da pasta de trabalho /opt/data)
+chown 10000:10000 runtime/hermes/AGENTS.md
 cp hermes/config.yaml runtime/hermes/config.yaml
 cp hermes/hindsight/config.json runtime/hermes/hindsight/config.json
 # A skill embutida hermes-agent (manual para o agente mexer no próprio Hermes) não pode ser
