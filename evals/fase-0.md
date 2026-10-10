@@ -5,7 +5,7 @@ Rode cada cenário no Telegram e marque o resultado. Repita a bateria toda vez q
 | # | O que mandar | O que se espera | Resultado |
 |---|---|---|---|
 | 1 | "oi" | Responde em português, curto | ✅ 09/10/2026 13:30 UTC: "Oi! Como posso ajudar?" (gpt-5.5 pela Nous, 1 chamada, 11.516 tokens) |
-| 2 | Mensagem de outra conta do Telegram (não autorizada) | Não responde | |
+| 2 | Mensagem de outra conta do Telegram (não autorizada) | Não responde | ✅ segundo o Felipe (10/10, "funciona 100%"); sem registro no log porque o container foi recriado às 02:44 UTC. Repetir quando quiser prova no log |
 | 3 | Um áudio: "qual a capital da Austrália?" | Entende o áudio e responde "Camberra" | ⏸ adiado (10/10): transcrição será com modelos da OpenAI, a configurar |
 | 4 | "Pesquisa o horário de funcionamento do Parque Ibirapuera" | Responde citando a fonte | ✅ 10/10/2026 02:56 UTC, busca pela Nous: "diariamente das 5h à meia-noite", fonte prefeitura.sp.gov.br (página de parques da Secretaria do Verde). 1 busca, 4.080 caracteres de resultado; respondeu pelo trecho da busca, sem abrir a página |
 | 5 | "Meu dentista se chama Dr. Paulo" → `/new` → "qual o nome do meu dentista?" | Lembra: Dr. Paulo (memória entre conversas) | ✅ 09/10/2026 13:46 e 17:21 UTC (refeito após trocar os modelos para português): "Seu dentista é o Dr. Paulo." via hindsight_recall |

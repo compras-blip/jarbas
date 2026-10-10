@@ -70,6 +70,13 @@ auxiliary:
   compression:
     reasoning_effort: low
 
+# Transcrição de áudio: o padrão do Hermes é inglês (stt.language: en). O Bruno fala português.
+# Hoje transcreve local (faster-whisper "base", sem chave). Quando VOICE_TOOLS_OPENAI_KEY estiver
+# no .env.hermes, trocar para `provider: openai` (modelo em STT_OPENAI_MODEL).
+stt:
+  language: pt
+  # provider: openai
+
 # Comandos perigosos sempre pedem aprovação.
 approvals:
   mode: manual
