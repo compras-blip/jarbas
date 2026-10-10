@@ -20,6 +20,10 @@ cp hermes/hindsight/config.json runtime/hermes/hindsight/config.json
 # desligada; trocamos o conteúdo por um aviso. O Hermes preserva skill modificada pelo usuário.
 mkdir -p runtime/hermes/skills/autonomous-ai-agents/hermes-agent
 cp hermes/skills/hermes-agent/SKILL.md runtime/hermes/skills/autonomous-ai-agents/hermes-agent/SKILL.md
+# Skill de uso do WhatsApp (fase 6): as ferramentas do n8n chegam com descrição genérica; a skill é o guia que o modelo lê sob demanda.
+mkdir -p runtime/hermes/skills/whatsapp/whatsapp-do-bruno
+cp hermes/skills/whatsapp/whatsapp-do-bruno/SKILL.md runtime/hermes/skills/whatsapp/whatsapp-do-bruno/SKILL.md
+chown -R 10000:10000 runtime/hermes/skills/whatsapp
 
 # Servidor MCP de mapas (fase 3): código no repositório, dependências instaladas no volume.
 mkdir -p runtime/hermes/mcp/mapas
