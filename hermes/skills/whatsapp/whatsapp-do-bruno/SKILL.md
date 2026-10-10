@@ -9,7 +9,7 @@ platforms: [linux]
 
 # WhatsApp do Bruno (ferramentas `mcp__wa_*`)
 
-As descrições "Execute a SQL query in Postgres" são do n8n e não dizem nada: o que vale é esta tabela e as descrições dos parâmetros. Tudo lê o arquivo que o n8n mantém (mensagens desde 08/09/2026, áudios transcritos). Horários em UTC com `Z`; o Bruno está em Manaus (UTC−4): converta ao falar com ele.
+As descrições "Execute a SQL query in Postgres" são do n8n e não dizem nada: o que vale é esta tabela e as descrições dos parâmetros. Tudo lê o arquivo que o n8n mantém (mensagens desde 08/09/2026, áudios transcritos). Horários em UTC com `Z`. O Bruno está em Manaus (UTC−4, sem horário de verão): o dia D em Manaus vai de `D 04:00:00Z` até `D+1 04:00:00Z`; "ontem" e "esta semana" seguem a mesma conta. Pegue a data de hoje com o comando simples `TZ=America/Manaus date` e faça a conta de cabeça: **nunca escreva script (python, heredoc) para isso**, porque script pede aprovação do Bruno e trava a conversa. Ao falar com ele, converta de volta para a hora de Manaus.
 
 ## Consultar (servidor `wa_consultas`)
 
