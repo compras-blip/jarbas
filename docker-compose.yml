@@ -23,6 +23,7 @@ services:
     container_name: atlas-hindsight
     restart: unless-stopped
     shm_size: 1g
+    cpus: 3            # teto de CPU: o servidor e compartilhado com o OpenClaw/n8n (10/10: reranker pesado ocupou 7 nucleos)
     env_file: .env.hindsight
     environment:
       HINDSIGHT_API_WORKER_ID: atlas-hindsight-1
