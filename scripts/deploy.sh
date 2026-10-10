@@ -25,7 +25,17 @@ cp hermes/skills/hermes-agent/SKILL.md runtime/hermes/skills/autonomous-ai-agent
 mkdir -p runtime/hermes/mcp/mapas
 cp hermes/mcp/mapas/*.mjs hermes/mcp/mapas/package.json hermes/mcp/mapas/package-lock.json runtime/hermes/mcp/mapas/
 (cd runtime/hermes/mcp/mapas && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
+# O gateway roda como uid 10000 dentro do container: o que este script copia como root fica legível, mas o log,
+# o cache e a trava do MCP precisam ser dele (10/10: criados como root numa sondagem, o gateway não conseguia escrever).
+chown -R 10000:10000 runtime/hermes/mcp
+for f in runtime/hermes/logs/mcp-stderr.log runtime/hermes/cache/mcp_schema_cache.json runtime/hermes/.mcp-discovery.lock; do
+  [ ! -e "$f" ] || chown 10000:10000 "$f"
+done
 
 docker compose pull
 docker compose up -d
+# O pacote python "mcp" é um extra opcional do Hermes e NÃO vem no ambiente gerenciado do volume
+# (/opt/data/installs/.../venv, só extras fal+telegram). Sem ele o gateway ignora mcp_servers em silêncio (achado em 10/10).
+# Idempotente; o gateway só enxerga o pacote depois de reiniciar (docker restart atlas-hermes).
+docker compose exec -T -u 10000 -e HERMES_HOME=/opt/data hermes hermes pm install --extra mcp </dev/null
 docker compose ps

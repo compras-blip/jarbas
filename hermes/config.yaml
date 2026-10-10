@@ -163,3 +163,11 @@ mcp_servers:
     tools:
       prompts: false
       resources: false
+
+# 10/10/2026: o Hermes esconde TODA ferramenta MCP atrás do tool_search (tools/tool_search.py: toolset "mcp-*" é sempre
+# adiável; não há lista de exceção). Com isso o modelo não veria as 4 ferramentas de mapas e tenderia a responder horário
+# pela web (F3-1). Desligado: tudo fica visível. Custo medido em 10/10: +1.006 tokens (4 de mapas) +1.684 (4 nativas que
+# ficavam adiadas: session_search, todo_list, process_manage, cronjob_manage) −839 (a ponte) ≈ +1.851 tokens por mensagem.
+tools:
+  tool_search:
+    enabled: "off"
