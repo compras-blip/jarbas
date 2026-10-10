@@ -13,12 +13,13 @@ Em 04 e 05/10 o Jarbas indicou um restaurante fechado de vez e "almoço das 12h 
 |---|---|---|---|
 | Text Search, campos **Pro** (nome, endereço, coordenada, situação do negócio, link do Maps, fuso, tipo) | achar o lugar e listar candidatos | US$ 32 | 5.000 |
 | Place Details, campos **Enterprise** (horário dos próximos 7 dias com feriados, horário regular, nota, nº de avaliações, preço, site, telefone) | horário e ficha de 1 lugar | US$ 20 | 1.000 |
+| Place Details, campos **Enterprise + Atmosphere** (os de cima mais até 5 avaliações e o resumo das avaliações do Google) | avaliações de 1 lugar, só quando pedido | US$ 25 | 1.000 |
 
 Regra de ouro do Google: a conta é pelo campo mais caro pedido. Por isso **nunca** pedimos horário na busca (Text Search Enterprise custa US$ 35 por 1.000 e só 1.000 grátis); buscamos barato (Pro) e pedimos horário só dos escolhidos (Details). Para "aberto agora", a própria busca filtra (`openNow: true`) sem custo extra.
 
 Conta para o Bruno: 10 pedidos por dia × (1 busca + até 5 fichas) = 300 buscas + 1.500 fichas por mês → busca dentro do grátis; fichas ~500 acima do grátis × US$ 0,02 = **~US$ 10/mês no pior caso**, zero em uso leve. Limite diário de 300 chamadas no servidor como trava.
 
-## 3. As ferramentas (uma por ação)
+## 3. As ferramentas (uma por ação) — 4, aprovadas pelo Felipe em 10/10
 
 Servidor MCP `mapas`, em Node (já existe na imagem do Hermes, v26), SDK oficial `@modelcontextprotocol/server` 2.3.1, transporte stdio. O Hermes expõe ao modelo como `mcp_mapas_<nome>`.
 
@@ -34,6 +35,10 @@ Servidor MCP `mapas`, em Node (já existe na imagem do Hermes, v26), SDK oficial
 
 **`link_mapa`** — "manda o mapa do X"
 - Entrada: `lugar`. Faz: 1 busca Pro. Devolve: nome, endereço e link do Google Maps (grátis até 5.000/mês).
+
+**`lugar_avaliacoes`** — "o que as pessoas dizem do X?" (aprovado em 10/10)
+- Entrada: `lugar`. Faz: 1 busca Pro + 1 ficha com avaliações.
+- Devolve: nota, nº de avaliações, resumo das avaliações do Google (quando existir) e as 5 avaliações mais relevantes (nota, quando, texto cortado em ~200 caracteres). Só roda quando o Bruno pede opinião sobre um lugar específico.
 
 Instruções que vão na descrição das próprias ferramentas (onde o modelo lê na hora de usar): o veredito é final, não refaça a conta; lugar fechado não é opção; "não confirmado" se diz na primeira linha; aberto não quer dizer mesa livre.
 
@@ -65,7 +70,8 @@ Instruções que vão na descrição das próprias ferramentas (onde o modelo l�
 | F3-5 | "O Bem Brasil em Milão abre segunda ao meio-dia?" | FECHADO ao meio-dia; só abre à noite (o outro erro do Jarbas) |
 | F3-6 | "Que horas abre o Mercado Municipal de Manaus daqui a 10 dias?" | Horário regular com aviso de que feriados não entram além de 7 dias |
 | F3-7 | "Horário do Restaurante Fulano Inexistente 123" | "Não confirmado: não achei no Google Maps", sem inventar |
-| F3-8 | Medição | ≤ 2 s por chamada ao Google; nº de chamadas por pedido no log; nenhuma busca na web em F3-1 a F3-5 |
+| F3-8 | "O que as pessoas falam do Il Boccone del Prete?" | Nota, nº de avaliações, resumo e até 5 avaliações curtas |
+| F3-9 | Medição | ≤ 2 s por chamada ao Google; nº de chamadas por pedido no log; nenhuma busca na web em F3-1 a F3-5 |
 
 ## 7. O que cada um faz
 
