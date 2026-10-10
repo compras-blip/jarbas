@@ -1,0 +1,149 @@
+# Configuração do Hermes para o Atlas (fase 0).
+# Este arquivo é a fonte da verdade: o scripts/deploy.sh copia ele para
+# runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
+# Segredos NÃO entram aqui: ficam em .env.hermes.
+
+# Modelo principal: ChatGPT pela Nous Portal (plano do ChatGPT conectado na Nous).
+# Login no servidor: `hermes auth add nous` (código de dispositivo).
+model:
+  provider: nous
+  default: openai/gpt-5.5   # cobrado no plano do ChatGPT (billing_mode subscription); trocar com /model se precisar
+
+# Reserva automática: entra quando o principal falha (login/cobrança, limite, queda,
+# resposta vazia) e o Hermes volta a tentar o principal na mensagem seguinte.
+# Nunca modelo da OpenAI aqui: cairia junto com o plano do ChatGPT.
+fallback_model:
+  provider: nous
+  model: google/gemini-3.8-flash
+
+# Busca na web pela Nous (Tool Gateway): busca e leitura de página sem chave extra,
+# cobrada por uso nos créditos da Nous. Ligada em 10/10/2026 após os testes 1, 5 e 9.
+# Alternativa sem custo: brave-free (2.000 buscas/mês, só busca, precisa de chave do Brave).
+web:
+  backend: nous
+
+# A política do Atlas: ligar só o necessário.
+# Ficam ligados: web, memory, session_search, cronjob, todo, clarify, skills,
+# vision, tts, file e terminal.
+agent:
+  disabled_toolsets:
+    - browser          # entra na fase 4, com o cofre do 1Password
+    - computer_use
+    - desktop_ui
+    - project
+    - start_chat
+    - setup
+    - image_gen
+    - video_gen
+    - video
+    - kanban
+    - delegation       # sem subagentes por enquanto
+    - code_execution   # o terminal já cobre; uma forma a menos de rodar código
+    - x_search
+    - spotify
+    - discord
+    - discord_admin
+    - feishu_doc
+    - feishu_drive
+    - yuanbao
+
+# O Hermes já roda dentro de um contêiner Docker isolado do VPS,
+# então o terminal roda "local" dentro desse contêiner.
+terminal:
+  backend: local
+  timeout: 180
+
+# Lembretes do agendador chegam limpos: sem cabeçalho "Cronjob Response (job_id)"
+# nem rodapé "To stop or manage this job..." em inglês (teste 6, 10/10/2026).
+cron:
+  wrap_response: false
+
+# Compactação de contexto: compacta quando a conversa passa de 150 mil tokens. A janela do
+# gpt-5.5 pela Nous é de 1 milhão (medido 642 mil OK em 10/10/2026); sem este teto o Hermes
+# só compactaria perto de 525 mil. Mantém as 20 últimas mensagens, o último pedido pendente e
+# as mensagens do Bruno palavra por palavra. Evidências: atlas-compactacao-evidencias.md (10/10).
+compression:
+  threshold_tokens: 150000
+
+# Quem resume é o modelo principal ("auto"); raciocínio baixo evita resumo cortado (issue #135602).
+auxiliary:
+  compression:
+    reasoning_effort: low
+
+# Transcrição de áudio: o padrão do Hermes é inglês (stt.language: en). O Bruno fala português.
+# Hoje transcreve local (faster-whisper "base", sem chave). Quando VOICE_TOOLS_OPENAI_KEY estiver
+# no .env.hermes, trocar para `provider: openai` (modelo em STT_OPENAI_MODEL).
+stt:
+  language: pt
+  # provider: openai
+
+# Comandos perigosos sempre pedem aprovação.
+approvals:
+  mode: manual
+
+# Só o Hindsight guarda fatos: ele separa a memória por pessoa (um banco por usuário do Telegram).
+# A memória embutida do Hermes (MEMORY.md/USER.md) é um arquivo único para todos e misturou os
+# testes do Felipe com fatos "do Bruno" em 10/10/2026; a documentação do plugin recomenda desligá-la.
+memory:
+  provider: hindsight
+  memory_enabled: false
+  user_profile_enabled: false
+  write_approval: false
+
+# Toda skill que o Atlas criar ou alterar sozinho espera revisão humana.
+# Skills embutidas do Hermes: só ficam as que as fases do Atlas usam (9):
+# google-workspace, email-inbox-triage, pdf, docx, xlsx, document-to-action-items, grounded-citations, blocked-page-recovery, youtube-content.
+# As outras 49 ficam escondidas (não aparecem no prompt nem para o agente):
+# menos tentação de ferramenta errada e menos tokens por mensagem. Decisão do Felipe em 10/10/2026.
+skills:
+  write_approval: true
+  disabled:
+    - airtable
+    - apple-notes
+    - apple-reminders
+    - architecture-diagram
+    - arxiv
+    - ascii-video
+    - baoyu-infographic
+    - box
+    - claude-code
+    - claude-design
+    - codebase-inspection
+    - codex
+    - competitor-news-monitor
+    - computer-use
+    - design-md
+    - dogfood
+    - findmy
+    - gif-search
+    - github
+    - hermes-agent
+    - hermes-agent-skill-authoring
+    - himalaya
+    - humanizer
+    - imessage
+    - inspecting-hermes-desktop-dom
+    - llm-wiki
+    - manim-video
+    - maps
+    - meeting-action-items
+    - node-inspect-debugger
+    - notion
+    - obsidian
+    - opencode
+    - p5js
+    - popular-web-designs
+    - powerpoint
+    - product-price-monitor
+    - python-debugpy
+    - requesting-code-review
+    - sdlc-review
+    - simplify-code
+    - songsee
+    - songwriting-and-ai-music
+    - spike
+    - systematic-debugging
+    - teams-meeting-pipeline
+    - test-driven-development
+    - weekly-review-planning
+    - xurl
