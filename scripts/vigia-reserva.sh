@@ -44,7 +44,7 @@ r = c.execute(
     f"from session_model_usage where {cond} and last_seen > ? and task = ''",
     (principal, desde)).fetchone()
 if r and r[2]:
-    print(f"{r[0]:.0f}|{r[1]}|{r[2]}")
+    print(f"{float(r[0])!r}|{r[1]}|{r[2]}")  # hora exata, com decimais: arredondar fazia o mesmo aviso repetir a cada 10 min (10/10)
 PY
 )
 if [ -n "$res" ]; then
