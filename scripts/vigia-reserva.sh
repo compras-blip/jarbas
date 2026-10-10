@@ -24,6 +24,9 @@ if [ "$MODO" = "--teste" ]; then
   avisar "Atlas: vigia da reserva instalado e funcionando ($(date -u +%H:%M) UTC). Principal: ${PRINCIPAL}."
   exit 0
 fi
+# 0) aquecimento da memoria: uma busca pequena a cada rodada mantem os modelos do Hindsight na RAM
+#    (10/10: depois de 5 h parado, a 1a busca levou 20 s so para carregar o modelo de embeddings).
+sudo -n docker exec atlas-hermes sh -c 'curl -s -m 60 -o /dev/null -X POST http://hindsight:8888/v1/default/banks/atlas-1890418170/memories/recall -H "Content-Type: application/json" -d "{\"query\":\"aquecimento\",\"budget\":\"low\"}"' >/dev/null 2>&1 || true
 # 1) containers no ar?
 for c in atlas-hermes atlas-hindsight; do
   st=$(sudo -n docker inspect "$c" --format '{{.State.Status}}' 2>/dev/null || echo ausente)
