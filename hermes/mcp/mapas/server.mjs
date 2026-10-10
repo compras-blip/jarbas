@@ -12,6 +12,9 @@ import { avaliarHorario, veredito, textoDoDia, lerHora, agoraNoLugar, diaDaSeman
 const chave = () => process.env.GOOGLE_PLACES_API_KEY || '';
 const limiteDiario = Number(process.env.MAPAS_LIMITE_DIARIO) || 300;
 const log = (...a) => console.error('[mapas]', new Date().toISOString(), ...a);
+// Toda saída normal passa por aqui: a linha de contagem no stderr é a prova de quantas chamadas ao Google o dia já gastou,
+// inclusive nos caminhos "não confirmado" e "fechado definitivamente" (10/10: F3-3 e F3-7 saíram sem a linha).
+const fim = (ferramenta, texto, ...extra) => { log(ferramenta, ...extra, `chamadas_hoje=${chamadasHoje()}`); return ok(texto); };
 
 const PRECO = { PRICE_LEVEL_FREE: 'grátis', PRICE_LEVEL_INEXPENSIVE: 'barato', PRICE_LEVEL_MODERATE: 'preço médio', PRICE_LEVEL_EXPENSIVE: 'caro', PRICE_LEVEL_VERY_EXPENSIVE: 'muito caro' };
 const SITUACAO = { CLOSED_PERMANENTLY: 'FECHADO DEFINITIVAMENTE (o Google Maps marca este lugar como fechado permanentemente)', CLOSED_TEMPORARILY: 'FECHADO TEMPORARIAMENTE (o Google Maps marca este lugar como fechado temporariamente)' };
@@ -103,7 +106,7 @@ server.registerTool('lugares_perto', {
   const ref = await referencia({ chave: chave(), pertoDe: perto_de, limiteDiario });
   const texto = ref ? o_que : `${o_que} perto de ${perto_de}`;
   const places = await buscarTexto({ chave: chave(), texto, locationBias: ref ? { latitude: ref.latitude, longitude: ref.longitude, raioMetros: 3000 } : null, abertoAgora: aberto_agora, quantos, notaMinima: nota_minima ?? null, limiteDiario });
-  if (!places.length) return ok(`Não achei "${limpa(o_que)}" perto de "${limpa(perto_de)}" no Google Maps${aberto_agora ? ' aberto agora' : ''}. Diga isso ao Bruno em vez de sugerir outro lugar sem conferir.`);
+  if (!places.length) return fim('lugares_perto', `Não achei "${limpa(o_que)}" perto de "${limpa(perto_de)}" no Google Maps${aberto_agora ? ' aberto agora' : ''}. Diga isso ao Bruno em vez de sugerir outro lugar sem conferir.`);
   const fichas = [];
   for (const p of places.slice(0, quantos)) {
     try { fichas.push(await ficha({ chave: chave(), placeId: p.id, limiteDiario })); }
@@ -131,7 +134,7 @@ server.registerTool('lugar_horario', {
 }, async ({ lugar, data, hora }) => protegido(async () => {
   const agoraMs = Date.now();
   const achado = await acharLugar(lugar);
-  if (achado.status !== 'ok') return ok(achado.texto);
+  if (achado.status !== 'ok') return fim('lugar_horario', achado.texto, `status=${achado.status}`);
   const p = await ficha({ chave: chave(), placeId: achado.place.id, limiteDiario });
   const local = agoraNoLugar(agoraMs, p?.utcOffsetMinutes);
   const dataAlvo = data || local.data;
@@ -139,9 +142,9 @@ server.registerTool('lugar_horario', {
   const minutos = hora ? lerHora(hora) : (dataAlvo === local.data ? local.minutos : null);
   const cabecalho = `${nome(p)} — ${limpa(p.formattedAddress)}${p.primaryTypeDisplayName?.text ? ` — ${limpa(p.primaryTypeDisplayName.text)}` : ''}`;
   const sit = SITUACAO[p?.businessStatus];
-  if (sit) return ok(`${cabecalho}\nVeredito: ${sit}.\nFonte: ${FONTE}.`);
+  if (sit) return fim('lugar_horario', `${cabecalho}\nVeredito: ${sit}.\nFonte: ${FONTE}.`, `status=${p.businessStatus}`);
   const h = avaliarHorario(p, { data: dataAlvo, minutos, agoraMs });
-  if (!h) return ok(`${cabecalho}\nVeredito: NÃO CONFIRMADO — o Google Maps não tem o horário deste lugar. Procure a página de horários do site oficial${p.websiteUri ? ` (${limpa(p.websiteUri)})` : ''} ou diga na primeira linha que não confirmou.\nFonte: ${FONTE}.`);
+  if (!h) return fim('lugar_horario', `${cabecalho}\nVeredito: NÃO CONFIRMADO — o Google Maps não tem o horário deste lugar. Procure a página de horários do site oficial${p.websiteUri ? ` (${limpa(p.websiteUri)})` : ''} ou diga na primeira linha que não confirmou.\nFonte: ${FONTE}.`);
   const v = veredito(h, { minutos, dia, agora: minutos !== null && !hora && dataAlvo === local.data });
   const origem = h.origem === 'proximos7dias' ? 'horário dos próximos 7 dias (inclui feriados e horários especiais)' : 'horário regular da semana (a data está além de 7 dias: feriados e horários especiais não entram)';
   const linhas = [cabecalho, `Data considerada: ${DIAS_PT[dia]}, ${dataAlvo}${minutos !== null ? `, ${hhmm(minutos)}` : ''} (fuso do lugar).`, `Veredito: ${v}.`, `${DIAS_PT[dia]}: ${textoDoDia(h)}.`, `Base: ${origem}.`];
@@ -153,12 +156,12 @@ server.registerTool('lugar_horario', {
 
 server.registerTool('link_mapa', {
   title: 'Link do Google Maps',
-  description: 'Devolve o nome, o endereço e o link do Google Maps de um lugar, para mandar ao Bruno (ele quer o link sozinho na mensagem, para copiar). Não serve para horário: para isso use lugar_horario.',
+  description: 'Devolve o nome, o endereço e o link do Google Maps de um lugar. Mande ao Bruno as 3 linhas: nome, endereço e, na última linha, o link sozinho (para ele copiar). Não serve para horário: para isso use lugar_horario.',
   inputSchema: { lugar: z.string().min(2).max(160).describe('Nome do lugar, de preferência com a cidade.') },
   annotations: { readOnlyHint: true, openWorldHint: true },
 }, async ({ lugar }) => protegido(async () => {
   const achado = await acharLugar(lugar, 1);
-  if (achado.status !== 'ok') return ok(achado.texto);
+  if (achado.status !== 'ok') return fim('link_mapa', achado.texto, `status=${achado.status}`);
   const p = achado.place;
   log('link_mapa', `chamadas_hoje=${chamadasHoje()}`);
   return ok(`${nome(p)}\n${limpa(p.formattedAddress)}\n${linkCurto(p.googleMapsUri) || '(sem link)'}`);
@@ -172,7 +175,7 @@ server.registerTool('lugar_avaliacoes', {
   annotations: { readOnlyHint: true, openWorldHint: true },
 }, async ({ lugar }) => protegido(async () => {
   const achado = await acharLugar(lugar);
-  if (achado.status !== 'ok') return ok(achado.texto);
+  if (achado.status !== 'ok') return fim('lugar_avaliacoes', achado.texto, `status=${achado.status}`);
   const p = await ficha({ chave: chave(), placeId: achado.place.id, comAvaliacoes: true, limiteDiario });
   const linhas = [`${nome(p)} — ${limpa(p.formattedAddress)} — ${nota(p)}${PRECO[p?.priceLevel] ? ` — ${PRECO[p.priceLevel]}` : ''}`];
   if (p?.reviewSummary?.text?.text) linhas.push(`Resumo do Google: ${limpa(p.reviewSummary.text.text).slice(0, 400)}`);

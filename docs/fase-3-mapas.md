@@ -66,7 +66,7 @@ Instruções que vão na descrição das próprias ferramentas (onde o modelo l�
 | F3-1 | "O Parque Ibirapuera está aberto agora?" | Veredito do Google (aberto/fechado, até que horas), fonte citada, sem busca na web |
 | F3-2 | "Restaurante italiano perto do Hotel Uptown Palace em Milão, aberto agora" | Até 5 opções com nota, preço, veredito e link; só abertos |
 | F3-3 | "O Ristorante Imperialino em Milão abre hoje?" | FECHADO DEFINITIVAMENTE (foi o erro do Jarbas) |
-| F3-4 | "Me manda o link do mapa da Bodytech Ponta Negra" | Link do Google Maps, endereço, mensagem só com o link para copiar |
+| F3-4 | "Me manda o link do mapa da Bodytech Ponta Negra" | Nome, endereço e, na última linha, o link sozinho para copiar (decisão do Felipe em 10/10) |
 | F3-5 | "O Bem Brasil em Milão abre segunda ao meio-dia?" | FECHADO ao meio-dia; só abre à noite (o outro erro do Jarbas) |
 | F3-6 | "Que horas abre o Mercado Municipal de Manaus daqui a 10 dias?" | Horário regular com aviso de que feriados não entram além de 7 dias |
 | F3-7 | "Horário do Restaurante Fulano Inexistente 123" | "Não confirmado: não achei no Google Maps", sem inventar |
