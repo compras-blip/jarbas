@@ -10,3 +10,6 @@ runtime/
 vigia/
 # Backups dos arquivos de segredo (tem chave dentro)
 .env.*.bak-*
+
+# Levantamento da memoria do Jarbas (dados pessoais do Bruno): nunca no git
+curadoria/
