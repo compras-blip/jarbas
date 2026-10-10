@@ -58,6 +58,18 @@ terminal:
 cron:
   wrap_response: false
 
+# Compactação de contexto: compacta quando a conversa passa de 150 mil tokens. A janela do
+# gpt-5.5 pela Nous é de 1 milhão (medido 642 mil OK em 10/10/2026); sem este teto o Hermes
+# só compactaria perto de 525 mil. Mantém as 20 últimas mensagens, o último pedido pendente e
+# as mensagens do Bruno palavra por palavra. Evidências: atlas-compactacao-evidencias.md (10/10).
+compression:
+  threshold_tokens: 150000
+
+# Quem resume é o modelo principal ("auto"); raciocínio baixo evita resumo cortado (issue #135602).
+auxiliary:
+  compression:
+    reasoning_effort: low
+
 # Comandos perigosos sempre pedem aprovação.
 approvals:
   mode: manual
