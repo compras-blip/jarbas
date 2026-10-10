@@ -15,7 +15,8 @@ As descrições "Execute a SQL query in Postgres" são do n8n e não dizem nada:
 
 | Pergunta do Bruno | Ferramenta | Como |
 |---|---|---|
-| "Quem me mandou mensagem hoje / nesta semana?" | `whatsapp_review_window_v1` | `from_utc`/`to_utc` do período (máx. 31 dias). Página de até 60 mensagens; se vier `has_more`, repita com `before_event_id` = `next_before_event_id` e o MESMO período. |
+| "Quem me mandou mensagem hoje / nesta semana?" | `whatsapp_find_contacts_v1` com `query` vazia | Devolve os 20 contatos e grupos mais recentes com a data da última mensagem: 1 chamada, barata. Responda com isso, separando pessoas de grupos. Só abra a conversa de quem ele perguntar. |
+| "O que chegou hoje / nas últimas horas?" (conteúdo, não só quem) | `whatsapp_review_window_v1` | `from_utc`/`to_utc` do período (máx. 31 dias). Página de até 60 mensagens (~7 KB cada); se vier `has_more`, repita com `before_event_id` = `next_before_event_id` e o MESMO período. **Pare na 3ª página**: resuma o que viu e diga quantas ficaram, em vez de ler o dia inteiro (o WhatsApp dele tem ~500 mensagens por dia, quase tudo grupo). |
 | "O que o Fulano falou?" | 1º `whatsapp_find_contacts_v1` (nome ou número; vazio lista recentes) → 2º `whatsapp_read_conversation_v1` com o `contact_id` exato | Período máx. 31 dias; 20 mensagens por página, cursor igual ao de cima. Vários candidatos: pergunte ao Bruno qual, nunca escolha por conta. |
 | Texto inteiro de uma mensagem longa ou a transcrição de um áudio | `whatsapp_read_message_v1` com o `event_id` da mensagem | Vem em trechos: comece em `offset` 0 e siga `next_offset`. Diga que é transcrição automática. |
 | Contato que nunca conversou (só está na agenda do celular) | `whatsapp_find_saved_contacts_v1` | Nome salvo ou número, 2+ caracteres. Nome de perfil não confirma identidade. |
