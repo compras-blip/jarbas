@@ -75,7 +75,7 @@ auxiliary:
 # no .env.hermes, trocar para `provider: openai` (modelo em STT_OPENAI_MODEL).
 stt:
   language: pt
-  # provider: openai
+  # provider: openai   # ligar quando a conta da OpenAI tiver créditos (chave já gravada em 10/10)
 
 # Comandos perigosos sempre pedem aprovação.
 approvals:
