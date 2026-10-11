@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Não consegui confirmar uma passagem disponível para comprar agora nas suas datas — não vou te passar preço de outro dia como se servisse.
+
+- Busquei Manaus–Guarulhos, como você prefere: ida sexta-feira, 16/10/2026, e volta domingo, 18/10/2026, sem escalas nos dois trechos.
+
+- A LATAM deu erro nas duas tentativas. Na GOL, consegui acessar o site, mas não obter a cotação desse período.
+
+- O que não conferi: horários, preço total, bagagem e disponibilidade para emissão. Nenhuma compra foi feita.
+
+- Para tentar a compra agora, use o site oficial da GOL com essas datas e filtro de voos diretos:
+
+https://www.voegol.com.br/
+
+session_id: 20261011_025219_5bd1f8
