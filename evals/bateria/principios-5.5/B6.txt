@@ -1,0 +1,17 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_015645_0f94a5
+Williams falou principalmente de caixa, prestação de contas e manutenção; decisão sua agora é se autoriza a linha de conserto do caminhão e como quer tratar o caixa do diesel.
+
+1. Recomendação: autorizar o conserto necessário e pedir orçamento antes de gasto maior. Sexta, 09/10, 22h33, ele disse que o caminhão acendeu vários códigos, deve voltar para a oficina, possivelmente válvula/EGR/DPF, e “não é nada severo”, mas não dá para escapar de consertar.
+
+2. Caixa: ele disse que os US$ 5.000 de cada um já foram consumidos por despesas iniciais e diesel. O primeiro resumo da semana fechou com US$ 4.700 de receita bruta, US$ 4.285 de deduções e saldo final de US$ 415.
+
+3. Diesel: ele errou a estimativa; colocou US$ 1.500 achando que daria, mas não deu. Disse que acabou tirando do próprio bolso para segurar o diesel do motorista até cair o pagamento da factoring, e isso atrasou o caminhão dele pessoalmente.
+
+4. Prestação de contas: ele prometeu mandar a planilha “direitinho”, com rate confirmations, recibos, milhas, porcentagens e deduções. Também explicou que algumas despesas pequenas nem entraram ainda, como logbook, modem, materiais e líquidos.
+
+5. Operação: foram 2 cargas na semana, total US$ 4.700, motorista Sannor Rojas recebeu 30%, US$ 1.410. Ele esperava 3 ou 4 cargas; uma carga ruim travou dois dias, e ele disse que já avisou o despachante que, se repetir, está fora.
+
+O que eu faria: responderia curto no grupo pedindo 3 coisas antes de qualquer aporte novo: planilha fechada da semana, orçamento da oficina antes de aprovar peça/serviço maior, e regra de caixa mínimo para diesel para ele não precisar cobrir do bolso.

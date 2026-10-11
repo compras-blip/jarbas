@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Achei opções diretas, mas ainda não tenho disponibilidade “ao vivo” de assento para compra fechada; recomendo Azul pelo menor preço encontrado para essas datas.
+
+1. Recomendado — Azul, direto MAO–São Paulo, ida sexta 16/10 e volta domingo 18/10: ida a partir de R$ 2.344,42 e volta a partir de R$ 2.655,42, total estimado R$ 4.999,84 sem bagagem/serviços. Fonte: página da Azul, tarifas vistas nas últimas 48h.
+
+2. Se fizer questão de Guarulhos: GOL/LATAM têm voos diretos diários MAO–GRU e GRU–MAO, mas eu não consegui confirmar preço atual de compra na fonte agora. KAYAK/Trip indicam que direto costuma ficar na faixa de R$ 1,5 mil a R$ 2,3 mil ida e volta, mas não é preço fechado.
+
+3. Azul pode cair em Viracopos/Campinas ou “São Paulo” genérico; é o ponto de atenção antes de comprar.
+
+4. Horários diretos usuais da rota ficam perto de 4h de voo; a volta de São Paulo para Manaus chega com diferença de fuso, então pode cair madrugada em Manaus.
+
+Se quiser, eu sigo com 1: Azul mais barato mesmo se for Viracopos, ou 2: só GRU mesmo que custe mais.
+
+session_id: 20261011_015537_cb286f

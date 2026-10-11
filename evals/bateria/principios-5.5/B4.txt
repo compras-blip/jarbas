@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_015439_aa1649
+Me confirma só quantas pessoas vão e se 20h30 serve; minha recomendação é manter Terraço Itália na sexta e Figueira Rubaiyat no sábado.
+
+1. Recomendado — sexta, 16/10, 20h30: Terraço Itália. Aberto nesse horário pelo Google Maps, fecha 1h. Vista, ambiente elegante, italiano refinado; muito caro. Av. Ipiranga, 344, 41º andar.
+
+2. Recomendado — sábado, 17/10, 20h30: A Figueira Rubaiyat. Aberto nesse horário pelo Google Maps, fecha meia-noite. Melhor para carne, ambiente sofisticado, a figueira é o diferencial; muito caro. Rua Haddock Lobo, 1738.
+
+3. Antes de viajar: fazer check-in do voo, separar documento, cartão/Wellhub, remédios, carregadores e fone.
+
+4. Mala: roupa do curso, roupa melhor para os jantares, tênis confortável e blusa leve — São Paulo pode esfriar à noite.
+
+5. Curso: recuperar/revisar o conteúdo dos módulos de 26 e 27/09 antes de embarcar, para não chegar atrasado no fio da meada.
