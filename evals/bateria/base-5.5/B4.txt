@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_014145_d36114
+Deixei um plano bom e seguro: sexta no Terraço Itália e sábado na Figueira Rubaiyat; para eu tentar reservar, só preciso saber quantas pessoas vão.
+
+1. Recomendado sexta-feira, 16/10, às 20h30, horário de São Paulo: Terraço Itália, Av. Ipiranga, 344, 41º andar — vista clássica, italiano elegante, aberto até 1h pelo Google Maps; reservas pelo site oficial para até 4 pessoas.
+
+2. Recomendado sábado, 17/10, às 20h30, horário de São Paulo: A Figueira Rubaiyat, Rua Haddock Lobo, 1738 — carne forte, frutos do mar bons, ambiente elegante; aberto até meia-noite pelo Google Maps; reserva direto com o restaurante.
+
+3. Eu evitaria SEEN e Skye como plano principal se você não estiver hospedado nos hotéis: os dois têm vista ótima, mas para cliente externo funcionam mais por ordem de chegada no jantar, então é menos garantido.
+
+4. Antes de viajar: fazer check-in do voo, separar documento, cartão/Wellhub, remédios, carregadores, roupa do curso, roupa de jantar e uma blusa leve — São Paulo costuma esfriar à noite.
+
+5. Não esquecer do curso: recuperar o conteúdo dos módulos de 26 e 27/09 antes de embarcar, porque isso ficou pendente.

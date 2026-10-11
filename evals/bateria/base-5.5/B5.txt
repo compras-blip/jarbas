@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Encontrei voos diretos, mas ainda não consegui confirmar preço final comprável para 16/10–18/10 na companhia; quer que eu continue na busca de disponibilidade/preço agora?
+
+1. Recomendação: GRU, não VCP — para São Paulo de verdade é mais prático; VCP pode sair mais barato, mas joga você em Campinas.
+
+2. Ida sexta-feira, 16/10: há diretos MAO–GRU pela Gol/LATAM, com opções no fim do dia chegando por volta de 22h–23h10, horário de São Paulo.
+
+3. Volta domingo, 18/10: há diretos GRU–MAO pela Gol/LATAM; vi opções diretas no dia, inclusive à noite, chegando em Manaus de madrugada.
+
+4. Faixa que apareceu em agregadores para diretos Manaus–São Paulo nos próximos dias: cerca de R$ 1.300–R$ 1.900 ida e volta, mas não posso tratar como preço final de compra sem abrir a oferta exata.
+
+5. Minha escolha, se confirmar disponibilidade: Gol ou LATAM direto MAO–GRU sexta no fim do dia + volta GRU–MAO domingo à noite.
+
+session_id: 20261011_014315_e45d8d
