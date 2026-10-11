@@ -26,6 +26,10 @@ cp hermes/skills/hermes-agent/SKILL.md runtime/hermes/skills/autonomous-ai-agent
 mkdir -p runtime/hermes/skills/whatsapp/whatsapp-do-bruno
 cp hermes/skills/whatsapp/whatsapp-do-bruno/SKILL.md runtime/hermes/skills/whatsapp/whatsapp-do-bruno/SKILL.md
 chown -R 10000:10000 runtime/hermes/skills/whatsapp
+# Skill de passagens (fase 4): caminho curto pelo Google Voos e regras de reporte.
+mkdir -p runtime/hermes/skills/viagem/passagens
+cp hermes/skills/viagem/passagens/SKILL.md runtime/hermes/skills/viagem/passagens/SKILL.md
+chown -R 10000:10000 runtime/hermes/skills/viagem
 
 # Servidor MCP de mapas (fase 3): código no repositório, dependências instaladas no volume.
 mkdir -p runtime/hermes/mcp/mapas
