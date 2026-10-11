@@ -106,6 +106,7 @@ memory:
 skills:
   write_approval: true
   disabled:
+    - google-workspace   # 11/10: desligada até a fase 1; sem ferramenta do Google ligada, o modelo a abria à toa (16 KB) e tentou rodar o instalador dela 3x
     - airtable
     - apple-notes
     - apple-reminders
