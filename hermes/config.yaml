@@ -7,7 +7,7 @@
 # Login no servidor: `hermes auth add nous` (código de dispositivo).
 model:
   provider: nous
-  default: openai/gpt-5.5   # cobrado no plano do ChatGPT (billing_mode subscription); trocar com /model se precisar
+  default: openai/gpt-6.1-sol   # 11/10/2026: bateria do Bruno 9,0 contra 7,0 do gpt-5.5 com o mesmo prompt; também   # cobrado no plano do ChatGPT (billing_mode subscription); trocar com /model se precisar
 
 # Reserva automática: entra quando o principal falha (login/cobrança, limite, queda,
 # resposta vazia) e o Hermes volta a tentar o principal na mensagem seguinte.
