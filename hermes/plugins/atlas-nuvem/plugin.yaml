@@ -1,0 +1,7 @@
+name: atlas-nuvem
+version: 1.0.0
+description: "Navegador em nuvem do Atlas: Browser Use pelo gateway da Nous (IP residencial), com nome de sessão curto. Contorno do bug hermes-agent#122786/#131144 (caminho do socket > 103 bytes)."
+author: Atlas
+kind: backend
+provides_browser_providers:
+  - atlas-nuvem

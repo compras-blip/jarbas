@@ -30,6 +30,10 @@ chown -R 10000:10000 runtime/hermes/skills/whatsapp
 mkdir -p runtime/hermes/skills/viagem/passagens
 cp hermes/skills/viagem/passagens/SKILL.md runtime/hermes/skills/viagem/passagens/SKILL.md
 chown -R 10000:10000 runtime/hermes/skills/viagem
+# Plugin de navegador em nuvem (Browser Use pela Nous com nome de sessão curto). Opt-in em plugins.enabled.
+mkdir -p runtime/hermes/plugins/atlas-nuvem
+cp hermes/plugins/atlas-nuvem/plugin.yaml hermes/plugins/atlas-nuvem/__init__.py runtime/hermes/plugins/atlas-nuvem/
+chown -R 10000:10000 runtime/hermes/plugins/atlas-nuvem
 
 # Servidor MCP de mapas (fase 3): código no repositório, dependências instaladas no volume.
 mkdir -p runtime/hermes/mcp/mapas

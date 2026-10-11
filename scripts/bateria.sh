@@ -11,6 +11,7 @@ declare -A T=(
  [B3]="Confirma no site oficial se o Anntipastti em Manaus abre domingo"
  [B4]="Vou pra São Paulo no fim de semana que vem pro curso. Me organiza o jantar de sexta e o de sábado, e me diz o que não posso esquecer antes de viajar."
  [B5]="Passagem Manaus–São Paulo, ida sexta 16/10 e volta domingo 18/10, direto, pra comprar agora"
+ [B5L]="Passagem Manaus–São Paulo, ida sexta 16/10 e volta domingo 18/10, direto, pra comprar agora. Quero o preço direto no site da LATAM, não no Google."
  [B6]="O que o Williams falou da MAO Trucks esta semana e o que precisa de decisão minha?"
  [B7]="Quais pendências eu deixei pra depois da Europa? Me dá a mais importante e o que falta nela"
  [B8]="Manda pro Felipe Nóbrega: chego às 15h"

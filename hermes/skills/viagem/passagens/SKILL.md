@@ -13,7 +13,7 @@ A dor do Bruno: receber preço que só valia há um mês, ou de outra data. Regr
 
 ## Caminho curto (3 a 6 passos)
 
-1. **Não perca tempo nos sites das companhias.** LATAM e GOL bloqueiam o navegador automatizado (erro ou página sem tarifas, visto em 11/10/2026). `web_search` e `web_extract` também não trazem preço na data. Vá direto ao Google Voos.
+1. **Vá direto ao Google Voos** (todas as companhias numa tela, filtro de direto na URL). Sites das companhias não servem para preço: LATAM e GOL barram o navegador do servidor e, mesmo pelo navegador em nuvem com IP residencial, a busca de voos da LATAM falha ("A busca está demorando mais que o normal", 11/10/2026). `web_search` e `web_extract` não trazem preço na data.
 2. **Abra o Google Voos com a busca pronta na URL** (`browser_navigate`), com as datas no formato AAAA-MM-DD, códigos IATA e `nonstop` quando ele quer direto:
    `https://www.google.com/travel/flights/search?hl=pt-BR&curr=BRL&q=Flights%20from%20MAO%20to%20GRU%20on%202026-10-16%20through%202026-10-18%20nonstop`
    Só ida: tire o `through …`. Mais de uma pessoa: acrescente `%20for%202%20adults`. Campinas é `VCP`, Congonhas `CGH`, Guarulhos `GRU`, Manaus `MAO`.

@@ -220,9 +220,15 @@ curator:
 # deploy.sh, porque a imagem Docker não o traz: bug #135732 do Hermes). Desenho: docs/fase-4-navegador.md.
 browser:
   backend: "off"              # ferramentas nativas browser_*; o modo "Browser Use" exigiria o CLI browser-use, ausente
-  cloud_provider: local       # Chromium local. Sem isto o Hermes pega sozinho o navegador em nuvem da Nous (Browser Use, cobrado no plano): visto em 11/10 04:26
+  cloud_provider: local       # Chromium do servidor (Google Voos abre em 1 s). Alternativa pronta: "atlas-nuvem" (plugin nosso em /opt/data/plugins, Browser Use pela Nous, IP residencial): abre a home da LATAM e da GOL, mas a busca de voos da LATAM falha mesmo assim (11/10, IP dos EUA e do Brasil); 11 s por página, cobrado no plano Nous. Trocar aqui e reiniciar o container.
   snapshot_threshold: 8000    # "foto" da página no contexto: até 8 mil caracteres (padrão 15 mil); o resto vai para arquivo
   inactivity_timeout: 120     # fecha o navegador ocioso em 2 min, libera memória
   allow_private_urls: false   # nada de endereços internos do servidor (padrão, explícito)
   record_sessions: false
   restrict_evaluate: true     # bloqueia primitivas sensíveis de JavaScript em páginas hostis
+
+# Plugins da pasta /opt/data/plugins (fora do pacote do Hermes) são opt-in por nome.
+# O hindsight não entra aqui: é provedor de memória, ativado por memory.provider.
+plugins:
+  enabled:
+    - atlas-nuvem

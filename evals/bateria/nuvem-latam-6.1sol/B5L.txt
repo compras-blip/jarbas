@@ -1,0 +1,12 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_053355_7861e0
+Não consegui confirmar um preço comprável agora: a busca da LATAM falhou nas duas tentativas, inclusive preenchendo pelo próprio site.
+
+- Consultei Manaus–Guarulhos, ida sexta 16/10/2026 e volta domingo 18/10/2026, para 1 adulto em econômica. Não usei o Google.
+
+- Sem a lista de voos, não consigo confirmar os trechos diretos nem o total de ida e volta; o valor do calendário não basta.
+
+- Busca pronta na LATAM para abrir no seu celular:
+https://www.latamairlines.com/br/pt/oferta-voos?origin=MAO&destination=GRU&outbound=2026-10-16&inbound=2026-10-18&adt=1&chd=0&inf=0&trip=RT&cabin=Economy&redemption=false
