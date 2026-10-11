@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_021059_58936e
+Qual será o hotel, a hora de chegada na sexta, o término do curso no sábado e quantas pessoas vão jantar? Minha proposta para 16 e 17/10 é esta, ainda sem reservas:
+
+- 1. Sexta, 16/10, às 20h30, horário de São Paulo: Terraço Itália — recomendado pela vista panorâmica e ambiente elegante. Italiano à la carte, Av. Ipiranga, 344, 41º andar, República. Nota 4,5/5; “muito caro” pelo Google Maps. Fotos: https://www.terracoitalia.com.br/
+
+- 2. Sábado, 17/10, às 20h30, horário de São Paulo: A Figueira Rubaiyat — recomendado pelas carnes e frutos do mar, num salão ao redor da figueira centenária; sem vista panorâmica. Rua Haddock Lobo, 1738, Jardins. Nota 4,6/5; “muito caro” pelo Google Maps. Fotos: https://gruporubaiyat.com/
+
+- Ambos abrem nos horários propostos, pelo Google Maps, com base no horário regular. São escolhas mais caras que sua preferência por preço equilibrado. Preços atuais, mesas e deslocamentos ainda não estão confirmados; só reservo com seu aval.
+
+- Antes da viagem: recuperar o conteúdo dos módulos de psicodrama de 26 e 27/09, se ainda estiver pendente; confirmar endereço, horários e materiais exigidos pelo curso.
+
+- Não esquecer: conferir voo, aeroporto, bagagem e hotel; fazer o check-in quando abrir; separar documento, remédios, carregadores, material e roupa confortável do curso, roupa de jantar e casaco leve. Agenda e e-mail estão sem conexão, então não consegui conferir as confirmações da viagem.

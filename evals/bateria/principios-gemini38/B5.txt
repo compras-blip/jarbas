@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_022114_575878
+Não consegui fechar a compra: os sites da LATAM e da Decolar bloquearam as consultas de preço em tempo real com erro de sistema, e eu preciso da sua confirmação antes de qualquer pagamento.
+
+- Rota mantida conforme sua preferência por Guarulhos (GRU): ida sexta 16/10 e volta domingo 18/10, em voos diretos de aproximadamente 3h55.
+
+- Link direto na LATAM com o trecho e as datas já preenchidos para você concluir a emissão agora:
+https://www.latamairlines.com/br/pt/oferta-voos?origin=MAO&destination=GRU&outbound=2026-10-16&inbound=2026-10-18&adt=1&chd=0&inf=0&trip=RT&cabin=Economy
+
+- Link de busca na GOL para comparar os mesmos voos diretos para GRU:
+https://www.voegol.com.br
+
+- Nenhuma compra ou reserva foi efetuada no seu cartão.
