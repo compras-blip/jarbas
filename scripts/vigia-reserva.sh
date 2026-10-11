@@ -13,6 +13,9 @@ DIR=vigia; mkdir -p "$DIR"
 ESTADO="$DIR/ultimo-aviso.epoch"
 MODO="${1:-}"
 PRINCIPAL=$(awk '/^model:/{f=1;next} f&&/^  default:/{print $2;exit}' hermes/config.yaml)
+# 11/10: avisa so quando o modelo de RESERVA (fallback_model) foi usado. Antes era "qualquer modelo diferente do
+# principal", e um teste A/B com /model --session (ex.: gpt-6.1-sol) disparava alarme falso a cada 10 min.
+RESERVA=$(awk '/^fallback_model:/{f=1;next} f&&/^  model:/{print $2;exit}' hermes/config.yaml)
 token=$(sed -nE 's/^TELEGRAM_BOT_TOKEN=//p' .env.hermes | tr -d '\r')
 dest=$(sed -nE 's/^TELEGRAM_ALLOWED_USERS=//p' .env.hermes | tr -d '\r' | cut -d, -f1)
 avisar() {
@@ -37,15 +40,16 @@ for c in atlas-hermes atlas-hindsight; do
 done
 # 2) uso da reserva desde o último aviso
 desde=$(cat "$ESTADO" 2>/dev/null || echo 0)
-res=$(sudo -n python3 - "$desde" "$PRINCIPAL" "$MODO" <<'PY'
+res=$(sudo -n python3 - "$desde" "$PRINCIPAL" "$MODO" "$RESERVA" <<'PY'
 import sqlite3, sys
-desde = float(sys.argv[1]); principal = sys.argv[2]; modo = sys.argv[3]
+desde = float(sys.argv[1]); principal = sys.argv[2]; modo = sys.argv[3]; reserva = sys.argv[4]
 c = sqlite3.connect("file:runtime/hermes/state.db?mode=ro", uri=True)
-cond = "model = ?" if modo == "--simular" else "model != ?"
+alvo = principal if modo == "--simular" else reserva  # --simular trata o principal como se fosse a reserva
+cond = "model = ?"
 r = c.execute(
     f"select max(last_seen), group_concat(distinct model), sum(api_call_count) "
     f"from session_model_usage where {cond} and last_seen > ? and task = ''",
-    (principal, desde)).fetchone()
+    (alvo, desde)).fetchone()
 if r and r[2]:
     print(f"{float(r[0])!r}|{r[1]}|{r[2]}")  # hora exata, com decimais: arredondar fazia o mesmo aviso repetir a cada 10 min (10/10)
 PY
