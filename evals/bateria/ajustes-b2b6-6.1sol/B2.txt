@@ -1,0 +1,9 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Não. Pelo Google Maps, o Flor de Lis não abre nesta segunda-feira, 12/10, nem no almoço.
+
+- Alternativa na Ponta Negra: O Lenhador, self-service, preço médio e nota 4,6. Para segunda, conferi às 12h, horário de Manaus: abre das 11h30 às 15h, pelo Google Maps.
+
+- Fica na Av. do Turismo, 2371: https://maps.google.com/?cid=10228620035292000788
+
+session_id: 20261011_165404_de2b92
