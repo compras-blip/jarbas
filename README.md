@@ -26,6 +26,6 @@ docs/                       passo a passo de instalação
 | 1 | Google Agenda + lembretes | depois da migração do Bruno para o Workspace |
 | 2 | Gmail (triagem, só leitura e marcadores) | |
 | 3 | Mapas + web (restaurantes perto) | |
-| 4 | Navegador + 1Password | |
+| 4 | Navegador (4a sem login, em uso desde 11/10/2026; 4b login via cofre/1Password depois) | docs/fase-4-navegador.md |
 | 5 | Dropbox (só leitura) | |
 | 6 | WhatsApp pelos MCP do n8n (arquivo + envio pela Z-API) | em andamento (10/10/2026), docs/fase-6-whatsapp.md |

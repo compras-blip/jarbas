@@ -44,4 +44,6 @@ docker compose up -d
 # (/opt/data/installs/.../venv, só extras fal+telegram). Sem ele o gateway ignora mcp_servers em silêncio (achado em 10/10).
 # Idempotente; o gateway só enxerga o pacote depois de reiniciar (docker restart atlas-hermes).
 docker compose exec -T -u 10000 -e HERMES_HOME=/opt/data hermes hermes pm install --extra mcp </dev/null
+# Fase 4: o agent-browser (dirige o Chromium que já vem na imagem) também não vem na imagem (bug #135732). Idempotente.
+docker compose exec -T -u 10000 -e HERMES_HOME=/opt/data hermes hermes pm install agent-browser </dev/null
 docker compose ps

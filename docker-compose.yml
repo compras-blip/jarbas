@@ -11,6 +11,7 @@ services:
     container_name: atlas-hermes
     restart: unless-stopped
     command: gateway run
+    shm_size: 1g        # fase 4: o Chromium usa memória compartilhada (recomendação da doc do Hermes)
     env_file: .env.hermes
     volumes:
       - ./runtime/hermes:/opt/data

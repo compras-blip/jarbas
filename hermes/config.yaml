@@ -29,7 +29,6 @@ agent:
   disabled_toolsets:
     - todo             # 11/10 (Felipe): lista de tarefas interna, 1,3 KB de esquema por mensagem, sem uso
     - connections      # 11/10 (Felipe): conectores remotos da Nous, 3,6 KB por mensagem, sem uso
-    - browser          # entra na fase 4, com o cofre do 1Password
     - computer_use
     - desktop_ui
     - project
@@ -216,3 +215,14 @@ tools:
 # Curador de skills criadas pelo agente (manutenção em segundo plano): sem skills do agente, não há o que curar.
 curator:
   enabled: false
+
+# Fase 4a (11/10/2026): navegador sem login. Chromium da imagem dirigido pelo agent-browser (instalado no volume pelo
+# deploy.sh, porque a imagem Docker não o traz: bug #135732 do Hermes). Desenho: docs/fase-4-navegador.md.
+browser:
+  backend: "off"              # ferramentas nativas browser_*; o modo "Browser Use" exigiria o CLI browser-use, ausente
+  cloud_provider: local       # Chromium local. Sem isto o Hermes pega sozinho o navegador em nuvem da Nous (Browser Use, cobrado no plano): visto em 11/10 04:26
+  snapshot_threshold: 8000    # "foto" da página no contexto: até 8 mil caracteres (padrão 15 mil); o resto vai para arquivo
+  inactivity_timeout: 120     # fecha o navegador ocioso em 2 min, libera memória
+  allow_private_urls: false   # nada de endereços internos do servidor (padrão, explícito)
+  record_sessions: false
+  restrict_evaluate: true     # bloqueia primitivas sensíveis de JavaScript em páginas hostis
