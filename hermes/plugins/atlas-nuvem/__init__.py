@@ -5,7 +5,8 @@
 1. Nome de sessão curto. O Hermes 0.21.6 monta ``hermes_<uuid da tarefa>_<hex>`` (52 caracteres) e o
    agent-browser recusa o caminho do socket que resulta disso (148 bytes, limite 103):
    https://github.com/NousResearch/hermes-agent/issues/122786 e /131144. Aqui o nome tem 15.
-2. Modo gerenciado (Nous) forçado. O plugin embutido só usa a Nous quando ``browser.cloud_provider``
+2. Proxy residencial do Brasil (o embutido fixa EUA).
+3. Modo gerenciado (Nous) forçado. O plugin embutido só usa a Nous quando ``browser.cloud_provider``
    é ``nous``; como a seleção aponta para este plugin, resolvemos o gateway diretamente.
 
 Tudo o mais (criar sessão, CDP, encerrar, limpeza de emergência) é herdado sem mudança.
@@ -27,6 +28,10 @@ class AtlasNuvemProvider(BrowserUseBrowserProvider):
     def _session_name(task_id: str) -> str:
         # "an_" + 12 hex = 15 caracteres; o caminho do socket fica em ~70 bytes.
         return f"an_{uuid.uuid4().hex[:12]}"
+
+    def _post_create(self, url: str, headers: Dict[str, str], payload: Dict[str, object], *, wrap_errors: bool = True):
+        # O embutido fixa proxy dos EUA no modo Nous; o Bruno usa sites brasileiros. O gateway aceitou "br" em 11/10/2026.
+        return super()._post_create(url, headers, {**payload, "proxyCountryCode": "br"}, wrap_errors=wrap_errors)
 
     def _get_config_or_none(self, *, refresh_token: bool = True) -> Optional[Dict[str, Any]]:
         from tools.managed_tool_gateway import peek_nous_access_token, resolve_managed_tool_gateway

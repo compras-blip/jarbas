@@ -1,0 +1,10 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_152503_2f8d2f
+Não consegui confirmar o preço no site da GOL: a busca falhou nas duas tentativas, sem mostrar tarifas.
+
+- Consultei Manaus–Guarulhos, para 1 adulto, ida sexta 16/10/2026 e volta domingo 18/10/2026. Não foi possível confirmar os voos diretos nem o total com taxas; não substituí por preço do Google.
+
+- A busca com as datas preenchidas está neste link da própria GOL, para tentar abrir no seu celular:
+https://b2c.voegol.com.br/compra/busca-parceiros?pv=br&tipo=DF&lang=pt-BR&de=MAO&para=GRU&ida=16-10-2026&volta=18-10-2026&ADT=1&ADL=0&CHD=0&INF=0&voebiz=0
