@@ -1,0 +1,17 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_164107_748f08
+Qual hotel você vai usar, quantas pessoas vão jantar e a que horas chega na sexta e termina o curso no sábado? Preparei uma proposta para 16 e 17/10, ainda sem reservas.
+
+1. Sexta, 16/10 — recomendo Terraço Itália, provisoriamente às 20h, horário de São Paulo. Vista panorâmica e ambiente elegante; nota 4,5 e faixa “muito caro” pelo Google Maps. Aberto nesse horário, até 1h. Av. Ipiranga, 344, 41º andar.
+Fotos: https://www.terracoitalia.com.br/
+
+2. Sábado, 17/10 — recomendo A Figueira Rubaiyat, provisoriamente às 20h, horário de São Paulo. Carnes e frutos do mar, ambiente acolhedor; nota 4,6 e faixa “muito caro”. Pelo Google Maps, o horário regular vai até meia-noite; exceções da data ainda não estão confirmadas. Rua Haddock Lobo, 1738.
+Fotos: https://www.instagram.com/afigueirarubaiyat/
+
+3. Os dois fogem da sua preferência por preço equilibrado. Falta conferir valores do cardápio, modalidade do jantar e mesa disponível; hotel e horários também podem mudar a escolha. Só reservo depois da sua aprovação.
+
+4. Curso: não esquecer de pedir o conteúdo dos módulos perdidos de 26 e 27/09. Confirmar também endereço, horários e material deste encontro — não encontrei esses dados nas consultas.
+
+5. Antes de embarcar: conferir passagem, aeroporto e hotel; fazer o check-in quando abrir; separar documento com foto, remédios, carregadores, material do curso, roupa de jantar e um casaco. Suas reservas de viagem ainda não foram conferidas.

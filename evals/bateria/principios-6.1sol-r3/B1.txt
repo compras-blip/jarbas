@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_163826_5e162b
+Eu iria ao Engenho, no mesmo shopping da Bodytech, amanhã, segunda-feira, 12/10, às 12h30, horário de Manaus.
+
+1. Engenho Ponta Negra — recomendado pela praticidade. À la carte; carne na brasa com legumes e salada por R$ 59,90 no cardápio oficial. Nota 4,5/5. Av. Coronel Teixeira, 5705, Shopping Ponta Negra. Pelo Google Maps, aberto às 12h30, até 22h, considerando o feriado.
+https://maps.google.com/?cid=9161113821095590137
+
+2. Catraca Churrascaria — alternativa para priorizar churrasco, mas exige sair do shopping. Nota 4,5/5; faixa de preço média, valor e modalidade do almoço não confirmados. Av. São Jorge, 6089. Pelo Google Maps, aberto às 12h30, até 15h. O site só aceita reservas de almoço até 12h; às 12h30, mesa não está garantida.
+https://maps.google.com/?cid=14081036450489010940
