@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { montarEvento, preparar } from './migrar-apple.mjs';
+import { montarEvento, preparar, exdatesParaMestre } from './migrar-apple.mjs';
 
 test('evento com hora: Recife 16:30 vira Manaus 15:30 com fuso', () => {
   const { corpo } = montarEvento({ uid: 'U1', titulo: 'Reunião', inicio: '2026-10-16T16:30:00', fim: '2026-10-16T17:30:00', dia_inteiro: 'false', local: 'Sala 2', descricao: 'pauta\nitem', url: 'https://x', status: 'confirmed', recorrencia: '', exdates: '', sequencia: '1' }, 'America/Recife');
@@ -32,4 +32,19 @@ test('uid repetido vira exceção com sufixo; cancelados saem', () => {
   assert.equal(p.eventos.length, 2);
   assert.deepEqual(p.eventos.map((e) => e.corpo.iCalUID), ['A', 'A-exc-1']);
   assert.equal(p.duplicados, 1);
+});
+
+test('UNTIL sem Z ganha Z (o Google exige UTC com fuso no início)', () => {
+  const { corpo } = montarEvento({ uid: 'J', titulo: 'Jeep', inicio: '2024-04-11T07:30:00', fim: '2024-04-11T08:30:00', dia_inteiro: 'false', status: 'confirmed', recorrencia: 'FREQ=YEARLY;INTERVAL=1;UNTIL=20250412T005959' }, 'America/Recife');
+  assert.deepEqual(corpo.recurrence, ['RRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20250412T005959Z']);
+  const ok = montarEvento({ uid: 'K', titulo: 'x', inicio: '2024-04-11T07:30:00', fim: '2024-04-11T08:30:00', dia_inteiro: 'false', status: 'confirmed', recorrencia: 'FREQ=WEEKLY;UNTIL=20250412T005959Z' }, 'America/Recife');
+  assert.deepEqual(ok.corpo.recurrence, ['RRULE:FREQ=WEEKLY;UNTIL=20250412T005959Z']);
+});
+
+test('EXDATE para ocorrências destacadas usa o dia da destacada e a hora do mestre, no fuso de destino', () => {
+  const mestre = { inicio: '2013-10-15T16:00:00', dia_inteiro: 'false', recorrencia: 'FREQ=WEEKLY' };
+  const r = exdatesParaMestre(mestre, [{ inicio: '2026-10-13T17:30:00' }, { inicio: '2026-10-20T16:00:00' }], 'America/Recife');
+  assert.deepEqual(r, { diaInteiro: false, lista: ['20261013T150000', '20261020T150000'] });
+  const d = exdatesParaMestre({ inicio: '2024-01-01T00:00:00', dia_inteiro: 'true', recorrencia: 'FREQ=MONTHLY' }, [{ inicio: '2024-03-01T00:00:00' }], 'America/Recife');
+  assert.deepEqual(d, { diaInteiro: true, lista: ['20240301'] });
 });

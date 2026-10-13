@@ -51,7 +51,7 @@ export function montarEvento(r, fusoOrigem, { excecao = 0 } = {}) {
     corpo.start = { dateTime: localDestino(a), timeZone: FUSO_DESTINO }; corpo.end = { dateTime: localDestino(b), timeZone: FUSO_DESTINO };
   }
   if (!excecao && r.recorrencia) {
-    const rec = [`RRULE:${r.recorrencia.replace(/^RRULE:/i, '')}`];
+    const rec = [`RRULE:${r.recorrencia.replace(/^RRULE:/i, '').replace(/UNTIL=(\d{8}T\d{6})(?![\dZ])/, 'UNTIL=$1Z')}`];
     if (r.exdates) {
       const ex = r.exdates.split(',').filter(Boolean).map((t) => diaInteiro ? t.slice(0, 10).replace(/-/g, '') : compacto(instante(t, fusoOrigem)));
       if (ex.length) rec.push(diaInteiro ? `EXDATE;VALUE=DATE:${ex.join(',')}` : `EXDATE;TZID=${FUSO_DESTINO}:${ex.join(',')}`);
@@ -133,6 +133,56 @@ async function migrar(pasta, aplicar, fusoOrigem) {
   if (aplicar) log('manifesto:', manifesto);
 }
 
+// Ocorrências destacadas (mesmo uid do mestre recorrente) foram importadas como eventos próprios; o mestre ainda
+// gera a instância naquele dia. Este passo acrescenta EXDATE no mestre para o DIA de cada ocorrência destacada.
+export function exdatesParaMestre(mestre, destacados, fusoOrigem) {
+  const diaInteiro = mestre.dia_inteiro === 'true';
+  const out = new Set();
+  for (const d of destacados) {
+    if (diaInteiro) out.add(d.inicio.slice(0, 10).replace(/-/g, ''));
+    else {
+      const horaMestre = localDestino(instante(mestre.inicio, fusoOrigem)).slice(11, 19).replace(/:/g, '');
+      const diaDestacado = localDestino(instante(d.inicio, fusoOrigem)).slice(0, 10).replace(/-/g, '');
+      out.add(`${diaDestacado}T${horaMestre}`);
+    }
+  }
+  return { diaInteiro, lista: [...out].sort() };
+}
+
+async function corrigirDuplicatas(pasta, fusoOrigem) {
+  const arquivos = (await readdir(pasta)).filter((f) => f.endsWith('.tsv')).sort();
+  const agendas = await listarAgendas();
+  let corrigidos = 0, semMestre = 0, erros = 0;
+  for (const arq of arquivos) {
+    const chave = normal(arq.replace(/\.tsv$/, ''));
+    const alvo = NOMES[chave] ?? arq.replace(/\.tsv$/, '');
+    const agendaId = alvo === 'primary' ? 'primary' : agendas.find((a) => normal(a.summary) === normal(alvo))?.id;
+    if (!agendaId) { log(`${arq}: calendário "${alvo}" não existe no Google`); continue; }
+    const regs = lerTsv(await readFile(path.join(pasta, arq), 'utf8'));
+    const grupos = new Map();
+    for (const r of regs) { if (!grupos.has(r.uid)) grupos.set(r.uid, []); grupos.get(r.uid).push(r); }
+    for (const [uid, lista] of grupos) {
+      if (lista.length < 2) continue;
+      const mestre = lista.find((r) => r.recorrencia);
+      if (!mestre) { semMestre++; continue; }
+      const destacados = lista.filter((r) => r !== mestre);
+      const { diaInteiro, lista: ex } = exdatesParaMestre(mestre, destacados, fusoOrigem);
+      try {
+        const busca = await chamar({ caminho: `/calendars/${encodeURIComponent(agendaId)}/events`, q: { iCalUID: uid, singleEvents: 'false', fields: 'items(id,recurrence,summary)' }, limiteDiario: LIMITE });
+        const ev = (busca.items || []).find((e) => e.recurrence);
+        if (!ev) { log(`  mestre não achado no Google: ${uid} (${mestre.titulo})`); erros++; continue; }
+        const atual = ev.recurrence || [];
+        const linha = diaInteiro ? `EXDATE;VALUE=DATE:${ex.join(',')}` : `EXDATE;TZID=${FUSO_DESTINO}:${ex.join(',')}`;
+        const nova = [...atual.filter((l) => !l.startsWith('EXDATE;TZID=' + FUSO_DESTINO + ':') || true), linha];
+        await chamar({ metodo: 'PATCH', caminho: `/calendars/${encodeURIComponent(agendaId)}/events/${encodeURIComponent(ev.id)}`, corpo: { recurrence: nova }, limiteDiario: LIMITE });
+        corrigidos++;
+      } catch (e) { erros++; log(`  erro em ${mestre.titulo}: ${e.code || e.message} ${e.detalhe || ''}`); }
+    }
+    log(`${arq}: grupos tratados até agora ${corrigidos}`);
+  }
+  log(`duplicatas corrigidas: ${corrigidos} mestres | sem mestre recorrente: ${semMestre} | erros: ${erros}`);
+}
+
 async function desfazer(arquivo) {
   const linhas = (await readFile(arquivo, 'utf8')).split('\n').filter(Boolean).map((l) => JSON.parse(l));
   let ev = 0, cal = 0, erros = 0;
@@ -145,5 +195,6 @@ const ehPrincipal = process.argv[1] && import.meta.url === pathToFileURL(process
 const args = ehPrincipal ? process.argv.slice(2) : [];
 const fusoArg = args.includes('--fuso-origem') ? args[args.indexOf('--fuso-origem') + 1] : 'America/Recife';
 if (args[0] === '--desfazer' && args[1]) await desfazer(args[1]);
+else if (args[0] === '--corrigir-duplicatas' && args[1]) await corrigirDuplicatas(args[1], fusoArg);
 else if (args[0] && !args[0].startsWith('--')) await migrar(args[0], args.includes('--aplicar'), fusoArg);
-else if (ehPrincipal) { log('uso: node migrar-apple.mjs <pasta> [--aplicar] [--fuso-origem America/Recife] | --desfazer <manifesto.jsonl>'); process.exit(1); }
+else if (ehPrincipal) { log('uso: node migrar-apple.mjs <pasta> [--aplicar] [--fuso-origem X] | --corrigir-duplicatas <pasta> | --desfazer <manifesto.jsonl>'); process.exit(1); }
