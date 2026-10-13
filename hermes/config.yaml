@@ -99,13 +99,12 @@ memory:
 
 # Toda skill que o Atlas criar ou alterar sozinho espera revisão humana.
 # Skills embutidas do Hermes: só ficam as que as fases do Atlas usam (9):
-# google-workspace, email-inbox-triage, pdf, docx, xlsx, document-to-action-items, grounded-citations, blocked-page-recovery, youtube-content.
+# (google-workspace religada em 13/10 para a fase 1) email-inbox-triage, pdf, docx, xlsx, document-to-action-items, grounded-citations, blocked-page-recovery, youtube-content.
 # As outras 49 ficam escondidas (não aparecem no prompt nem para o agente):
 # menos tentação de ferramenta errada e menos tokens por mensagem. Decisão do Felipe em 10/10/2026.
 skills:
   write_approval: true
   disabled:
-    - google-workspace   # 11/10: desligada até a fase 1; sem ferramenta do Google ligada, o modelo a abria à toa (16 KB) e tentou rodar o instalador dela 3x
     - airtable
     - apple-notes
     - apple-reminders
