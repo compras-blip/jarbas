@@ -102,8 +102,8 @@ const enc = encodeURIComponent;
 export const listarEventos = ({ agenda = 'primary', timeMin, timeMax, fuso, texto, max = 50, ...resto }) =>
   chamar({ caminho: `/calendars/${enc(agenda)}/events`, q: { singleEvents: 'true', orderBy: 'startTime', timeMin, timeMax, timeZone: fuso, q: texto, maxResults: max, eventTypes: undefined }, ...resto });
 
-export const consultarLivre = ({ agenda = 'primary', timeMin, timeMax, fuso, ...resto }) =>
-  chamar({ metodo: 'POST', caminho: '/freeBusy', corpo: { timeMin, timeMax, timeZone: fuso, items: [{ id: agenda }] }, ...resto });
+export const consultarLivre = ({ agenda = 'primary', agendas, timeMin, timeMax, fuso, ...resto }) =>
+  chamar({ metodo: 'POST', caminho: '/freeBusy', corpo: { timeMin, timeMax, timeZone: fuso, items: (agendas || [agenda]).map((id) => ({ id })) }, ...resto });
 
 export const inserirEvento = ({ agenda = 'primary', evento, comMeet = false, avisar = 'none', ...resto }) =>
   chamar({ metodo: 'POST', caminho: `/calendars/${enc(agenda)}/events`, q: { conferenceDataVersion: comMeet ? 1 : 0, sendUpdates: avisar }, corpo: evento, ...resto });
@@ -116,3 +116,6 @@ export const remendarEvento = ({ agenda = 'primary', id, mudancas, comMeet = fal
 
 export const apagarEvento = ({ agenda = 'primary', id, avisar = 'none', ...resto }) =>
   chamar({ metodo: 'DELETE', caminho: `/calendars/${enc(agenda)}/events/${enc(id)}`, q: { sendUpdates: avisar }, ...resto });
+
+export const listarAgendas = ({ ...resto } = {}) =>
+  chamar({ caminho: '/users/me/calendarList', q: { maxResults: 250, minAccessRole: 'reader' }, ...resto });

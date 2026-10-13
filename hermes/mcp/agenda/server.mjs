@@ -8,7 +8,7 @@ import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
-import { listarEventos, consultarLivre, inserirEvento, obterEvento, remendarEvento, apagarEvento, ErroGoogle, chamadasHoje, FONTE } from './google.mjs';
+import { listarEventos, consultarLivre, inserirEvento, obterEvento, remendarEvento, apagarEvento, listarAgendas, ErroGoogle, chamadasHoje, FONTE } from './google.mjs';
 import { FUSO_PADRAO, ErroTempo, fusoValido, lerData, lerDataHora, localParaUtc, rfc3339, dataIso, somarDias, hojeNoFuso, fmtFaixa, fmtDia, fmtDiaLongo, fmtHora, fmtDataSolta, cruzam, buracos, fmtMinutos } from './tempo.mjs';
 
 const limiteDiario = Number(process.env.AGENDA_LIMITE_DIARIO) || 300;
@@ -37,6 +37,7 @@ function mensagemErro(e) {
   if (c === 'FUSO_INVALIDO') return `Fuso inválido (${e.detalhe}): use um nome IANA, por exemplo America/Manaus ou Europe/Rome.`;
   if (c === 'FIM_ANTES_DO_INICIO') return 'O fim precisa ser depois do início.';
   if (c === 'PERIODO_INVALIDO') return 'O período precisa ter o fim depois do início e no máximo 62 dias.';
+  if (c === 'AGENDA_DESCONHECIDA') return `Não existe calendário com esse nome (${e.detalhe}).`;
   if (e?.transitorio) return 'O Google Agenda não respondeu agora. Tente de novo em instantes; se falhar, diga que não conseguiu confirmar.';
   return 'Falha ao acessar a agenda do Google. Diga que não conseguiu confirmar.';
 }
@@ -47,6 +48,39 @@ async function protegido(fn) {
     if (e instanceof ErroGoogle || e instanceof ErroTempo) { log('erro', e.code, e.detalhe || ''); return falha(mensagemErro(e)); }
     log('erro inesperado', e?.message || e); return falha('Falha inesperada ao acessar a agenda. Diga que não conseguiu confirmar.');
   }
+}
+
+// Calendários da conta (a principal + os secundários: Médico, Família...). Cache de 10 min.
+const normal = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+const cacheAgendas = { em: 0, lista: [] };
+async function agendas() {
+  if (Date.now() - cacheAgendas.em < 10 * 60000 && cacheAgendas.lista.length) return cacheAgendas.lista;
+  const r = await listarAgendas({ limiteDiario });
+  cacheAgendas.lista = (r.items || []).filter((a) => !a.hidden && !a.deleted && a.selected !== false).map((a) => ({ id: a.id, nome: a.summaryOverride || a.summary || a.id, principal: Boolean(a.primary), escreve: ['owner', 'writer'].includes(a.accessRole) }));
+  cacheAgendas.em = Date.now();
+  return cacheAgendas.lista;
+}
+// "Médico", "medico", "primary", id -> id do calendário. Nome desconhecido = erro claro.
+async function resolverAgenda(nomeOuId) {
+  const t = limpa(nomeOuId);
+  if (!t || t === 'primary' || normal(t) === 'principal') return 'primary';
+  const lista = await agendas();
+  const n = normal(t);
+  const achou = lista.find((a) => normal(a.nome) === n) || lista.find((a) => a.id === t) || lista.find((a) => normal(a.nome).includes(n));
+  if (!achou) throw new ErroTempo('AGENDA_DESCONHECIDA', `${t}; existem: ${lista.map((a) => a.nome).join(', ')}`);
+  return achou.principal ? 'primary' : achou.id;
+}
+const nomeDaAgenda = async (id) => { if (id === 'primary') return ''; const a = (await agendas()).find((x) => x.id === id); return a ? (a.principal ? '' : a.nome) : id; };
+// Acha um evento pelo id quando a agenda não foi dita: tenta a principal e depois as outras.
+async function acharEvento(id, agendaDita) {
+  if (agendaDita) { const ag = await resolverAgenda(agendaDita); return { agenda: ag, evento: await obterEvento({ agenda: ag, id, limiteDiario }) }; }
+  const todas = ['primary', ...(await agendas()).filter((a) => !a.principal).map((a) => a.id)];
+  let ultimo = null;
+  for (const ag of todas) {
+    try { return { agenda: ag, evento: await obterEvento({ agenda: ag, id, limiteDiario }) }; }
+    catch (e) { if (e instanceof ErroGoogle && (e.code === 'GOOGLE_HTTP_404' || e.code === 'GOOGLE_HTTP_410')) { ultimo = e; continue; } throw e; }
+  }
+  throw ultimo || new ErroGoogle('GOOGLE_HTTP_404');
 }
 
 const fusoOu = (f) => {
@@ -82,7 +116,7 @@ function alertasDe(ev) {
 }
 
 // Uma linha por evento, no fuso pedido. O id vai no fim para mudar/cancelar (o SOUL proíbe mostrá-lo ao Bruno).
-function linhaEvento(ev, zona, { comId = true } = {}) {
+function linhaEvento(ev, zona, { comId = true, agendaNome = '' } = {}) {
   const j = janelaDoEvento(ev);
   const quando = j.diaInteiro
     ? (j.dataFim && dataIso(somarDias(lerData(j.dataInicio), 1)) !== j.dataFim ? `${fmtDataSolta(j.dataInicio)} a ${fmtDataSolta(dataIso(somarDias(lerData(j.dataFim), -1)))}, dia inteiro` : `${fmtDataSolta(j.dataInicio)}, dia inteiro`)
@@ -94,14 +128,20 @@ function linhaEvento(ev, zona, { comId = true } = {}) {
   if (ev.status === 'tentative') partes.push('(provisório)');
   if (ev.recurringEventId) partes.push('(recorrente)');
   partes.push(alertasDe(ev));
-  if (comId) partes.push(`[id: ${ev.id}]`);
-  return '• ' + partes.join(' · ');
+  if (comId) partes.push(agendaNome ? `[id: ${ev.id} · agenda: ${agendaNome}]` : `[id: ${ev.id}]`);
+  return '• ' + (agendaNome ? `[${agendaNome}] ` : '') + partes.join(' · ');
 }
 
 // Eventos que cruzam [inicio, fim) numa agenda, exceto o id dado.
-async function eventosNaJanela({ agenda, zona, inicioMs, fimMs, exceto }) {
-  const r = await listarEventos({ agenda, timeMin: rfc3339(zona, inicioMs), timeMax: rfc3339(zona, fimMs), fuso: zona, max: 50, limiteDiario });
-  return (r.items || []).filter((ev) => ev.id !== exceto && ev.status !== 'cancelled' && ev.transparency !== 'transparent').filter((ev) => { const j = janelaDoEvento(ev); return cruzam(j.inicio, j.fim, inicioMs, fimMs); });
+async function eventosNaJanela({ agenda, zona, inicioMs, fimMs, exceto, texto }) {
+  const alvos = agenda ? [{ id: agenda, nome: await nomeDaAgenda(agenda) }] : [{ id: 'primary', nome: '' }, ...(await agendas()).filter((a) => !a.principal)];
+  const tudo = [];
+  for (const a of alvos) {
+    const r = await listarEventos({ agenda: a.id, timeMin: rfc3339(zona, inicioMs), timeMax: rfc3339(zona, fimMs), fuso: zona, texto, max: 50, limiteDiario });
+    for (const ev of r.items || []) { ev._agenda = a.nome; ev._agendaId = a.id; tudo.push(ev); }
+    if (r.nextPageToken) tudo.maisPaginas = true;
+  }
+  return tudo.filter((ev) => ev.id !== exceto && ev.status !== 'cancelled' && (texto !== undefined || ev.transparency !== 'transparent')).filter((ev) => { const j = janelaDoEvento(ev); return cruzam(j.inicio, j.fim, inicioMs, fimMs); }).sort((x, y) => janelaDoEvento(x).inicio - janelaDoEvento(y).inicio);
 }
 
 // Converte a lista de e-mails em attendees; aceita "Nome <email>".
@@ -116,28 +156,29 @@ const server = new McpServer({ name: 'agenda', version: '1.0.0' });
 
 server.registerTool('agenda_listar', {
   title: 'Compromissos da agenda do Bruno',
-  description: 'Lista os compromissos da Google Agenda do Bruno num período (padrão: hoje), no fuso dele, com título, horário, local, convidados e resposta deles, link do Meet, alertas e o identificador de cada um (use o id só para mudar ou cancelar; não mostre ao Bruno). '
+  description: 'Lista os compromissos de todos os calendários da Google Agenda do Bruno (principal, Médico, Família, Contas casa, Curso psicodrama, Lembretes agendados) num período (padrão: hoje), no fuso dele, com título, horário, local, convidados e resposta deles, link do Meet, alertas e o identificador de cada um (use o id só para mudar ou cancelar; não mostre ao Bruno). '
     + 'Serve para "o que tenho amanhã", "minha semana", "quando é a consulta" (use `texto` para buscar por palavra). Datas em AAAA-MM-DD no fuso do Bruno. Eventos recorrentes vêm expandidos por ocorrência.',
   inputSchema: {
     de: z.string().optional().describe('Primeiro dia, AAAA-MM-DD, no fuso do Bruno. Padrão: hoje.'),
     ate: z.string().optional().describe('Último dia (inclusive), AAAA-MM-DD. Padrão: igual a `de`. Máximo 62 dias.'),
     texto: z.string().max(80).optional().describe('Palavra ou nome para filtrar (título, local, convidado).'),
     fuso: z.string().max(40).optional().describe('Fuso IANA para interpretar e mostrar as horas. Padrão America/Manaus; use o do lugar onde ele estará.'),
-    agenda: z.string().max(120).optional().describe('Identificador da agenda. Padrão: a principal dele.'),
+    agenda: z.string().max(120).optional().describe('Nome do calendário (ex.: "Médico", "Família", "Contas casa"). Padrão: todos os calendários dele.'),
   },
   annotations: { readOnlyHint: true },
-}, async ({ de, ate, texto, fuso, agenda = 'primary' }) => protegido(async () => {
+}, async ({ de, ate, texto, fuso, agenda }) => protegido(async () => {
   const zona = fusoOu(fuso);
   const d0 = de ? lerData(de) : hojeNoFuso(zona);
   const d1 = ate ? lerData(ate) : d0;
   const inicioMs = localParaUtc(zona, d0), fimMs = localParaUtc(zona, somarDias(d1, 1));
   if (fimMs <= inicioMs || fimMs - inicioMs > 62 * 86400000) throw new ErroTempo('PERIODO_INVALIDO');
-  const r = await listarEventos({ agenda, timeMin: rfc3339(zona, inicioMs), timeMax: rfc3339(zona, fimMs), fuso: zona, texto: limpa(texto) || undefined, max: 50, limiteDiario });
-  const itens = (r.items || []).filter((ev) => ev.status !== 'cancelled');
+  const alvo = agenda ? await resolverAgenda(agenda) : null;
+  const itens = await eventosNaJanela({ agenda: alvo, zona, inicioMs, fimMs, texto: limpa(texto) || undefined });
   const periodo = dataIso(d0) === dataIso(d1) ? fmtDiaLongo(zona, inicioMs) : `${fmtDia(zona, inicioMs)} a ${fmtDia(zona, localParaUtc(zona, d1))}`;
-  const cab = `${periodo} (horário de ${zona}): ${itens.length ? `${itens.length} compromisso${itens.length > 1 ? 's' : ''}` : 'nenhum compromisso'}${texto ? ` com "${limpa(texto)}"` : ''}. Fonte: ${FONTE}.`;
-  const linhas = itens.map((ev) => linhaEvento(ev, zona));
-  if (r.nextPageToken) linhas.push('(há mais compromissos além dos 50 primeiros: peça um período menor)');
+  const onde = alvo ? (await nomeDaAgenda(alvo)) || 'agenda principal' : 'todos os calendários';
+  const cab = `${periodo} (horário de ${zona}, ${onde}): ${itens.length ? `${itens.length} compromisso${itens.length > 1 ? 's' : ''}` : 'nenhum compromisso'}${texto ? ` com "${limpa(texto)}"` : ''}. Fonte: ${FONTE}.`;
+  const linhas = itens.map((ev) => linhaEvento(ev, zona, { agendaNome: ev._agenda }));
+  if (itens.maisPaginas) linhas.push('(há mais compromissos além dos 50 primeiros de um calendário: peça um período menor)');
   return fim('agenda_listar', [cab, ...linhas].join('\n'), `periodo=${dataIso(d0)}..${dataIso(d1)}`, `eventos=${itens.length}`);
 }));
 
@@ -152,15 +193,17 @@ server.registerTool('agenda_livre', {
     agenda: z.string().max(120).optional(),
   },
   annotations: { readOnlyHint: true },
-}, async ({ de, ate, duracao_min = 60, fuso, agenda = 'primary' }) => protegido(async () => {
+}, async ({ de, ate, duracao_min = 60, fuso, agenda }) => protegido(async () => {
   const zona = fusoOu(fuso);
   const inicioMs = localParaUtc(zona, lerDataHora(de)), fimMs = localParaUtc(zona, lerDataHora(ate));
   if (fimMs <= inicioMs || fimMs - inicioMs > 14 * 86400000) throw new ErroTempo('PERIODO_INVALIDO');
+  const alvo = agenda ? await resolverAgenda(agenda) : null;
+  const ids = alvo ? [alvo] : ['primary', ...(await agendas()).filter((a) => !a.principal).map((a) => a.id)];
   const [fb, evs] = await Promise.all([
-    consultarLivre({ agenda, timeMin: rfc3339(zona, inicioMs), timeMax: rfc3339(zona, fimMs), fuso: zona, limiteDiario }),
-    eventosNaJanela({ agenda, zona, inicioMs, fimMs }),
+    consultarLivre({ agendas: ids, timeMin: rfc3339(zona, inicioMs), timeMax: rfc3339(zona, fimMs), fuso: zona, limiteDiario }),
+    eventosNaJanela({ agenda: alvo, zona, inicioMs, fimMs }),
   ]);
-  const ocupados = (fb.calendars?.[agenda]?.busy || fb.calendars?.[Object.keys(fb.calendars || {})[0]]?.busy || []).map((b) => ({ inicio: Date.parse(b.start), fim: Date.parse(b.end) }));
+  const ocupados = Object.values(fb.calendars || {}).flatMap((c) => c.busy || []).map((b) => ({ inicio: Date.parse(b.start), fim: Date.parse(b.end) })).sort((x, y) => x.inicio - y.inicio);
   const titulo = (o) => evs.filter((ev) => { const j = janelaDoEvento(ev); return cruzam(j.inicio, j.fim, o.inicio, o.fim); }).map((ev) => limpa(ev.summary) || '(sem título)').join(' / ') || 'ocupado';
   const livres = buracos(inicioMs, fimMs, ocupados, duracao_min * 60000);
   const cab = `Entre ${fmtFaixa(zona, inicioMs, fimMs)} (horário de ${zona}). Fonte: ${FONTE}.`;
@@ -193,12 +236,12 @@ server.registerTool('agenda_criar', {
     ...camposEvento,
     recorrencia: z.string().max(200).optional().describe('Repetição em RRULE sem o prefixo, ex.: "FREQ=WEEKLY;BYDAY=MO" (toda segunda), "FREQ=MONTHLY;BYMONTHDAY=5" (dia 5), "FREQ=DAILY;COUNT=10".'),
     ignorar_conflito: z.boolean().optional().describe('true cria mesmo com choque de horário (só depois de o Bruno decidir).'),
-    agenda: z.string().max(120).optional(),
+    agenda: z.string().max(120).optional().describe('Nome do calendário onde criar ("Médico", "Família", "Contas casa", "Curso psicodrama", "Lembretes agendados"). Padrão: a principal. Use o calendário que combina com o assunto.'),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
 }, async (a) => protegido(async () => {
   const zona = fusoOu(a.fuso);
-  const agenda = a.agenda || 'primary';
+  const agenda = await resolverAgenda(a.agenda);
   const alertas = a.alertas_min ?? ALERTAS_PADRAO;
   const evento = { summary: limpa(a.titulo), reminders: { useDefault: false, overrides: alertas.map((m) => ({ method: 'popup', minutes: m })) } };
   if (a.local) evento.location = limpa(a.local);
@@ -217,8 +260,8 @@ server.registerTool('agenda_criar', {
     evento.start = { dateTime: rfc3339(zona, inicioMs), timeZone: zona }; evento.end = { dateTime: rfc3339(zona, fimMs), timeZone: zona };
     quando = `${fmtFaixa(zona, inicioMs, fimMs)} (horário de ${zona})`;
     if (!a.ignorar_conflito) {
-      const choque = await eventosNaJanela({ agenda, zona, inicioMs, fimMs });
-      if (choque.length) return fim('agenda_criar', `CONFLITO: ${quando} já tem ${choque.length} compromisso${choque.length > 1 ? 's' : ''}. Não criei "${evento.summary}". Pergunte ao Bruno se mantém, muda de horário ou cancela o outro:\n` + choque.map((ev) => linhaEvento(ev, zona)).join('\n'), 'conflito', `n=${choque.length}`);
+      const choque = await eventosNaJanela({ agenda: null, zona, inicioMs, fimMs });
+      if (choque.length) return fim('agenda_criar', `CONFLITO: ${quando} já tem ${choque.length} compromisso${choque.length > 1 ? 's' : ''}. Não criei "${evento.summary}". Pergunte ao Bruno se mantém, muda de horário ou cancela o outro:\n` + choque.map((ev) => linhaEvento(ev, zona, { agendaNome: ev._agenda })).join('\n'), 'conflito', `n=${choque.length}`);
     }
   }
   if (a.recorrencia) evento.recurrence = [/^RRULE:/i.test(a.recorrencia.trim()) ? a.recorrencia.trim() : `RRULE:${a.recorrencia.trim()}`];
@@ -232,7 +275,8 @@ server.registerTool('agenda_criar', {
     try { criado = await obterEvento({ agenda, id: criado.id, limiteDiario }); } catch { /* fica com o que veio */ }
   }
   const meet = meetDe(criado);
-  const linhas = [`CRIADO: ${quando}, "${evento.summary}".`];
+  const nomeAg = await nomeDaAgenda(agenda);
+  const linhas = [`CRIADO${nomeAg ? ` no calendário ${nomeAg}` : ''}: ${quando}, "${evento.summary}".`];
   if (evento.location) linhas.push(`Local: ${evento.location}`);
   if (conv.length) linhas.push(`Convidados: ${conv.map((c) => c.displayName ? `${c.displayName} (${c.email})` : c.email).join(', ')}${avisar === 'all' ? ' — convite enviado por e-mail' : ' — sem aviso por e-mail'}`);
   if (a.online) linhas.push(meet ? `Meet: ${meet}` : 'Meet: o Google ainda está gerando o link; consulte o compromisso em instantes.');
@@ -262,13 +306,14 @@ server.registerTool('agenda_mudar', {
     serie: z.enum(['esta', 'toda']).optional().describe('Em recorrente: "esta" ocorrência (padrão) ou "toda" a série.'),
     avisar_convidados: camposEvento.avisar_convidados,
     ignorar_conflito: z.boolean().optional(),
-    agenda: z.string().max(120).optional(),
+    agenda: z.string().max(120).optional().describe('Nome do calendário onde o compromisso está (vem no id de agenda_listar). Sem isso, procura em todos.'),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
 }, async (a) => protegido(async () => {
   const zona = fusoOu(a.fuso);
-  const agenda = a.agenda || 'primary';
-  let alvo = await obterEvento({ agenda, id: a.id, limiteDiario });
+  const achado = await acharEvento(a.id, a.agenda);
+  const agenda = achado.agenda;
+  let alvo = achado.evento;
   if (a.serie === 'toda' && alvo.recurringEventId) alvo = await obterEvento({ agenda, id: alvo.recurringEventId, limiteDiario });
   const antes = linhaEvento(alvo, zona, { comId: false });
   const m = {};
@@ -282,9 +327,9 @@ server.registerTool('agenda_mudar', {
     if (fimMs <= inicioMs) throw new ErroTempo('FIM_ANTES_DO_INICIO');
     m.start = { dateTime: rfc3339(zona, inicioMs), timeZone: zona }; m.end = { dateTime: rfc3339(zona, fimMs), timeZone: zona };
     if (!a.ignorar_conflito) {
-      const choque = await eventosNaJanela({ agenda, zona, inicioMs, fimMs, exceto: alvo.id });
-      const outros = choque.filter((ev) => ev.recurringEventId !== alvo.id);
-      if (outros.length) return fim('agenda_mudar', `CONFLITO: ${fmtFaixa(zona, inicioMs, fimMs)} já tem ${outros.length} compromisso${outros.length > 1 ? 's' : ''}. Não alterei. Pergunte ao Bruno:\n` + outros.map((ev) => linhaEvento(ev, zona)).join('\n'), 'conflito');
+      const choque = await eventosNaJanela({ agenda: null, zona, inicioMs, fimMs, exceto: alvo.id });
+      const outros = choque.filter((ev) => ev.recurringEventId !== alvo.id && ev.id !== alvo.id);
+      if (outros.length) return fim('agenda_mudar', `CONFLITO: ${fmtFaixa(zona, inicioMs, fimMs)} já tem ${outros.length} compromisso${outros.length > 1 ? 's' : ''}. Não alterei. Pergunte ao Bruno:\n` + outros.map((ev) => linhaEvento(ev, zona, { agendaNome: ev._agenda })).join('\n'), 'conflito');
     }
   }
   if (a.titulo !== undefined) m.summary = limpa(a.titulo);
@@ -316,12 +361,14 @@ server.registerTool('agenda_cancelar', {
     serie: z.enum(['esta', 'toda']).optional(),
     avisar_convidados: z.boolean().optional().describe('Padrão true.'),
     fuso: camposEvento.fuso,
-    agenda: z.string().max(120).optional(),
+    agenda: z.string().max(120).optional().describe('Nome do calendário onde o compromisso está. Sem isso, procura em todos.'),
   },
   annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
-}, async ({ id, serie, avisar_convidados = true, fuso, agenda = 'primary' }) => protegido(async () => {
+}, async ({ id, serie, avisar_convidados = true, fuso, agenda: agendaDita }) => protegido(async () => {
   const zona = fusoOu(fuso);
-  let alvo = await obterEvento({ agenda, id, limiteDiario });
+  const achado = await acharEvento(id, agendaDita);
+  const agenda = achado.agenda;
+  let alvo = achado.evento;
   if (alvo.status === 'cancelled') return fim('agenda_cancelar', `Esse compromisso já estava cancelado: ${linhaEvento(alvo, zona, { comId: false })}`);
   if (serie === 'toda' && alvo.recurringEventId) alvo = await obterEvento({ agenda, id: alvo.recurringEventId, limiteDiario });
   const temConvidados = (alvo.attendees || []).some((x) => !x.self);
