@@ -18,6 +18,15 @@ declare -A T=(
  [B8]="Manda pro Felipe Nóbrega: chego às 15h"
  [B9]="Hotel Unique em São Paulo: tem garagem? quanto custa?"
  [B10]="Me lembra quinta que vem, 9h, de ligar pro Héliton sobre a taxa do 901"
+ [A1]="O que tenho na agenda amanhã?"
+ [A2]="Marca amanhã às 10h, 1 hora, revisão do orçamento da MAO Trucks com o Williams, online"
+ [A3]="Marca treino sexta às 7h, 1 hora, na Bodytech Ponta Negra"
+ [A4]="Marca dentista sexta às 7h30, 1 hora"
+ [A5]="Muda o treino de sexta para 8h"
+ [A6]="Estou livre sexta de manhã?"
+ [A7]="Quando é o treino?"
+ [A8]="Cancela o treino de sexta"
+ [A9]="Toda segunda às 7h, treino de corrida, 1 hora"
 )
 LISTA=("$@"); [ ${#LISTA[@]} -eq 0 ] && LISTA=(B1 B2 B3 B4 B5 B6 B7 B8 B9 B10)
 for k in "${LISTA[@]}"; do

@@ -39,6 +39,10 @@ chown -R 10000:10000 runtime/hermes/plugins/atlas-nuvem
 mkdir -p runtime/hermes/mcp/mapas
 cp hermes/mcp/mapas/*.mjs hermes/mcp/mapas/package.json hermes/mcp/mapas/package-lock.json runtime/hermes/mcp/mapas/
 (cd runtime/hermes/mcp/mapas && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
+# Servidor MCP da agenda (fase 1): Google Calendar do Bruno; lê /opt/data/google_token.json.
+mkdir -p runtime/hermes/mcp/agenda
+cp hermes/mcp/agenda/*.mjs hermes/mcp/agenda/package.json hermes/mcp/agenda/package-lock.json runtime/hermes/mcp/agenda/
+(cd runtime/hermes/mcp/agenda && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
 # O gateway roda como uid 10000 dentro do container: o que este script copia como root fica legível, mas o log,
 # o cache e a trava do MCP precisam ser dele (10/10: criados como root numa sondagem, o gateway não conseguia escrever).
 chown -R 10000:10000 runtime/hermes/mcp

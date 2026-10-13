@@ -105,6 +105,7 @@ memory:
 skills:
   write_approval: true
   disabled:
+    - google-workspace   # 13/10: a agenda vai pelo MCP agenda; a skill (16 KB) volta só para Gmail/Drive nas fases 2 e 5
     - airtable
     - apple-notes
     - apple-reminders
@@ -165,6 +166,20 @@ mcp_servers:
     env:
       GOOGLE_PLACES_API_KEY: "${GOOGLE_PLACES_API_KEY}"
       MAPAS_LIMITE_DIARIO: "300"
+    timeout: 25
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  # Fase 1 (13/10/2026): Google Agenda do Bruno por servidor próprio (hermes/mcp/agenda). Desenho: docs/fase-1-agenda.md.
+  # Nomes ao modelo: mcp__agenda__agenda_listar, agenda_livre, agenda_criar, agenda_mudar, agenda_cancelar.
+  agenda:
+    command: node
+    args: ["/opt/data/mcp/agenda/server.mjs"]
+    env:
+      AGENDA_TOKEN_PATH: "/opt/data/google_token.json"
+      AGENDA_FUSO_PADRAO: "America/Manaus"
+      AGENDA_LIMITE_DIARIO: "300"
     timeout: 25
     connect_timeout: 20
     tools:
