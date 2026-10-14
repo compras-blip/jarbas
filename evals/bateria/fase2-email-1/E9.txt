@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Não encontrei cobrança confirmada em aberto com vencimento nesta semana, de segunda, 12/10, a domingo, 18/10. Mas há um alerta anterior que precisa de conferência.
+
+- Google Cloud: na quarta, 07/10, avisou que encerrou a conta e os serviços por forma de pagamento inválida ou pagamentos atrasados. Não informa valor; não encontrei confirmação posterior de regularização. É preciso conferir o faturamento para saber se há dívida.
+
+- Z-API: a mensalidade MIDAS de R$ 99,99 está paga, com confirmação de quinta, 08/10. A outra nota, de R$ 99,99, do serviço “Meu número”, não tem comprovante localizado nem vencimento informado; a nota sozinha não confirma dívida.
+
+- Wellhub: a pendência anterior foi resolvida, com pagamento de R$ 333,31 confirmado na sexta, 02/10.
+
+session_id: 20261014_142724_3cd3d7

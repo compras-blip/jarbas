@@ -43,6 +43,10 @@ cp hermes/mcp/mapas/*.mjs hermes/mcp/mapas/package.json hermes/mcp/mapas/package
 mkdir -p runtime/hermes/mcp/agenda
 cp hermes/mcp/agenda/*.mjs hermes/mcp/agenda/package.json hermes/mcp/agenda/package-lock.json runtime/hermes/mcp/agenda/
 (cd runtime/hermes/mcp/agenda && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
+# Servidor MCP de e-mail (fase 2): Gmail e Contatos do Bruno; mesmo token do Google.
+mkdir -p runtime/hermes/mcp/email
+cp hermes/mcp/email/*.mjs hermes/mcp/email/package.json hermes/mcp/email/package-lock.json runtime/hermes/mcp/email/
+(cd runtime/hermes/mcp/email && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
 # O gateway roda como uid 10000 dentro do container: o que este script copia como root fica legível, mas o log,
 # o cache e a trava do MCP precisam ser dele (10/10: criados como root numa sondagem, o gateway não conseguia escrever).
 chown -R 10000:10000 runtime/hermes/mcp

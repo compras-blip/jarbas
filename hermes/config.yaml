@@ -185,6 +185,23 @@ mcp_servers:
     tools:
       prompts: false
       resources: false
+  # Fase 2 (14/10/2026): Gmail e Contatos do Bruno por servidor próprio (hermes/mcp/email). Desenho: docs/fase-2-email.md.
+  # Nomes ao modelo: mcp__email__email_buscar, email_ler, email_anexo, email_marcar, email_resumo, email_enviar, email_rascunho, contato_buscar.
+  email:
+    command: node
+    args: ["/opt/data/mcp/email/server.mjs"]
+    env:
+      EMAIL_TOKEN_PATH: "/opt/data/google_token.json"
+      AGENDA_FUSO_PADRAO: "America/Manaus"
+      EMAIL_LIMITE_DIARIO: "2000"
+      EMAIL_LIMITE_ENVIOS: "50"
+      EMAIL_PASTA_ANEXOS: "/opt/data/cache/anexos"
+      EMAIL_RUIDO: "asaas,u-star,skilltree"   # remetentes que o Bruno chamou de propaganda (preferência F); ficam fora da busca padrão
+    timeout: 40
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
   # Fase 6 (10/10/2026): WhatsApp do Bruno pelos servidores MCP do próprio n8n (réplica webhook, rede interna).
   # Tokens no .env.hermes. Desenho: docs/fase-6-whatsapp.md. Nomes ao modelo: mcp__wa_consultas__whatsapp_read_conversation_v1 etc.
   wa_consultas:

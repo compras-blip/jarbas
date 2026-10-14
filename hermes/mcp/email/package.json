@@ -1,0 +1,11 @@
+{
+  "name": "atlas-mcp-email",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servidor MCP do Atlas para o Gmail e os Contatos do Bruno: buscar, ler, anexo, marcar, resumo, enviar, rascunho, contato.",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": { "start": "node server.mjs", "test": "node --test" },
+  "engines": { "node": ">=20" },
+  "dependencies": { "@modelcontextprotocol/server": "2.3.1", "zod": "4.6.5" }
+}

@@ -24,7 +24,7 @@ docs/                       passo a passo de instalação
 |---|---|---|
 | 0 | Telegram + modelo + memória | [instalação](docs/fase-0-instalacao.md) |
 | 1 | Google Agenda (servidor MCP `agenda`, 5 ferramentas) | em uso desde 13/10/2026 na conta Gmail do Bruno; docs/fase-1-agenda.md; evals/fase-1.md |
-| 2 | Gmail (triagem, só leitura e marcadores) | |
+| 2 | Gmail + Contatos (servidor MCP `email`, 8 ferramentas: buscar, ler, anexo, marcar, resumo, enviar, rascunho, contato) | em uso desde 14/10/2026; docs/fase-2-email.md; evals/fase-2.md |
 | 3 | Mapas + web (restaurantes perto) | |
 | 4 | Navegador (4a sem login, em uso desde 11/10/2026; 4b login via cofre/1Password depois) | docs/fase-4-navegador.md |
 | 5 | Dropbox (só leitura) | |

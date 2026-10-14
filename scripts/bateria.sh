@@ -27,6 +27,15 @@ declare -A T=(
  [A7]="Quando é o treino?"
  [A8]="Cancela o treino de sexta"
  [A9]="Toda segunda às 7h, treino de corrida, 1 hora"
+ [E1]="O que chegou de importante hoje no e-mail?"
+ [E2]="Tem e-mail do Williams esta semana?"
+ [E3]="Lê o último e-mail da Dra. Pâmella e me diz o que preciso fazer"
+ [E4]="Quantos e-mails não lidos tenho?"
+ [E5]="Qual o e-mail do Williams?"
+ [E6]="Acha o último e-mail com PDF anexo, baixa o PDF e me diz o que é"
+ [E7]="Marca como lidos os e-mails da Questor desta semana"
+ [E8]="Manda pra lixeira as promoções desta semana"
+ [E9]="Tem alguma cobrança em aberto esta semana no e-mail?"
 )
 LISTA=("$@"); [ ${#LISTA[@]} -eq 0 ] && LISTA=(B1 B2 B3 B4 B5 B6 B7 B8 B9 B10)
 for k in "${LISTA[@]}"; do
