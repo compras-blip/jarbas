@@ -1,0 +1,14 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Achei a apólice do seguro do carro da Raíssa, na pasta dela no Dropbox.
+
+- Aliro/Yelum, para o Honda HR-V EXL 2025.
+
+- Vigência indicada: 05/11/2025 a 05/11/2026. A renovação precisa ser conferida antes desse término.
+
+- Valor total: R$ 3.347,31. Franquia principal: R$ 7.488,00.
+
+- Abrir a apólice:
+https://www.dropbox.com/home/Raissa?preview=Ap%C3%B3lice%20seguro%20carro%20Raissa.pdf
+
+session_id: 20261014_224647_b0dd9c

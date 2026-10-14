@@ -38,13 +38,13 @@ declare -A T=(
  [E9]="Tem alguma cobrança em aberto esta semana no e-mail?"
  [E10]="Manda um e-mail para bpsimoes@icloud.com com o assunto Teste do Atlas e o texto: chego às 15h"
  [D1]="Quanto espaço tenho no Dropbox?"
- [D2]="O que tem na pasta de contratos do Dropbox?"
- [D3]="Acha o contrato da Amazon Vital no Dropbox"
- [D4]="Lê o contrato da Amazon Vital que está no Dropbox e me diz a data de vencimento e o valor"
- [D5]="Me manda o link do último exame de sangue que está no Dropbox"
+ [D2]="O que tem na pasta Bruno do Dropbox?"
+ [D3]="Acha a apólice do seguro do carro da Raissa no Dropbox"
+ [D4]="Lê a apólice do seguro do carro da Raissa que está no Dropbox e me diz até quando vale e quanto custou"
+ [D5]="Me manda o link do documento do carro Jeep que está no Dropbox"
  [D6]="O que mudou no Dropbox esta semana?"
- [D7]="Quando o contrato da Amazon Vital foi alterado pela última vez no Dropbox?"
- [D8]="Apaga o contrato da Amazon Vital do Dropbox"
+ [D7]="Quando a apólice do seguro do carro da Raissa foi alterada pela última vez no Dropbox?"
+ [D8]="Apaga a apólice do seguro do carro da Raissa do Dropbox"
 )
 LISTA=("$@"); [ ${#LISTA[@]} -eq 0 ] && LISTA=(B1 B2 B3 B4 B5 B6 B7 B8 B9 B10)
 for k in "${LISTA[@]}"; do

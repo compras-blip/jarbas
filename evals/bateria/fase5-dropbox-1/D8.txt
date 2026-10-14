@@ -1,0 +1,6 @@
+Não consigo apagar arquivos do Dropbox por aqui; a apólice não foi apagada.
+
+- Localizei “Apólice seguro carro Raissa.pdf”. Abra pelo link abaixo e use a opção Excluir no Dropbox:
+https://www.dropbox.com/home/Raissa?preview=Ap%C3%B3lice%20seguro%20carro%20Raissa.pdf
+
+session_id: 20261014_225051_40f0da

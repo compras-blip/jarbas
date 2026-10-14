@@ -29,6 +29,7 @@ test('tamanho e tipo', () => {
   assert.equal(fmtTamanho(7212), '7,0 KB');
   assert.equal(fmtTamanho(1958858), '1,9 MB');
   assert.equal(fmtTamanho(3 * 1024 ** 3), '3,00 GB');
+  assert.equal(fmtTamanho(2.5 * 1024 ** 4), '2,50 TB');
   assert.equal(tipoPorNome('x.PDF'), 'PDF');
   assert.equal(tipoPorNome('x.xlsx'), 'planilha');
   assert.equal(tipoPorNome('sem-extensao'), 'arquivo');

@@ -1,0 +1,9 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261014_224730_9a6d04
+A apólice do Honda HR-V da Raíssa vale até o fim de quinta-feira, 05/11/2026, e custou R$ 3.347,31, já com impostos.
+
+- Pagamento previsto em 12 parcelas no cartão, sem juros.
+
+- Essa é a vigência indicada na apólice; o documento não comprova a quitação das parcelas nem confirma se houve cancelamento posterior.

@@ -10,7 +10,7 @@ import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
 import { rpc, conteudo, ErroDropbox, chamadasHoje, FONTE } from './dropbox.mjs';
-import { FUSO_PADRAO, ErroTempo, lerData, localParaUtc, fmtDia, fmtHora } from './tempo.mjs';
+import { FUSO_PADRAO, ErroTempo, lerData, localParaUtc, fmtDia, fmtDiaLongo, fmtHora } from './tempo.mjs';
 import { ErroCaminho, validarCaminho, ehRaiz, pastaDe, nomeSeguro, linkSite, fmtTamanho, tipoPorNome, ehImagemMiniatura, temPreviewPdf, CATEGORIAS } from './caminhos.mjs';
 
 const limiteDiario = Number(process.env.ARQUIVOS_LIMITE_DIARIO) || 1000;
@@ -73,7 +73,9 @@ const dbx = (rota, arg) => rpc(rota, arg, { limiteDiario });
 const baixar = (rota, arg) => conteudo(rota, arg, { limiteDiario, maxBytes: MAX_BYTES });
 
 // ---- formatação ----
-const quando = (iso) => { const ms = Date.parse(iso || ''); return Number.isFinite(ms) ? `${fmtDia(ZONA, ms)} ${fmtHora(ZONA, ms)}` : '?'; };
+// Sempre com ano: arquivo do Dropbox costuma ser de outro ano (D7 em 14/10: "sex 07/11" deixou o modelo sem o ano).
+const quandoLongo = (iso) => { const ms = Date.parse(iso || ''); return Number.isFinite(ms) ? `${fmtDiaLongo(ZONA, ms)} ${fmtHora(ZONA, ms)}` : '?'; };
+const quando = (iso) => quandoLongo(iso).replace(/^[^,]+, /, '');
 function linhaEntrada(m, { comPasta = true } = {}) {
   const p = m.path_display || m.path_lower || '';
   if (m['.tag'] === 'folder') return `• ${m.name}/ · pasta${comPasta ? ` · em ${pastaDe(p)}` : ''}${m.id ? ` · [id: ${m.id}]` : ''}`;
@@ -121,7 +123,7 @@ server.registerTool('arquivo_buscar', {
 server.registerTool('arquivo_listar', {
   title: 'Listar pasta do Dropbox',
   description: 'Lista o que há numa pasta do Dropbox do Bruno (pastas primeiro, depois arquivos) com nome, tipo, tamanho e data de modificação em Manaus. '
-    + 'Com `desde`, mostra só arquivos modificados a partir daquele dia, mais recentes primeiro ("o que mudou esta semana?"). `recursivo` entra nas subpastas (bom com `desde` ou numa pasta específica; na raiz inteira pode ser grande). '
+    + 'Com `desde`, mostra só arquivos modificados a partir daquele dia, mais recentes primeiro ("o que mudou esta semana?"). `recursivo` entra nas subpastas e, com `desde`, varre o Dropbox inteiro em uma chamada: a resposta já é completa, não repita sem `desde` para conferir. '
     + 'Serve para "o que tem na pasta de contratos?", "o que mudou no Dropbox esta semana?".',
   inputSchema: {
     pasta: z.string().max(500).optional().describe('Caminho da pasta, ex. "/Contratos". Padrão: raiz do Dropbox.'),
@@ -134,10 +136,12 @@ server.registerTool('arquivo_listar', {
 }, async ({ pasta, recursivo = false, desde, ordem = 'nome', quantos = 30 }) => protegido(async () => {
   const p = pasta !== undefined ? validarCaminho(pasta) : '';
   const desdeMs = desde ? localParaUtc(ZONA, lerData(desde)) : null;
+  // Com `desde` vale varrer tudo (o Dropbox do Bruno inteiro: 16.300 entradas em 10 chamadas, 14 s em 14/10); sem `desde`, uma pasta só.
+  const maxChamadas = desdeMs !== null ? 20 : 5; const maxEntradas = desdeMs !== null ? 40000 : LIMITE_LISTA;
   const entradas = []; let chamadas = 0;
   let r = await dbx('files/list_folder', { path: p, recursive: recursivo, include_deleted: false, include_non_downloadable_files: true, limit: 2000 }); chamadas++;
   entradas.push(...(r.entries || []));
-  while (r.has_more && entradas.length < LIMITE_LISTA && chamadas < 5) { r = await dbx('files/list_folder/continue', { cursor: r.cursor }); chamadas++; entradas.push(...(r.entries || [])); }
+  while (r.has_more && entradas.length < maxEntradas && chamadas < maxChamadas) { r = await dbx('files/list_folder/continue', { cursor: r.cursor }); chamadas++; entradas.push(...(r.entries || [])); }
   const parcial = Boolean(r.has_more);
   let pastas = entradas.filter((m) => m['.tag'] === 'folder');
   let arquivos = entradas.filter((m) => m['.tag'] === 'file');
@@ -150,7 +154,7 @@ server.registerTool('arquivo_listar', {
   if (!total) return fim('arquivo_listar', `${desdeMs !== null ? `Nenhum arquivo modificado desde ${fmtDia(ZONA, desdeMs)}` : 'Nada'} em ${nomePasta}${recursivo ? ' (incluindo subpastas)' : ''}${parcial ? ' (lista parcial: pasta muito grande)' : ''}. Fonte: ${FONTE}.`, [`pasta=${p}`, 'n=0']);
   const mostrar = [...pastas, ...arquivos].slice(0, quantos);
   const cab = `${nomePasta}${recursivo ? ' (com subpastas)' : ''}${desdeMs !== null ? `, modificados desde ${fmtDia(ZONA, desdeMs)}` : ''}: ${pastas.length} pasta${pastas.length !== 1 ? 's' : ''} e ${arquivos.length} arquivo${arquivos.length !== 1 ? 's' : ''}${parcial ? ' (lista parcial: pasta muito grande)' : ''}${mostrar.length < total ? `, mostrando ${mostrar.length}` : ''}. Horário de ${ZONA}. Fonte: ${FONTE}.`;
-  return fim('arquivo_listar', [cab, ...mostrar.map((m) => linhaEntrada(m, { comPasta: recursivo }))].join('\n'), [`pasta=${p}`, `n=${total}`, `chamadas=${chamadas}`], 6000);
+  return fim('arquivo_listar', [cab, ...mostrar.map((m) => linhaEntrada(m, { comPasta: recursivo }))].join('\n'), [`pasta=${p}`, `n=${total}`, `chamadas=${chamadas}`], 12000);
 }));
 
 server.registerTool('arquivo_info', {
@@ -173,7 +177,7 @@ server.registerTool('arquivo_info', {
   }
   if (m['.tag'] === 'deleted') return fim('arquivo_info', `${m.name} foi apagado do Dropbox (${cam}). Só o Bruno pode restaurar, pelo site do Dropbox.`, [`path=${p}`]);
   linhas.push(`Arquivo: ${m.name} (${tipoPorNome(m.name)}, ${fmtTamanho(m.size)})`, `Pasta: ${pastaDe(cam)}`,
-    `Modificado no Dropbox: ${quando(m.server_modified)}${m.client_modified && m.client_modified !== m.server_modified ? ` (no aparelho: ${quando(m.client_modified)})` : ''}`);
+    `Modificado no Dropbox: ${quandoLongo(m.server_modified)}${m.client_modified && m.client_modified !== m.server_modified ? ` (no aparelho: ${quandoLongo(m.client_modified)})` : ''}`);
   if (m.is_downloadable === false) linhas.push(`Não baixável; exportação como ${m.export_info?.export_as || '?'}${m.export_info?.export_options?.length ? ` (opções: ${m.export_info.export_options.join(', ')})` : ''}`);
   if (m.sharing_info) linhas.push(`Em pasta compartilhada${m.sharing_info.read_only ? ', só leitura para o Bruno' : ''}`);
   if (m.file_lock_info) linhas.push(`Bloqueado para edição${m.file_lock_info.lockholder_name ? ` por ${m.file_lock_info.lockholder_name}` : ''}${m.file_lock_info.is_lockholder ? ' (pelo próprio Bruno)' : ''}`);
@@ -181,7 +185,7 @@ server.registerTool('arquivo_info', {
   if (versoes) {
     const v = await dbx('files/list_revisions', { path: m.id, mode: 'id', limit: 10 });
     const vs = v.entries || [];
-    linhas.push(`Versões (${vs.length}${v.has_more ? '+' : ''}):`, ...vs.map((e, i) => `• ${quando(e.server_modified)} · ${fmtTamanho(e.size)}${i === 0 ? ' (atual)' : ''}`));
+    linhas.push(`Versões (${vs.length}${v.has_more ? '+' : ''}):`, ...vs.map((e, i) => `• ${quandoLongo(e.server_modified)} · ${fmtTamanho(e.size)}${i === 0 ? ' (atual)' : ''}`));
   }
   return fim('arquivo_info', linhas.join('\n'), [`path=${p}`]);
 }));
@@ -217,7 +221,7 @@ server.registerTool('arquivo_ler', {
   try { for (const f of await readdir(PASTA_CACHE)) { const fp = path.join(PASTA_CACHE, f); const s = await stat(fp); if (s.isFile() && Date.now() - s.mtimeMs > 7 * 86400000) await unlink(fp); } } catch { /* limpeza é melhor esforço */ }
   const destino = path.join(PASTA_CACHE, `${m.id.replace(/^id:/, '').slice(0, 10)}-${nomeSeguro(nome)}`);
   await writeFile(destino, res.bytes);
-  return fim('arquivo_ler', `Arquivo salvo: ${destino} (${tipoPorNome(nome)}, ${fmtTamanho(res.bytes.length)}, ${modo}; modificado no Dropbox em ${quando(m.server_modified)}). Leia-o com a ferramenta de leitura de PDF/imagem/texto e responda com o conteúdo interpretado.`, [`path=${p}`, `bytes=${res.bytes.length}`, modo]);
+  return fim('arquivo_ler', `Arquivo salvo: ${destino} (${tipoPorNome(nome)}, ${fmtTamanho(res.bytes.length)}, ${modo}; modificado no Dropbox em ${quandoLongo(m.server_modified)}). Leia-o com a ferramenta de leitura de PDF/imagem/texto e responda com o conteúdo interpretado.`, [`path=${p}`, `bytes=${res.bytes.length}`, modo]);
 }));
 
 server.registerTool('arquivo_link', {
@@ -233,7 +237,7 @@ server.registerTool('arquivo_link', {
   if (m['.tag'] === 'folder') return fim('arquivo_link', `Pasta ${m.name} (${m.path_display || p}): abrir no Dropbox ${linkSite(m)}`, [`path=${p}`]);
   if (m['.tag'] !== 'file') throw new ErroCaminho('NAO_E_ARQUIVO', m.name);
   const t = await dbx('files/get_temporary_link', { path: m.id });
-  return fim('arquivo_link', [`${m.name} (${tipoPorNome(m.name)}, ${fmtTamanho(m.size)}, modificado ${quando(m.server_modified)})`, `Abrir no app/site do Dropbox (não expira): ${linkSite(m)}`, `Download direto (vale 4 horas, para quem tiver o link): ${t.link}`].join('\n'), [`path=${p}`]);
+  return fim('arquivo_link', [`${m.name} (${tipoPorNome(m.name)}, ${fmtTamanho(m.size)}, modificado ${quandoLongo(m.server_modified)})`, `Abrir no app/site do Dropbox (não expira): ${linkSite(m)}`, `Download direto (vale 4 horas, para quem tiver o link): ${t.link}`].join('\n'), [`path=${p}`]);
 }));
 
 server.registerTool('arquivo_espaco', {

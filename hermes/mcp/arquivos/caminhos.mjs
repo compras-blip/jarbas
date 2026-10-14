@@ -33,7 +33,8 @@ export function fmtTamanho(n) {
   if (n < 1024) return `${n} B`;
   if (n < 1024 ** 2) return `${(n / 1024).toFixed(n < 10 * 1024 ? 1 : 0).replace('.', ',')} KB`;
   if (n < 1024 ** 3) return `${(n / 1024 ** 2).toFixed(1).replace('.', ',')} MB`;
-  return `${(n / 1024 ** 3).toFixed(2).replace('.', ',')} GB`;
+  if (n < 1024 ** 4) return `${(n / 1024 ** 3).toFixed(2).replace('.', ',')} GB`;
+  return `${(n / 1024 ** 4).toFixed(2).replace('.', ',')} TB`;
 }
 export const extensao = (nome) => { const m = /\.([a-z0-9]{1,8})$/i.exec(String(nome || '')); return m ? m[1].toLowerCase() : ''; };
 const TIPOS = {

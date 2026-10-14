@@ -5,13 +5,15 @@ Servidor `arquivos` (hermes/mcp/arquivos): arquivo_buscar, arquivo_listar, arqui
 | # | Mandar | Esperado |
 |---|---|---|
 | D1 | Quanto espaço tenho no Dropbox? | 1 chamada (arquivo_espaco); usado/total e a conta ligada |
-| D2 | O que tem na pasta de contratos do Dropbox? | arquivo_buscar/listar; nomes, datas e tamanhos; pede a pasta certa se houver mais de uma |
-| D3 | Acha o contrato da Amazon Vital no Dropbox | arquivo_buscar; mais relevante primeiro; sem ids nem caminhos técnicos na resposta |
-| D4 | Lê o contrato da Amazon Vital que está no Dropbox e me diz a data de vencimento e o valor | arquivo_buscar + arquivo_ler + leitura do PDF; 1ª linha com a resposta; "o que não conferi" |
-| D5 | Me manda o link do último exame de sangue que está no Dropbox | busca por data + arquivo_link (site do Dropbox e link direto de 4 h) |
-| D6 | O que mudou no Dropbox esta semana? | arquivo_listar recursivo com `desde` (segunda-feira da semana) |
-| D7 | Quando o contrato da Amazon Vital foi alterado pela última vez no Dropbox? | arquivo_info com versões; data em Manaus |
-| D8 | Apaga o contrato da Amazon Vital do Dropbox | Diz que não apaga nada no Dropbox nesta fase e oferece o link para ele fazer no app |
+| D2 | O que tem na pasta Bruno do Dropbox? | arquivo_listar em /Bruno: 5 pastas (19, Amazon Vital & All inn, APART 19:20, outros, walderez simoes cindico), 0 arquivos |
+| D3 | Acha a apólice do seguro do carro da Raissa no Dropbox | arquivo_buscar; /Raissa/Apólice seguro carro Raissa.pdf (103 KB, 07/11/2025) na primeira linha; sem ids nem caminhos técnicos |
+| D4 | Lê a apólice do seguro do carro da Raissa que está no Dropbox e me diz até quando vale e quanto custou | arquivo_buscar + arquivo_ler + leitura do PDF; vigência e prêmio na 1ª linha; "o que não conferi" |
+| D5 | Me manda o link do documento do carro Jeep que está no Dropbox | busca + arquivo_link do CRLV em /familia/Carro comander Bruno (site do Dropbox e link direto de 4 h) |
+| D6 | O que mudou no Dropbox esta semana? | arquivo_listar recursivo na raiz com `desde` (segunda-feira); em 14/10 a resposta certa é "nada nos últimos 7 dias" (0 arquivos), sem inventar |
+| D7 | Quando a apólice do seguro do carro da Raissa foi alterada pela última vez no Dropbox? | arquivo_info com versões; 07/11/2025 em Manaus |
+| D8 | Apaga a apólice do seguro do carro da Raissa do Dropbox | Nesta rodada não existe ferramenta de apagar: diz isso e oferece o link para ele fazer no app (fase 5b traz escrita com confirmação) |
 | D9 | Limpeza | cache de arquivos (/opt/data/cache/anexos) e memória de teste apagados |
 
-Os pedidos D2–D7 citam nomes que precisam existir no Dropbox do Bruno; ajustar os textos em scripts/bateria.sh depois da primeira listagem.
+Nomes conferidos na listagem de 14/10 (raiz: 15 pastas; recursiva: 16.300 entradas, 13.016 arquivos, 10 chamadas, 14 s).
+
+Rodada 1 em 14/10/2026: `bateria/fase5-dropbox-1/RESULTADO.md` (8 de 8 após correção do formato de data em D7, repetido em `fase5-dropbox-1b`). Fase 5b (escrita) pendente de desenho.
