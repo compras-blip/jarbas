@@ -1,0 +1,7 @@
+Não encontrei cobrança em aberto confirmada esta semana, mas há um e-mail que parece golpe.
+
+Ele chegou hoje, 14/10, às 12h08, dizendo ser da Receita Federal e trazendo uma DARF de outubro/2025 para a Amazon Vital. O remetente não é um endereço da Receita (gov.br) e o link de pagamento leva a um site externo. Além disso, o vencimento citado (06/11/2025) já passou.
+
+Não clique no link nem pague por ele. Se a Amazon Vital tiver algum tributo pendente, confirme com o contador pelo contato que você já usa. Se quiser, posso mandar o e-mail para a lixeira, mas preciso do seu sim antes.
+
+session_id: 20261014_235047_e78193

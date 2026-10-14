@@ -43,3 +43,16 @@ Leitura (atualizada com a 5ª rodada): com o mesmo modelo (6.1 Sol), princípios
 - **B5 e B9 oscilam com a fonte.** B5 com navegador e skill: 0,5 ou 1 conforme o modelo fecha ou não o total da combinação (2 de 3 fecharam). B9: 1 quando abre o site do hotel, 0,5 quando a extração falha e ele aceita o trecho da busca (1 de 3).
 - **Custo estável:** 52 a 69 chamadas, 9,4 a 10,5 min por rodada de 10 tarefas, custo zero no plano. B6 é o pico (48–50 mil tokens) porque lê 6 páginas de conversa quando a skill pede até 3: candidato a ajuste barato.
 - **Comparação justa com as outras células:** só a R1 roda no mesmo ambiente das outras 4 (sem navegador). Mesmo assim o 6.1 Sol + princípios é a única célula acima de 8,0, e com 3 rodadas a média 8,67 fica acima do melhor das demais (8,0, 1 rodada).
+
+## Haiku 5.5 (Anthropic direto) × GPT-6.1 Sol (Nous), 14/10/2026
+
+Mesmos 36 pedidos (B1–B10, A1–A9, E1–E9, D1–D8), mesmo prompt e ferramentas. Detalhe em `haiku-5.5-leitura-1/RESULTADO.md`.
+
+| | GPT-6.1 Sol | Haiku 5.5 |
+|---|---|---|
+| Nota (36) | 33 na rodada, 34 após correções de ferramenta | 34 |
+| Tempo por teste | 54 s | 38 s |
+| Custo da bateria | 0 (plano do ChatGPT pela Nous) | US$ 0,12 |
+| Melhor em | triagem profunda de e-mail (E1, E9) | alternativas e honestidade (B2, B9), velocidade, menos chamadas |
+
+Decisão pendente do Felipe: manter o GPT-6.1 Sol como padrão e usar o Haiku 5.5 como reserva no lugar do Gemini 3.8 Flash, ou trocar o padrão.

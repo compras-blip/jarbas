@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261014_235252_5182dc
+Vale até **5 de novembro de 2026**, ou seja, faltam 22 dias para o vencimento. A apólice foi emitida pela Yelum (marca Aliro), com corretora Gabarito.
+
+O custo total foi **R$ 3.347,31** (prêmio líquido de R$ 3.117,26 mais IOF de R$ 230,05). Foi parcelado em 12 vezes de cerca de R$ 278,95 no cartão de crédito Mastercard final 7484, com vencimentos de 13/11/2025 a 13/10/2026. A última parcela vence ontem, então o seguro está quitado se as 12 foram pagas.
+
+Cobertura: compreensiva (casco) com franquia de R$ 7.488,00, responsabilidade civil e acidentes pessoais de passageiros, carro reserva e assistências.
+
+A renovação está próxima. Quer que eu procure cotações para o HR-V 2025 ou que eu deixe um lembrete para a semana que vem?
