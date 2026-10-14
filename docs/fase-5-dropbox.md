@@ -8,7 +8,7 @@ Baseado na documentação baixada em `docs-dropbox/` (7 guias: OAuth e escopos, 
 |---|---|
 | OAuth 2 com **escopos escolhidos no App Console** (aba Permissions) e **acesso "Full Dropbox"** ou só pasta do app | App "Atlas" com acesso Full Dropbox e 3 escopos de leitura: `account_info.read`, `files.metadata.read`, `files.content.read`. Nada de escrita, compartilhamento ou apagar |
 | Token de acesso é **curto (4 h)**; acesso em segundo plano exige **refresh token**, obtido com `token_access_type=offline` na URL de autorização | O servidor guarda só o refresh token em `/opt/data/dropbox_token.json` (600) e renova o acesso em memória, como no Google |
-| Fluxo de código **sem redirect**: o código aparece na tela do dropbox.com para copiar e colar | Igual ao Google: eu gero o link, o Bruno (ou o Felipe na conta dele) aprova, copia o código e cola no servidor; a troca usa app key + app secret, que o Felipe digita no `.env.hermes` |
+| Fluxo de código **sem redirect**: o código aparece na tela do dropbox.com para copiar e colar | Igual ao Google: eu gero o link, o Bruno (ou o Felipe na conta dele) aprova, copia o código e cola no servidor; a troca usa app key + app secret, que o Felipe digita num arquivo do servidor (`/opt/data/dropbox_app.json`, modo 600, como o `google_client_secret.json`) |
 | Botão "Generate" no App Console dá um token da própria conta, mas **curto e sem refresh** | Não serve para o Atlas; só para teste rápido |
 | `files/search:2` (+ `search/continue:2`): busca por nome e, para contas pagas, conteúdo; opções `path`, `max_results` (≤ 1.000), `order_by` (relevância ou data), `file_status`, `filename_only`, `file_extensions`, `file_categories` (pdf, document, spreadsheet, image…); até 10.000 resultados, índice com pequeno atraso | `arquivo_buscar`: 1 chamada com filtros por pasta, tipo e ordem por data |
 | `files/list_folder` (+ `continue`, cursor; `recursive`; `limit` ≤ 2.000; `include_deleted`) | `arquivo_listar`: pastas e arquivos com nome, tamanho, data de modificação, caminho |
@@ -57,14 +57,14 @@ Travas: zod; só rotas de leitura (nada de upload, mover, apagar, compartilhar);
 ## 4. Autorização (uma vez)
 
 1. **Felipe, no App Console** (dropbox.com/developers/apps, logado na conta do Bruno ou na dele): "Create app" → API: Scoped access → Access: **Full Dropbox** → Name: `Atlas`. Aba **Permissions**: marcar `account_info.read`, `files.metadata.read`, `files.content.read` → Submit. Aba **Settings**: anotar **App key** e **App secret**.
-2. **Felipe digita no servidor** (`.env.hermes`): `DROPBOX_APP_KEY` e `DROPBOX_APP_SECRET`. Nada no chat.
+2. **Felipe digita no servidor** (comando com `read -rs`, nada na tela nem no chat): grava `/opt/data/dropbox_app.json` com `app_key` e `app_secret` (600, uid 10000). Mesmo molde do `google_client_secret.json`; o `.env.hermes` não muda.
 3. **Eu gero o link** de autorização (`response_type=code`, `token_access_type=offline`, sem redirect). O Bruno abre, logado na conta dele, aprova, copia o código mostrado na tela.
 4. **Código colado no servidor** (mesmo comando do Google); eu troco por refresh token e gravo `/opt/data/dropbox_token.json`. Teste: `arquivo_espaco` mostra a conta.
 
 ## 5. Mudanças no Atlas
 
 - `hermes/mcp/arquivos/`: `server.mjs`, `dropbox.mjs` (token, renovação, RPC e content endpoints, erros), `caminhos.mjs` (validação, nomes seguros, link do site), testes.
-- `config.yaml`: `mcp_servers.arquivos` (env `DROPBOX_APP_KEY`, `DROPBOX_APP_SECRET`, `DROPBOX_TOKEN_PATH`, `ARQUIVOS_PASTA_CACHE`, `ARQUIVOS_LIMITE_DIARIO`); `deploy.sh`; `AGENTS.md` 1 linha; `.env.hermes.example`.
+- `config.yaml`: `mcp_servers.arquivos` (env `DROPBOX_APP_PATH`, `DROPBOX_TOKEN_PATH`, `ARQUIVOS_PASTA_CACHE`, `ARQUIVOS_LIMITE_DIARIO`, timeout 60 s); `deploy.sh`; `AGENTS.md` 1 linha. Autorização única por `autorizar.mjs` (link | trocar | testar), rodado dentro do container como uid 10000.
 - Custo no prompt: 6 ferramentas ≈ 2,5 KB; previsto 21,1 → ~23,6 KB (teto 30).
 
 ## 6. Testes (`evals/fase-5.md`)

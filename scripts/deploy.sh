@@ -47,6 +47,10 @@ cp hermes/mcp/agenda/*.mjs hermes/mcp/agenda/package.json hermes/mcp/agenda/pack
 mkdir -p runtime/hermes/mcp/email
 cp hermes/mcp/email/*.mjs hermes/mcp/email/package.json hermes/mcp/email/package-lock.json runtime/hermes/mcp/email/
 (cd runtime/hermes/mcp/email && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
+# Fase 5 (14/10): Dropbox do Bruno, só leitura (hermes/mcp/arquivos). App key/secret em runtime/hermes/dropbox_app.json (600, uid 10000).
+mkdir -p runtime/hermes/mcp/arquivos
+cp hermes/mcp/arquivos/*.mjs hermes/mcp/arquivos/package.json hermes/mcp/arquivos/package-lock.json runtime/hermes/mcp/arquivos/
+(cd runtime/hermes/mcp/arquivos && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
 # O gateway roda como uid 10000 dentro do container: o que este script copia como root fica legível, mas o log,
 # o cache e a trava do MCP precisam ser dele (10/10: criados como root numa sondagem, o gateway não conseguia escrever).
 chown -R 10000:10000 runtime/hermes/mcp
