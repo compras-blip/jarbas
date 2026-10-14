@@ -297,9 +297,23 @@ server.registerTool('email_rascunho', {
   return fim('email_rascunho', `RASCUNHO criado no Gmail para ${m.para.map((p) => p.email).join(', ')}, assunto "${m.assunto}"${m.anexos.length ? `, ${m.anexos.length} anexo(s)` : ''}. O Bruno revisa e envia pelo app; nada foi enviado.\n[id do rascunho: ${r.id}]`, `rascunho=${r.id}`);
 }));
 
+// Lista completa de contatos (até 3.000), para a varredura local quando a busca indexada falha.
+const normal = (t) => String(t ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+let cacheContatos = { em: 0, lista: [] };
+async function listaDeContatos() {
+  if (Date.now() - cacheContatos.em < 10 * 60000 && cacheContatos.lista.length) return cacheContatos.lista;
+  const lista = []; let pageToken;
+  do {
+    const r = await pp({ caminho: '/people/me/connections', q: { personFields: 'names,nicknames,emailAddresses,phoneNumbers,organizations', pageSize: 1000, pageToken } });
+    lista.push(...(r.connections || [])); pageToken = r.nextPageToken;
+  } while (pageToken && lista.length < 3000);
+  cacheContatos = { em: Date.now(), lista };
+  return lista;
+}
+
 server.registerTool('contato_buscar', {
   title: 'Buscar contato',
-  description: 'Acha nos Contatos do Google do Bruno o e-mail, telefone e empresa de alguém pelo nome (ou pedaço), e-mail ou telefone. Se não estiver salvo, procura no Gmail quem já escreveu com esse nome e diz que veio de lá. Até 10 resultados.',
+  description: 'Acha nos Contatos do Google do Bruno o e-mail, telefone e empresa de alguém pelo nome (ou pedaço), e-mail ou telefone, inclusive por varredura da lista inteira. Se não estiver salvo, procura no Gmail quem já escreveu com esse nome e diz que veio de lá. Até 10 resultados. Um cadastro só com telefone e outro só com e-mail podem ser a mesma pessoa: diga isso ao Bruno em vez de concluir que não há e-mail.',
   inputSchema: { nome_ou_email: z.string().min(2).max(100) },
   annotations: { readOnlyHint: true },
 }, async ({ nome_ou_email }) => protegido(async () => {
@@ -317,6 +331,14 @@ server.registerTool('contato_buscar', {
     linhas.push(`• ${nome}${emails ? ` · ${emails}` : ''}${fones ? ` · ${fones}` : ''}${org ? ` · ${org}` : ''}`);
   }
   if (linhas.length) return fim('contato_buscar', [`${linhas.length} contato${linhas.length > 1 ? 's' : ''} para "${q}" (Contatos do Google):`, ...linhas].join('\n'), `n=${linhas.length}`);
+  // a busca indexada do Google só casa prefixo e demora a indexar importações: varre a lista completa (cache de 10 min)
+  const todos = await listaDeContatos();
+  const n = normal(q);
+  const achados = todos.filter((p) => normal(JSON.stringify([p.names?.map((x) => x.displayName), p.nicknames?.map((x) => x.value), p.emailAddresses?.map((x) => x.value), p.phoneNumbers?.map((x) => x.value), p.organizations?.map((x) => x.name)])).includes(n)).slice(0, 10);
+  if (achados.length) {
+    const ls = achados.map((p) => { const nome = p.names?.[0]?.displayName || p.nicknames?.[0]?.value || '(sem nome)'; const emails = (p.emailAddresses || []).map((e) => e.value).join(', '); const fones = (p.phoneNumbers || []).map((f) => f.value).join(', '); const org = (p.organizations || []).map((o) => [o.name, o.title].filter(Boolean).join(', ')).join('; '); return `• ${nome}${emails ? ` · ${emails}` : ''}${fones ? ` · ${fones}` : ''}${org ? ` · ${org}` : ''}`; });
+    return fim('contato_buscar', [`${ls.length} contato${ls.length > 1 ? 's' : ''} para "${q}" (Contatos do Google, por varredura):`, ...ls].join('\n'), `varredura=${ls.length}`);
+  }
   // não está salvo: quem já escreveu com esse nome, pelo Gmail
   const g = await gm({ caminho: '/messages', q: { q: `from:(${q})`, maxResults: 8 } });
   const metas = await emParalelo((g.messages || []).map((m) => m.id), 4, (id) => obterMeta(id));

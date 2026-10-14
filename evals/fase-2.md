@@ -1,6 +1,6 @@
 # Fase 2 — Gmail e Contatos: testes
 
-Rodada 1 em 14/10/2026: `bateria/fase2-email-1/RESULTADO.md` (9 de 9, caixa com 431 e-mails). Repetir quando o encaminhamento do iCloud e a importação do histórico estiverem feitos.
+Rodada 1 em 14/10/2026: `bateria/fase2-email-1/RESULTADO.md` (9 de 9, caixa com 431 e-mails). Rodada 2, caixa importada (801 mensagens, 1.798 contatos): `bateria/fase2-email-2/RESULTADO.md` (10 de 10 após correção da busca de contatos; E10 envio real feito).
 
 | # | Mandar | Nota 1 exige | Como eu confiro |
 |---|---|---|---|

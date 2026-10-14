@@ -36,6 +36,7 @@ declare -A T=(
  [E7]="Marca como lidos os e-mails da Questor desta semana"
  [E8]="Manda pra lixeira as promoções desta semana"
  [E9]="Tem alguma cobrança em aberto esta semana no e-mail?"
+ [E10]="Manda um e-mail para bpsimoes@icloud.com com o assunto Teste do Atlas e o texto: chego às 15h"
 )
 LISTA=("$@"); [ ${#LISTA[@]} -eq 0 ] && LISTA=(B1 B2 B3 B4 B5 B6 B7 B8 B9 B10)
 for k in "${LISTA[@]}"; do
