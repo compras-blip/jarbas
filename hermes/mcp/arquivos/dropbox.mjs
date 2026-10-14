@@ -85,7 +85,7 @@ async function erroDaResposta(r) {
   let j = null; try { j = texto ? JSON.parse(texto) : null; } catch { j = null; }
   const resumo = String(j?.error_summary || (j ? '' : texto) || '').replace(/\.+$/, '').slice(0, 160);
   const um = j?.user_message; const msg = String((um && typeof um === 'object' ? um.text : um) || '').slice(0, 200);
-  if (r.status === 409) return new ErroDropbox('DROPBOX_409', /^(retry_error|internal_error)/.test(resumo), resumo, msg);
+  if (r.status === 409) return new ErroDropbox('DROPBOX_409', /^(retry_error|internal_error)|too_many_write_operations/.test(resumo), resumo, msg);
   if (r.status === 401) return new ErroDropbox('DROPBOX_HTTP_401', false, resumo);
   if (r.status === 403) return new ErroDropbox('DROPBOX_HTTP_403', false, resumo, msg);
   if (r.status === 429) return new ErroDropbox('DROPBOX_HTTP_429', true, resumo);
@@ -159,5 +159,17 @@ export async function conteudo(rota, arg, { maxBytes = 25 * 1024 * 1024, timeout
       let meta = {}; try { meta = JSON.parse(r.headers.get('dropbox-api-result') || '{}'); } catch { meta = {}; }
       return { bytes, meta };
     },
+  });
+}
+
+// Rota de envio (style upload): argumento no cabeçalho, bytes no corpo (octet-stream), JSON de volta no corpo.
+// Só 1 repetição: se o 1º envio tiver gravado e a resposta se perdido, o 2º com mode "add" devolve conflito (seguro, nada duplica).
+export async function enviar(rota, arg, bytes, { timeoutMs = 120000, tentativas = 1, ...opts } = {}) {
+  return executar({
+    ...opts, timeoutMs, tentativas,
+    url: CONTEUDO + rota,
+    headers: { 'Dropbox-API-Arg': jsonAscii(arg), 'Content-Type': 'application/octet-stream' },
+    body: bytes,
+    lerCorpo: async (r) => { const t = await r.text(); try { return t ? JSON.parse(t) : {}; } catch { throw new ErroDropbox('DROPBOX_RESPOSTA_INVALIDA', true); } },
   });
 }

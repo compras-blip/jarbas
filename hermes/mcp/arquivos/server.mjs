@@ -1,20 +1,24 @@
-// server.mjs — servidor MCP "arquivos": o Dropbox do Bruno para o Atlas, só leitura, em 6 ferramentas:
-//   arquivo_buscar, arquivo_listar, arquivo_info, arquivo_ler, arquivo_link, arquivo_espaco.
-// Regras em código: nenhuma rota de escrita (nada de enviar, mover, apagar, compartilhar); caminhos validados;
+// server.mjs — servidor MCP "arquivos": o Dropbox do Bruno para o Atlas, em 11 ferramentas.
+//   Leitura (fase 5): arquivo_buscar, arquivo_listar, arquivo_info, arquivo_ler, arquivo_link, arquivo_espaco.
+//   Escrita (fase 5b): arquivo_salvar, arquivo_copiar, arquivo_mover, pasta_criar, arquivo_apagar (lixeira; apagar definitivo não existe).
+// Regras em código: nada de compartilhar; escrita com teto diário e só de arquivos da pasta de dados; apagar pasta exige eh_pasta; caminhos validados;
 // arquivo até 25 MB (imagem grande vira miniatura; Paper e Google Docs são exportados); teto diário de chamadas;
 // segredos nunca em log ou resposta. Feito para o Hermes Agent (mcp_servers em config.yaml) com o SDK oficial do MCP.
 // Docs: docs-dropbox/ e a spec Stone (files.stone, users.stone). Desenho: docs/fase-5-dropbox.md.
-import { mkdir, writeFile, readdir, stat, unlink } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, stat, unlink, readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
-import { rpc, conteudo, ErroDropbox, chamadasHoje, FONTE } from './dropbox.mjs';
+import { rpc, conteudo, enviar, ErroDropbox, chamadasHoje, FONTE } from './dropbox.mjs';
 import { FUSO_PADRAO, ErroTempo, lerData, localParaUtc, fmtDia, fmtDiaLongo, fmtHora } from './tempo.mjs';
-import { ErroCaminho, validarCaminho, ehRaiz, pastaDe, nomeSeguro, linkSite, fmtTamanho, tipoPorNome, ehImagemMiniatura, temPreviewPdf, CATEGORIAS } from './caminhos.mjs';
+import { ErroCaminho, validarCaminho, validarNome, juntar, dentroDe, ehRaiz, pastaDe, nomeSeguro, linkSite, fmtTamanho, tipoPorNome, ehImagemMiniatura, temPreviewPdf, CATEGORIAS } from './caminhos.mjs';
 
 const limiteDiario = Number(process.env.ARQUIVOS_LIMITE_DIARIO) || 1000;
 const PASTA_CACHE = process.env.ARQUIVOS_PASTA_CACHE || '/opt/data/cache/anexos';
+const RAIZ_LOCAL = process.env.ARQUIVOS_RAIZ_LOCAL || '/opt/data';
+const LIMITE_ESCRITAS = Number(process.env.ARQUIVOS_LIMITE_ESCRITAS) || 100;
+const escritas = { dia: '', n: 0 };
 const MAX_BYTES = 25 * 1024 * 1024;
 const LIMITE_TEXTO = 1800;
 const LIMITE_LISTA = 3000;
@@ -45,6 +49,25 @@ const POR_PREFIXO = [
   ['not_allowed', 'O Dropbox não permite link para esse arquivo.'],
   ['in_progress', 'O Dropbox ainda está preparando a visualização; tente de novo em instantes.'],
   ['invalid_argument', 'O Dropbox rejeitou a busca (texto ou filtro inválido).'],
+  // escrita (fase 5b): o prefixo varia por rota (path/, to/, from_write/, path_write/), por isso o casamento é por pedaço
+  ['conflict', 'Já existe um arquivo ou pasta com esse nome no destino. Nada foi alterado: pergunte ao Bruno se é para sobrescrever (só arquivo, com sobrescrever=true, vira versão nova) ou usar outro nome.'],
+  ['insufficient_space', 'O Dropbox do Bruno está sem espaço para isso.'],
+  ['insufficient_quota', 'O Dropbox do Bruno está sem espaço para isso.'],
+  ['disallowed_name', 'O Dropbox não aceita esse nome de arquivo ou pasta.'],
+  ['no_write_permission', 'Sem permissão de escrita nessa pasta (compartilhada só para leitura).'],
+  ['too_many_write_operations', 'O Dropbox está ocupado com outras gravações nessa conta; tente de novo em instantes.'],
+  ['too_many_files', 'Pasta com arquivos demais para esta operação de uma vez (limite do Dropbox: 10.000). Peça ao Bruno para fazer no app.'],
+  ['cant_move_folder_into_itself', 'Não dá para mover uma pasta para dentro dela mesma.'],
+  ['duplicated_or_nested_paths', 'Origem e destino se sobrepõem; nada foi alterado.'],
+  ['cant_move_shared_folder', 'O Dropbox não deixa mover uma pasta compartilhada assim; o Bruno faz no app.'],
+  ['cant_copy_shared_folder', 'O Dropbox não deixa copiar uma pasta compartilhada assim; o Bruno faz no app.'],
+  ['cant_nest_shared_folder', 'O Dropbox não deixa colocar uma pasta compartilhada dentro de outra.'],
+  ['cant_transfer_ownership', 'Isso transferiria a posse de uma pasta compartilhada; o Bruno faz no app.'],
+  ['payload_too_large', 'Arquivo grande demais para enviar de uma vez.'],
+  ['team_folder', 'Pasta de equipe: o Dropbox não permite essa operação pela API.'],
+  ['access_restricted', 'O Dropbox restringiu o acesso de escrita a esse caminho.'],
+  ['not_found', 'Arquivo ou pasta não encontrado nesse caminho: pode ter sido movido, renomeado ou apagado. Procure pelo nome com arquivo_buscar.'],
+  ['malformed_path', 'Caminho mal formado para o Dropbox. Use "/Pasta/arquivo.ext" ou o id do arquivo.'],
 ];
 function mensagemErro(e) {
   const c = e?.code || '';
@@ -59,6 +82,13 @@ function mensagemErro(e) {
   if (c === 'RAIZ_SEM_FICHA') return 'A raiz do Dropbox não tem ficha; use arquivo_listar.';
   if (c === 'CAMINHO_INVALIDO') return `Caminho inválido (${e.detalhe}). Use "/Pasta/arquivo.ext" ou o id vindo de arquivo_buscar.`;
   if (c === 'DATA_INVALIDA') return `Data inválida (${e.detalhe}): use AAAA-MM-DD.`;
+  if (c === 'NOME_INVALIDO') return `Nome inválido para o Dropbox (${e.detalhe}): sem barra, sem ponto ou espaço no fim.`;
+  if (c === 'ARQUIVO_FORA') return 'Só posso salvar no Dropbox arquivos que estão na pasta de dados do Atlas no servidor.';
+  if (c === 'ARQUIVO_AUSENTE') return `Arquivo local não encontrado: ${e.detalhe}.`;
+  if (c === 'LIMITE_ESCRITAS') return `Teto de ${LIMITE_ESCRITAS} gravações por dia no Dropbox atingido no servidor. Diga que o Felipe pode rever.`;
+  if (c === 'PASTA_SEM_CONFIRMACAO') return `Isso é uma pasta: ${e.detalhe}. Apagar a pasta inteira exige o sim do Bruno (diga o que há dentro); depois do sim, chame de novo com eh_pasta=true.`;
+  if (c === 'DESTINO_INVALIDO') return 'Destino de escrita precisa ser um caminho de pasta ("/Pasta"), não um id.';
+  if (c === 'SEM_MUDANCA') return 'Informe a pasta de destino, o novo nome ou os dois.';
   if (e?.transitorio) return 'O Dropbox não respondeu agora. Tente de novo em instantes; se falhar, diga que não conseguiu confirmar.';
   return 'Falha ao acessar o Dropbox. Diga que não conseguiu confirmar.';
 }
@@ -70,6 +100,7 @@ async function protegido(fn) {
   }
 }
 const dbx = (rota, arg) => rpc(rota, arg, { limiteDiario });
+const subir = (rota, arg, bytes) => enviar(rota, arg, bytes, { limiteDiario });
 const baixar = (rota, arg) => conteudo(rota, arg, { limiteDiario, maxBytes: MAX_BYTES });
 
 // ---- formatação ----
@@ -254,6 +285,129 @@ server.registerTool('arquivo_espaco', {
   return fim('arquivo_espaco', `Conta: ${conta.name?.display_name || '?'} <${conta.email || '?'}>${conta.email_verified === false ? ' (e-mail não verificado)' : ''}, plano ${plano}. Espaço: ${fmtTamanho(usado)} de ${fmtTamanho(total)} (${pct}%), livre ${fmtTamanho(Math.max(total - usado, 0))}. Fonte: ${FONTE}.`, [`usado=${usado}`, `total=${total}`]);
 }));
 
+// ---- escrita (fase 5b) ----
+function contarEscrita() {
+  const dia = new Date().toISOString().slice(0, 10);
+  if (escritas.dia !== dia) { escritas.dia = dia; escritas.n = 0; }
+  if (escritas.n >= LIMITE_ESCRITAS) throw new ErroCaminho('LIMITE_ESCRITAS');
+  escritas.n += 1;
+}
+// Só arquivos da pasta de dados do Atlas (links simbólicos resolvidos), até 25 MB.
+async function lerArquivoLocal(caminho) {
+  let real;
+  try { real = await realpath(path.resolve(RAIZ_LOCAL, String(caminho || ''))); } catch { throw new ErroCaminho('ARQUIVO_AUSENTE', String(caminho || '').slice(0, 80)); }
+  if (!dentroDe(real, RAIZ_LOCAL)) throw new ErroCaminho('ARQUIVO_FORA', real);
+  const s = await stat(real);
+  if (!s.isFile()) throw new ErroCaminho('ARQUIVO_AUSENTE', real.slice(0, 80));
+  if (s.size > MAX_BYTES) throw new ErroDropbox('ARQUIVO_GRANDE', false, fmtTamanho(s.size));
+  return { real, bytes: await readFile(real), nome: path.basename(real) };
+}
+const pastaDeEscrita = (txt) => { const p = validarCaminho(txt); if (!ehRaiz(p) && !p.startsWith('/')) throw new ErroCaminho('DESTINO_INVALIDO', p); return p; };
+const rotulo = (m) => (m['.tag'] === 'folder' ? 'pasta' : `${tipoPorNome(m.name)}, ${fmtTamanho(m.size)}`);
+
+server.registerTool('arquivo_salvar', {
+  title: 'Salvar arquivo no Dropbox',
+  description: 'Envia para uma pasta do Dropbox do Bruno um arquivo que está no servidor do Atlas (anexo baixado de e-mail, arquivo que você gerou ou editou; só da pasta de dados). Até 25 MB. '
+    + 'Se já existir arquivo com o mesmo nome, nada é alterado e você recebe aviso: pergunte ao Bruno se é para sobrescrever (`sobrescrever: true`, vira versão nova, recuperável no histórico) ou usar outro nome. '
+    + 'Destino ditado por ele vai direto; sobrescrever segue o princípio 7 (mostre e espere o sim).',
+  inputSchema: {
+    arquivo_local: z.string().min(1).max(500).describe('Caminho do arquivo no servidor (ex. /opt/data/cache/anexos/x.pdf, ou nota.txt na pasta de trabalho).'),
+    pasta_destino: z.string().max(500).describe('Pasta do Dropbox, ex. "/Documentos". "" ou "/" é a raiz.'),
+    nome: z.string().max(255).optional().describe('Nome no Dropbox; padrão: o nome do arquivo local.'),
+    sobrescrever: z.boolean().optional().describe('true substitui o arquivo existente (versão nova). Só depois do sim do Bruno.'),
+  },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+}, async ({ arquivo_local, pasta_destino, nome, sobrescrever = false }) => protegido(async () => {
+  const pasta = pastaDeEscrita(pasta_destino);
+  const local = await lerArquivoLocal(arquivo_local);
+  const destino = juntar(pasta, validarNome(nome || local.nome));
+  contarEscrita();
+  const m = await subir('files/upload', { path: destino, mode: sobrescrever ? 'overwrite' : 'add', autorename: false, mute: false, strict_conflict: false }, local.bytes);
+  return fim('arquivo_salvar', `Salvo no Dropbox: ${m.path_display} (${tipoPorNome(m.name)}, ${fmtTamanho(m.size)})${sobrescrever ? ', no lugar da versão anterior (recuperável no histórico do Dropbox)' : ''}. Abrir: ${linkSite(m)}`, [`destino=${destino}`, `bytes=${local.bytes.length}`, `sobrescrever=${sobrescrever}`]);
+}));
+
+async function relocar(rota, { de, para_pasta, novo_nome }) {
+  const origem = validarCaminho(de);
+  if (ehRaiz(origem)) throw new ErroCaminho('CAMINHO_INVALIDO', 'raiz');
+  if (para_pasta === undefined && !novo_nome) throw new ErroCaminho('SEM_MUDANCA');
+  const m = await dbx('files/get_metadata', { path: origem });
+  const cam = m.path_display || m.path_lower || origem;
+  const pasta = para_pasta !== undefined ? pastaDeEscrita(para_pasta) : (pastaDe(cam) === '/' ? '' : pastaDe(cam));
+  const destino = juntar(pasta, validarNome(novo_nome || m.name));
+  if (destino.toLowerCase() === cam.toLowerCase()) throw new ErroCaminho('SEM_MUDANCA');
+  contarEscrita();
+  const r = await dbx(rota, { from_path: m.id || cam, to_path: destino, autorename: false, allow_ownership_transfer: false });
+  return { antes: m, depois: r.metadata, cam, destino };
+}
+
+server.registerTool('arquivo_mover', {
+  title: 'Mover ou renomear no Dropbox',
+  description: 'Move um arquivo ou pasta do Dropbox do Bruno para outra pasta, renomeia, ou os dois. Dê `para_pasta` (destino), `novo_nome`, ou ambos; sem `para_pasta` fica na mesma pasta (renomear). '
+    + 'Nunca sobrescreve: se já existir algo com o nome no destino, nada muda e você recebe aviso. Segue o princípio 7: mostre o que vai mudar e espere o sim, salvo quando ele ditou exatamente o que mover e para onde.',
+  inputSchema: {
+    de: z.string().min(1).max(1000).describe('Caminho ou id do arquivo ou pasta.'),
+    para_pasta: z.string().max(500).optional().describe('Pasta de destino, ex. "/Contratos". "" ou "/" é a raiz.'),
+    novo_nome: z.string().max(255).optional(),
+  },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+}, async (a) => protegido(async () => {
+  const r = await relocar('files/move_v2', a);
+  return fim('arquivo_mover', `Movido no Dropbox: ${r.cam} → ${r.depois.path_display || r.destino} (${rotulo(r.depois)}). Abrir: ${linkSite(r.depois)}`, [`de=${r.cam}`, `para=${r.destino}`]);
+}));
+
+server.registerTool('arquivo_copiar', {
+  title: 'Copiar no Dropbox',
+  description: 'Copia um arquivo ou pasta do Dropbox do Bruno para outra pasta, com o mesmo nome ou `novo_nome`. Nunca sobrescreve. Destino ditado por ele vai direto.',
+  inputSchema: {
+    de: z.string().min(1).max(1000).describe('Caminho ou id do arquivo ou pasta.'),
+    para_pasta: z.string().max(500).optional().describe('Pasta de destino. Sem ela, copia na mesma pasta com `novo_nome`.'),
+    novo_nome: z.string().max(255).optional(),
+  },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+}, async (a) => protegido(async () => {
+  const r = await relocar('files/copy_v2', a);
+  return fim('arquivo_copiar', `Copiado no Dropbox: ${r.cam} → ${r.depois.path_display || r.destino} (${rotulo(r.depois)}). Abrir: ${linkSite(r.depois)}`, [`de=${r.cam}`, `para=${r.destino}`]);
+}));
+
+server.registerTool('pasta_criar', {
+  title: 'Criar pasta no Dropbox',
+  description: 'Cria uma pasta no Dropbox do Bruno pelo caminho completo (ex. "/Contratos/2026"). Se já existir, nada muda e você recebe aviso. Pasta pedida por ele vai direto.',
+  inputSchema: { caminho: z.string().min(1).max(1000).describe('Caminho completo da pasta nova, começando por "/".') },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+}, async ({ caminho }) => protegido(async () => {
+  const p = pastaDeEscrita(caminho);
+  if (ehRaiz(p)) throw new ErroCaminho('CAMINHO_INVALIDO', 'raiz');
+  validarNome(p.slice(p.lastIndexOf('/') + 1));
+  contarEscrita();
+  const r = await dbx('files/create_folder_v2', { path: p, autorename: false });
+  return fim('pasta_criar', `Pasta criada no Dropbox: ${r.metadata.path_display || p}. Abrir: ${linkSite({ ...r.metadata, '.tag': 'folder' })}`, [`pasta=${p}`]); // CreateFolderResult.metadata vem sem .tag
+}));
+
+server.registerTool('arquivo_apagar', {
+  title: 'Apagar no Dropbox (lixeira)',
+  description: 'Manda um arquivo ou pasta do Dropbox do Bruno para a lixeira do Dropbox (recuperável pelo site por 180 dias no plano dele; apagar definitivo não existe aqui). '
+    + 'Sempre princípio 7: diga o que vai apagar e espere o sim. Pasta exige `eh_pasta: true` depois do sim; sem isso a ferramenta só informa quantos itens há dentro.',
+  inputSchema: { caminho_ou_id: z.string().min(1).max(1000), eh_pasta: z.boolean().optional().describe('true confirma apagar uma pasta com tudo dentro (só depois do sim do Bruno).') },
+  annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false },
+}, async ({ caminho_ou_id, eh_pasta = false }) => protegido(async () => {
+  const p = validarCaminho(caminho_ou_id);
+  if (ehRaiz(p)) throw new ErroCaminho('CAMINHO_INVALIDO', 'raiz');
+  const m = await dbx('files/get_metadata', { path: p });
+  if (m['.tag'] === 'folder' && !eh_pasta) {
+    // conta o que há dentro (a listagem recursiva devolve a própria pasta como 1ª entrada; has_more vem true à toa na 1ª página)
+    let l = await dbx('files/list_folder', { path: m.id, recursive: true, limit: 2000 }); let n = 0, k = 1;
+    const soma = (es) => { for (const e of es || []) if ((e.path_lower || '') !== (m.path_lower || '')) n++; };
+    soma(l.entries);
+    while (l.has_more && k < 4) { l = await dbx('files/list_folder/continue', { cursor: l.cursor }); k++; soma(l.entries); }
+    throw new ErroCaminho('PASTA_SEM_CONFIRMACAO', `${m.path_display || p}, com ${l.has_more ? 'mais de ' : ''}${n} ${n === 1 ? 'item' : 'itens'} dentro`);
+  }
+  if (m['.tag'] === 'deleted') return fim('arquivo_apagar', `${m.name} já estava apagado.`, [`path=${p}`]);
+  contarEscrita();
+  const r = await dbx('files/delete_v2', { path: m.id || p });
+  const md = r.metadata || m;
+  return fim('arquivo_apagar', `Foi para a lixeira do Dropbox: ${md.path_display || p} (${rotulo(md)}). O Bruno recupera pelo site do Dropbox, em "Arquivos excluídos", por 180 dias.`, [`path=${p}`, `tipo=${md['.tag']}`]);
+}));
+
 const transport = new StdioServerTransport();
 await server.connect(transport);
-log('pronto', `limite_diario=${limiteDiario}`, `cache=${PASTA_CACHE}`, `fuso=${ZONA}`);
+log('pronto', `limite_diario=${limiteDiario}`, `limite_escritas=${LIMITE_ESCRITAS}`, `cache=${PASTA_CACHE}`, `raiz_local=${RAIZ_LOCAL}`, `fuso=${ZONA}`);

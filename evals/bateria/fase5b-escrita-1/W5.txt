@@ -1,0 +1,5 @@
+
+session_id: 20261014_230731_a827de
+Encontrei a pasta Atlas testes, mas nesta fase só tenho acesso de leitura ao Dropbox; não posso apagá-la por aqui.
+
+- Abra a pasta no aplicativo para excluir: https://www.dropbox.com/home/Atlas%20testes

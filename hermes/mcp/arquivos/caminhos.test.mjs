@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validarCaminho, ErroCaminho, pastaDe, nomeSeguro, linkSite, fmtTamanho, tipoPorNome, ehImagemMiniatura, temPreviewPdf } from './caminhos.mjs';
+import { validarCaminho, ErroCaminho, pastaDe, nomeSeguro, linkSite, fmtTamanho, tipoPorNome, ehImagemMiniatura, temPreviewPdf, validarNome, juntar, dentroDe } from './caminhos.mjs';
 
 test('caminhos: raiz, normalização, id e rev', () => {
   assert.equal(validarCaminho(''), '');
@@ -38,4 +38,16 @@ test('tamanho e tipo', () => {
   assert.equal(ehImagemMiniatura('f.jpg'), true);
   assert.equal(temPreviewPdf('c.docx'), true);
   assert.equal(temPreviewPdf('c.xlsx'), false);
+});
+
+test('escrita: nome válido, juntar e raiz local', () => {
+  assert.equal(validarNome('  Contrato Amazônia 2026.pdf '), 'Contrato Amazônia 2026.pdf');
+  assert.equal(validarNome('nome '), 'nome'); // espaço no fim é aparado, não recusado
+  for (const ruim of ['', 'a/b', 'nome.', '..', '.DS_Store', '~$doc.docx', 'a\u0000b']) assert.throws(() => validarNome(ruim), (e) => e instanceof ErroCaminho && e.code === 'NOME_INVALIDO', ruim);
+  assert.equal(juntar('', 'x.pdf'), '/x.pdf');
+  assert.equal(juntar('/Contratos', 'x.pdf'), '/Contratos/x.pdf');
+  assert.equal(dentroDe('/opt/data/cache/anexos/a.pdf', '/opt/data/'), true);
+  assert.equal(dentroDe('/opt/data', '/opt/data'), true);
+  assert.equal(dentroDe('/opt/datax/a.pdf', '/opt/data'), false);
+  assert.equal(dentroDe('/etc/passwd', '/opt/data'), false);
 });

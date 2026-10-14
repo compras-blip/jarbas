@@ -53,3 +53,15 @@ export const ehImagemMiniatura = (nome) => ['jpg', 'jpeg', 'png', 'gif', 'webp',
 export const temPreviewPdf = (nome) => ['doc', 'docx', 'docm', 'odt', 'rtf', 'ppt', 'pptx', 'pptm', 'pps', 'ppsx', 'ppsm', 'odp', 'ai', 'eps', 'gdoc', 'gslides'].includes(extensao(nome));
 // file_categories do Dropbox por "tipo" que o modelo pede.
 export const CATEGORIAS = { pdf: ['pdf'], documento: ['document'], planilha: ['spreadsheet'], imagem: ['image'], apresentacao: ['presentation'], video: ['video'], audio: ['audio'], pasta: ['folder'] };
+
+// Nome de arquivo ou pasta aceitável no Dropbox: sem barra nem controle, não vazio, não só pontos, sem ponto ou espaço no fim,
+// e fora os nomes que o Dropbox ignora (~$..., .ds_store, desktop.ini, thumbs.db).
+export function validarNome(nome) {
+  const n = String(nome ?? '').normalize('NFC').trim();
+  if (!n || n.length > 255 || /[\/\\\u0000-\u001f\u007f]/.test(n) || /^\.+$/.test(n) || /[. ]$/.test(n) || /^(~\$|\.ds_store$|desktop\.ini$|thumbs\.db$)/i.test(n)) throw new ErroCaminho('NOME_INVALIDO', n.slice(0, 60));
+  return n;
+}
+// Caminho completo a partir de pasta validada ('' é a raiz) e nome validado.
+export const juntar = (pasta, nome) => `${pasta}/${nome}`;
+// Caminho local já resolvido (realpath) fica dentro da raiz de dados do Atlas?
+export const dentroDe = (real, raiz) => { const r = String(raiz).replace(/\/+$/, ''); return real === r || real.startsWith(r + '/'); };

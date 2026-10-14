@@ -204,7 +204,8 @@ mcp_servers:
       resources: false
   # Fase 5 (14/10/2026): Dropbox do Bruno por servidor próprio, só leitura (hermes/mcp/arquivos). Desenho: docs/fase-5-dropbox.md.
   # App key/secret em /opt/data/dropbox_app.json (Felipe digita), refresh token em /opt/data/dropbox_token.json (autorizar.mjs).
-  # Nomes ao modelo: mcp__arquivos__arquivo_buscar, arquivo_listar, arquivo_info, arquivo_ler, arquivo_link, arquivo_espaco.
+  # Nomes ao modelo: mcp__arquivos__arquivo_buscar, arquivo_listar, arquivo_info, arquivo_ler, arquivo_link, arquivo_espaco;
+  # escrita (5b, 14/10): arquivo_salvar, arquivo_copiar, arquivo_mover, pasta_criar, arquivo_apagar (lixeira).
   arquivos:
     command: node
     args: ["/opt/data/mcp/arquivos/server.mjs"]
@@ -214,6 +215,8 @@ mcp_servers:
       AGENDA_FUSO_PADRAO: "America/Manaus"
       ARQUIVOS_LIMITE_DIARIO: "1000"
       ARQUIVOS_PASTA_CACHE: "/opt/data/cache/anexos"
+      ARQUIVOS_RAIZ_LOCAL: "/opt/data"          # só arquivos daqui podem ser salvos no Dropbox
+      ARQUIVOS_LIMITE_ESCRITAS: "100"          # gravações por dia (salvar, copiar, mover, criar pasta, apagar)
     timeout: 60
     connect_timeout: 20
     tools:

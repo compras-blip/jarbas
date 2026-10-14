@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { rpc, conteudo, trocarCodigo, jsonAscii, urlAutorizacao, zerarEstado, chamadasHoje, ErroDropbox, OAUTH_TOKEN, API, CONTEUDO } from './dropbox.mjs';
+import { rpc, conteudo, enviar, trocarCodigo, jsonAscii, urlAutorizacao, zerarEstado, chamadasHoje, ErroDropbox, OAUTH_TOKEN, API, CONTEUDO } from './dropbox.mjs';
 
 const dir = await mkdtemp(path.join(tmpdir(), 'atlas-dbx-'));
 process.env.DROPBOX_APP_PATH = path.join(dir, 'app.json');
@@ -93,4 +93,18 @@ test('trocarCodigo grava só o refresh token e dados da conta; sem refresh é er
   assert.equal(gravado.access_token, undefined);
   const g = fetchFalso([json({ access_token: 'a', expires_in: 14400 })]);
   await assert.rejects(trocarCodigo('codigo-colado-2', { fetchImpl: g }), (e) => e.code === 'SEM_REFRESH_TOKEN');
+});
+
+test('enviar: bytes no corpo, argumento ASCII no cabeçalho, JSON de volta', async () => {
+  zerarEstado();
+  const f = fetchFalso([tokenOk(), json({ '.tag': 'file', name: 'nota.txt', path_display: '/Atlas testes/nota.txt', size: 2 })]);
+  const r = await enviar('files/upload', { path: '/Atlas testes/nota.txt', mode: 'add', autorename: false, mute: false, strict_conflict: false }, Buffer.from('oi'), { fetchImpl: f, esperar: semEspera });
+  assert.equal(r.path_display, '/Atlas testes/nota.txt');
+  assert.equal(f.pedidos[1].url, CONTEUDO + 'files/upload');
+  assert.equal(f.pedidos[1].init.headers['Content-Type'], 'application/octet-stream');
+  assert.equal(f.pedidos[1].init.headers['Dropbox-API-Arg'], '{"path":"/Atlas testes/nota.txt","mode":"add","autorename":false,"mute":false,"strict_conflict":false}');
+  assert.equal(Buffer.from(f.pedidos[1].init.body).toString(), 'oi');
+  const g = fetchFalso([json({ error_summary: 'path/conflict/file/...' }, 409)]);
+  await assert.rejects(enviar('files/upload', { path: '/x' }, Buffer.from('a'), { fetchImpl: g, esperar: semEspera }), (e) => e.code === 'DROPBOX_409' && e.detalhe.startsWith('path/conflict/file'));
+  assert.equal(g.pedidos.length, 1);
 });

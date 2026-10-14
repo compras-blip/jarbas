@@ -85,3 +85,17 @@ Travas: zod; só rotas de leitura (nada de upload, mover, apagar, compartilhar);
 
 **Felipe:** criar o app no App Console (passo 4.1), digitar key e secret no servidor (4.2), aprovar o desenho; o Bruno (ou o Felipe na conta dele, se for a conta dele que tem os arquivos) aprova o link (4.3) e cola o código (4.4).
 **Eu:** servidor, testes de unidade, instalação, bateria D1–D9, registro.
+
+## 8. Fase 5b — escrita (pedido do Felipe em 14/10/2026: "o Bruno precisa editar, salvar arquivo, editar as pastas")
+
+Escopo `files.content.write` concedido na 3ª autorização. Cinco ferramentas no mesmo servidor, todas pela spec Stone (`files/upload`, `files/copy_v2`, `files/move_v2`, `files/create_folder_v2`, `files/delete_v2`):
+
+| Ferramenta | Faz | Trava em código |
+|---|---|---|
+| `arquivo_salvar` | envia arquivo do servidor (anexo, documento gerado ou editado) para uma pasta | só de /opt/data (realpath); 25 MB; `mode: add` (conflito se já existe) salvo `sobrescrever: true` (`overwrite`, versão nova no histórico) |
+| `arquivo_copiar` | copia arquivo ou pasta para outra pasta e/ou com outro nome | `autorename: false`: nunca sobrescreve |
+| `arquivo_mover` | move, renomeia ou os dois | idem; recusa quando nada muda |
+| `pasta_criar` | cria pasta pelo caminho completo | conflito se já existe |
+| `arquivo_apagar` | manda para a lixeira do Dropbox (`delete_v2`; recuperável 180 dias no Pro) | pasta exige `eh_pasta: true` e a ferramenta antes informa quantos itens há dentro; apagar definitivo não existe na API de conta pessoal e não está no código |
+
+Comum a todas: teto de 100 gravações por dia (`ARQUIVOS_LIMITE_ESCRITAS`), nomes validados (sem barra, sem ponto ou espaço no fim, sem nomes que o Dropbox ignora), erros 409 por prefixo (`conflict`, `insufficient_space`, `no_write_permission`, `too_many_write_operations` com repetição, `too_many_files`...). Prompt: salvar, copiar e criar pasta ditados vão direto; mover e sobrescrever seguem o princípio 7; apagar sempre espera o sim. Editar documento = baixar, alterar com as ferramentas do Hermes, salvar de volta como versão nova. Fora: links compartilháveis (`sharing.write`), pedidos de arquivo, restaurar versão.

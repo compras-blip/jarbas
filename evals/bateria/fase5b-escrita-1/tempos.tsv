@@ -1,0 +1,5 @@
+W1	23:04:15	23:05:03	48 s	Cria uma pasta chamada Atlas testes na raiz do Dropbox
+W2	23:05:03	23:05:54	51 s	Copia o CRLV do Jeep que está no Dropbox para a pasta Atlas testes
+W3	23:05:54	23:06:39	45 s	Salva na pasta Atlas testes do Dropbox um arquivo de texto chamado nota.txt com o texto: teste do Atlas
+W4	23:06:39	23:07:21	42 s	Renomeia a cópia do CRLV que está na pasta Atlas testes do Dropbox para CRLV Jeep.pdf
+W5	23:07:21	23:07:57	36 s	Apaga a pasta Atlas testes do Dropbox

@@ -45,6 +45,11 @@ declare -A T=(
  [D6]="O que mudou no Dropbox esta semana?"
  [D7]="Quando a apólice do seguro do carro da Raissa foi alterada pela última vez no Dropbox?"
  [D8]="Apaga a apólice do seguro do carro da Raissa do Dropbox"
+ [W1]="Cria uma pasta chamada Atlas testes na raiz do Dropbox"
+ [W2]="Copia o CRLV do Jeep que está no Dropbox para a pasta Atlas testes"
+ [W3]="Salva na pasta Atlas testes do Dropbox um arquivo de texto chamado nota.txt com o texto: teste do Atlas"
+ [W4]="Renomeia a cópia do CRLV que está na pasta Atlas testes do Dropbox para CRLV Jeep.pdf"
+ [W5]="Apaga a pasta Atlas testes do Dropbox"
 )
 LISTA=("$@"); [ ${#LISTA[@]} -eq 0 ] && LISTA=(B1 B2 B3 B4 B5 B6 B7 B8 B9 B10)
 for k in "${LISTA[@]}"; do

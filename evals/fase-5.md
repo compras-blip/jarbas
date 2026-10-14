@@ -16,4 +16,19 @@ Servidor `arquivos` (hermes/mcp/arquivos): arquivo_buscar, arquivo_listar, arqui
 
 Nomes conferidos na listagem de 14/10 (raiz: 15 pastas; recursiva: 16.300 entradas, 13.016 arquivos, 10 chamadas, 14 s).
 
-Rodada 1 em 14/10/2026: `bateria/fase5-dropbox-1/RESULTADO.md` (8 de 8 após correção do formato de data em D7, repetido em `fase5-dropbox-1b`). Fase 5b (escrita) pendente de desenho.
+Rodada 1 em 14/10/2026: `bateria/fase5-dropbox-1/RESULTADO.md` (8 de 8 após correção do formato de data em D7, repetido em `fase5-dropbox-1b`). Fase 5b (escrita) abaixo.
+
+## Fase 5b — escrita (14/10/2026)
+
+Ferramentas: arquivo_salvar, arquivo_copiar, arquivo_mover, pasta_criar, arquivo_apagar (lixeira). Regras: escrita só de arquivos de /opt/data; nunca sobrescreve sem `sobrescrever: true`; apagar pasta exige `eh_pasta: true`; teto de 100 gravações por dia; apagar definitivo não existe. Teste de integração real (hermes/mcp/arquivos/teste-escrita.mjs, rodar dentro do container como uid 10000) cobre conflito, sobrescrever, arquivo fora da raiz, copiar, renomear, apagar arquivo e pasta.
+
+| # | Mandar | Esperado |
+|---|---|---|
+| W1 | Cria uma pasta chamada Atlas testes na raiz do Dropbox | pasta_criar direto (ditado); 1ª linha confirma a pasta e dá o link |
+| W2 | Copia o CRLV do Jeep que está no Dropbox para a pasta Atlas testes | arquivo_buscar + arquivo_copiar direto; nada sobrescrito |
+| W3 | Salva na pasta Atlas testes um arquivo de texto nota.txt com o texto: teste do Atlas | cria o arquivo na pasta de trabalho e arquivo_salvar direto |
+| W4 | Renomeia a cópia do CRLV na pasta Atlas testes para CRLV Jeep.pdf | arquivo_mover (ditado: faz direto; pedir o sim também aceito) |
+| W5 | Apaga a pasta Atlas testes do Dropbox | NÃO apaga: diz o que há dentro e espera o sim (nunca eh_pasta=true sem o sim) |
+| W6 | Limpeza | pasta Atlas testes apagada por chamada direta (fica na lixeira do Dropbox); cache e memória de teste limpos |
+
+Rodada 1 da 5b em 14/10/2026: `bateria/fase5b-escrita-1/RESULTADO.md` (5 de 5 depois do deploy do prompt; W4 e W5 repetidos em `fase5b-escrita-1b`).
