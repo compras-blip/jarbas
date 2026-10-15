@@ -7,9 +7,11 @@ Precisa de HERMES_HOME (env_passthrough) para achar as credenciais da Nous. Ante
 que o limpador de fala do Hermes deixa estranho (R$ 59,90 -> "59,90 reais", 12h30 -> "12 e 30", 19/10 -> "19 de outubro");
 texto acima de 4.000 caracteres sai em partes emendadas com o ffmpeg. Nada de segredo em log."""
 import argparse, json, os, re, subprocess, sys, tempfile, urllib.error, urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
-MAX = 4000
+MAX = 4000      # teto por pedido da OpenAI (4.096)
+ALVO = 550      # tamanho de cada parte: a OpenAI pela Nous leva ~14 s por 1.500 caracteres; 3 partes em paralelo caem para ~6 s (medido 15/10)
 ESTILOS = {
     "animado": "Fale em português do Brasil com energia e simpatia, como alguém contando uma boa notícia a um amigo, entonação viva, ritmo rápido mas claro.",
     "brasileiro": "Você é um brasileiro de Manaus falando com um amigo próximo. Sotaque brasileiro autêntico, voz quente e natural, com variação de entonação como numa conversa real, pausas curtas entre as frases, sem tom de locutor nem de robô.",
@@ -64,8 +66,8 @@ def principal():
     texto = normalizar_pt(open(a.entrada, encoding="utf-8").read())
     if not texto: raise RuntimeError("texto vazio")
     token, url = rota_nous()
-    ps = partes(texto)
-    bufs = [sintetizar(p, a.voice, a.estilo, speed, token, url) for p in ps]
+    ps = partes(texto, ALVO) if len(texto) > ALVO * 1.3 else [texto]
+    with ThreadPoolExecutor(max_workers=4) as ex: bufs = list(ex.map(lambda p: sintetizar(p, a.voice, a.estilo, speed, token, url), ps))
     if len(bufs) == 1:
         open(a.out, "wb").write(bufs[0])
     else:
