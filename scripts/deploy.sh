@@ -53,7 +53,7 @@ cp hermes/mcp/arquivos/*.mjs hermes/mcp/arquivos/package.json hermes/mcp/arquivo
 (cd runtime/hermes/mcp/arquivos && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
 # Fase 7 (15/10): provedor de voz pela Soniox (hermes/mcp/voz), chamado pelo Hermes como tts.providers.soniox; sem dependências.
 mkdir -p runtime/hermes/mcp/voz
-cp hermes/mcp/voz/*.mjs runtime/hermes/mcp/voz/
+cp hermes/mcp/voz/*.mjs hermes/mcp/voz/*.py runtime/hermes/mcp/voz/
 # O gateway roda como uid 10000 dentro do container: o que este script copia como root fica legível, mas o log,
 # o cache e a trava do MCP precisam ser dele (10/10: criados como root numa sondagem, o gateway não conseguia escrever).
 chown -R 10000:10000 runtime/hermes/mcp
