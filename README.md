@@ -29,3 +29,4 @@ docs/                       passo a passo de instalação
 | 4 | Navegador (4a sem login, em uso desde 11/10/2026; 4b login via cofre/1Password depois) | docs/fase-4-navegador.md |
 | 5 | Dropbox (servidor MCP `arquivos`, 6 ferramentas: buscar, listar, info, ler, link, espaço; só leitura) | em uso desde 14/10/2026 na conta do Bruno; docs/fase-5-dropbox.md; evals/fase-5.md. 5b (escrita: salvar, copiar, mover, criar pasta, apagar para a lixeira; 11 ferramentas no total) em uso desde 14/10/2026 |
 | 6 | WhatsApp pelos MCP do n8n (arquivo + envio pela Z-API) | em andamento (10/10/2026), docs/fase-6-whatsapp.md |
+| 7 | Voz: transcrição dos áudios e resposta em áudio no Telegram (OpenAI pela Nous) | ligada em 15/10/2026; docs/fase-7-voz.md; evals/fase-7.md (testes do Felipe) |

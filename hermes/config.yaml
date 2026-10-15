@@ -83,7 +83,13 @@ auxiliary:
 # Hoje transcreve local (faster-whisper "base", sem chave). Quando VOICE_TOOLS_OPENAI_KEY estiver
 # no .env.hermes, trocar para `provider: openai` (modelo em STT_OPENAI_MODEL).
 stt:
+  # Fase 7 (15/10/2026): transcrição dos áudios do Bruno pela OpenAI através do gateway de áudio da Nous
+  # ("nous" = modelo da OpenAI, cobrado nos créditos da Nous; sem chave da OpenAI). Modelo em STT_OPENAI_MODEL (.env.hermes).
+  # O valor "openai" aqui tentaria a OpenAI direto com VOICE_TOOLS_OPENAI_KEY e dava HTTP 400 (achado em 15/10).
+  provider: nous
   language: pt
+  # Vocabulário que o transcritor tende a errar: nomes das pessoas, empresas e lugares do Bruno.
+  prompt: "Bruno, Yanna, Raíssa, Felipe, Williams Jezini, Héliton, Manaus, Ponta Negra, Amazon Vital, MAO Trucks, Wyn Hub, Aparte, BP Simões, Questor, Z-API, Wise, Bodytech, Anntipastti, Registro.br, Dropbox, Telegram, WhatsApp"
   # provider: openai   # ligar quando a conta da OpenAI tiver créditos (chave já gravada em 10/10)
 
 # Comandos perigosos sempre pedem aprovação.
@@ -285,3 +291,15 @@ browser:
 plugins:
   enabled:
     - atlas-nuvem
+
+# Fase 7 (15/10/2026): voz das respostas. Toda resposta ao Bruno vai como áudio (bolha de voz no Telegram) seguido do texto.
+# Modelo gpt-4o-mini-tts da OpenAI pelo gateway da Nous (único modelo que o gateway aceita). Voz escolhida pelo Felipe
+# ouvindo as amostras (amostras-voz-atlas/); "ash" é provisória. Desligar para uma conversa: /voice off; religar: /voice tts.
+tts:
+  provider: nous
+  speed: 1.0
+  openai:
+    model: gpt-4o-mini-tts
+    voice: ash
+voice:
+  auto_tts: true

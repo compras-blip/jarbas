@@ -1,0 +1,11 @@
+# Fase 7 — Voz (15/10/2026)
+
+**O que o Bruno vê:** manda texto ou áudio no Telegram; o Atlas transcreve o áudio, responde, e a resposta chega como bolha de voz seguida do mesmo texto. Sempre os dois (o Bruno pediu isso no Jarbas: "todas as mensagens têm que vir com áudio junto"). `/voice off` desliga o áudio numa conversa; `/voice tts` religa.
+
+**Como está feito (tudo do próprio Hermes 0.21.6, sem código novo):**
+- Transcrição: `stt.provider: nous` = modelo da OpenAI (`STT_OPENAI_MODEL`, hoje gpt-4o-mini-transcribe) pelo gateway de áudio da Nous, cobrado nos créditos da Nous. `stt.language: pt` e `stt.prompt` com os nomes que o transcritor tende a errar (pessoas, empresas, lugares do Bruno). Achado em 15/10: `provider: openai` tentava a OpenAI direto com `VOICE_TOOLS_OPENAI_KEY` (171 caracteres que não são chave da OpenAI) e dava HTTP 400; "nous" resolve. Áudio sem transcrição local (faster-whisper não está instalado).
+- Voz: `tts.provider: nous` = `gpt-4o-mini-tts` da OpenAI pelo mesmo gateway (único modelo que ele aceita). Voz em `tts.openai.voice` (provisória: ash; amostras das 8 vozes em `amostras-voz-atlas/` no Mac do Felipe). `voice.auto_tts: true`: o gateway gera o áudio de toda resposta e manda antes do texto (`_send_voice_reply`); o Telegram recebe Ogg/Opus (ffmpeg na imagem) como bolha de voz.
+- Texto falado: o Hermes limpa a resposta antes de sintetizar (`prepare_spoken_text`: tira markdown, emoji, links, identificadores). É feito para inglês: "R$ 59,90" vira "R59,90 dollars" e "19/10" some. Por isso o SOUL manda escrever "59,90 reais" e "segunda, 19 de outubro". Melhoria futura: provedor de voz próprio (`tts.providers.<nome>.command`) com normalização em português, se a leitura de números incomodar.
+- Diferenças em relação ao Jarbas (Soniox): 1 áudio por resposta em vez de vários pedaços; texto inteiro em mensagem própria; sem plugin nem chave extra; vocabulário na transcrição; o que não se fala (link, telefone) fica no texto por regra do prompt.
+
+**Testes (evals/fase-7.md), feitos pelo Felipe no Telegram.**
