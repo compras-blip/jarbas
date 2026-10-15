@@ -1,0 +1,22 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261014_233554_bea055
+Achei voo direto LATAM ida e volta a partir de R$ 4.494 (Google Voos, consultado agora). Ainda não comprei nada: preciso que você escolha a combinação abaixo.
+
+Ida, sexta 16/10 (horário de Manaus na saída, de São Paulo na chegada):
+1. 11h30 Manaus, chega 16h25 Guarulhos, 3h55. R$ 4.494
+2. 16h45 Manaus, chega 21h45 Guarulhos, 4h. R$ 4.494
+
+Volta, domingo 18/10 (horário de Guarulhos na saída, de Manaus na chegada):
+A. 22h55 Guarulhos, chega 02h00 de segunda (4h05 de voo). R$ 4.494
+B. 07h50 Guarulhos, chega 10h50 Manaus, domingo. R$ 4.765
+C. 12h35 Guarulhos, chega 15h35 Manaus, domingo. R$ 5.258
+
+Minha recomendação: ida 1 e volta B. Custa R$ 271 a mais que a opção mais barata, mas você chega em casa no domingo de manhã, e não de madrugada de segunda.
+
+O Google avisa que os preços estão altos agora. Os valores são o menor encontrado por trecho; o total final só se confirma na tela da LATAM e pode mudar. Bagagem e remarcação não conferi.
+
+Busca pronta para você ver: https://www.google.com/travel/flights/search?hl=pt-BR&curr=BRL&q=Flights%20from%20MAO%20to%20GRU%20on%202026-10-16%20through%202026-10-18%20nonstop
+
+Qual combinação eu deixo como base para você comprar (ex.: 1 e B)?

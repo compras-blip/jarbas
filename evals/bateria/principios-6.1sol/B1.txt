@@ -1,0 +1,13 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_020848_617996
+Minha recomendação é o Pobre Juan, no mesmo shopping da Bodytech, para amanhã, domingo, 11/10, às 12h30, horário de Manaus.
+
+- Fica no piso L2 do Shopping Ponta Negra: almoço sem precisar ir a outro endereço.
+
+- Especializado em carnes na parrilla. Nota 4,5/5 no Google Maps; faixa alta de preço no Tripadvisor. Não confirmei valores do cardápio.
+
+- Pelo Google Maps, estará aberto às 12h30; domingo funciona das 12h às 22h. Mesa disponível ainda não confirmada.
+
+- Fotos: https://www.instagram.com/restaurantepobrejuan/

@@ -1,0 +1,25 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Williams trouxe 3 assuntos da MAO Trucks esta semana: caixa apertado, prestação de contas e manutenção do caminhão.
+
+- Operação da semana: sexta-feira, 09/10, ele disse que foram 2 cargas, receita bruta de US$ 4.700 e saldo final estimado de US$ 415 depois de motorista, factory, despachante, logbook, internet e diesel.
+
+- Caixa/diesel: ele disse que o erro foi estimar US$ 1.500 de diesel; não deu. Falou que precisou tirar do próprio dinheiro para segurar diesel do caminhão até a factory pagar, e isso atrasou a viagem dele.
+
+- Aportes: no privado, sexta às 17h35, ele confirmou que o Cezinha quitou a parte do caminhão e colocou mais US$ 5.000 para custos. Também disse que os US$ 5.000 extras “já foram” em despesas da operação.
+
+- Prestação de contas: sexta à tarde, ele disse que vai fechar a planilha “direitinho”, com recibos, cargas, valores, milhas, percentuais e deduções. Também explicou que algumas despesas pequenas não entraram no grupo.
+
+- Manutenção: sexta às 22h33, ele mandou áudio dizendo que o caminhão acendeu vários códigos, deve voltar para a oficina depois de entregar segunda na Pensilvânia e que agora suspeita mais de válvula/EGR do que de sensor. Disse que “não tem como escapar”: precisa consertar e botar para rodar.
+
+Decisões suas agora:
+
+1. Recomendada: pedir a planilha fechada antes de qualquer novo aporte ou acerto de caixa.
+
+2. Definir se aprovam cobrir imediatamente o conserto/oficina após a entrega de segunda.
+
+3. Definir regra de caixa: Williams não bancar diesel do próprio bolso; ou a MAO deixa uma reserva mínima operacional.
+
+4. Definir se querem mudar o despachante caso ele repita carga ruim que trava o caminhão por 2 dias.
+
+session_id: 20261011_014420_bd7a98

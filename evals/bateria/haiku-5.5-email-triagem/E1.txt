@@ -1,0 +1,13 @@
+
+session_id: 20261015_011039_2cb81e
+Sim, há três coisas que pedem atenção, e uma delas pode ser de segurança.
+
+1. Visto americano: o consulado do Rio (9h50) disse que o processo administrativo foi concluído e que você precisa enviar o passaporte ao Consulado Geral dos EUA para seguir com a solicitação. Quer que eu leia o e-mail inteiro para ver o prazo e o agendamento?
+
+2. Possível acesso indevido: hoje o Google avisou quatro vezes que o app "ShuttleCloud Migration" recebeu acesso aos dados do seu Gmail (bpsimoesnews@gmail.com). Antes, às 11h32 (horário de Manaus), houve um login no seu iCloud pelo navegador, e às 11h38 e 11h39 foram geradas duas senhas de app na sua conta Apple. Você reconhece isso? Se não foi você, troque a senha do Google e da Apple e revogue esses acessos. Posso te guiar passo a passo.
+
+3. Golpe: o e-mail "Receita Federal" com a DARF (12h08) não é da Receita. O remetente e o link de pagamento são de outros domínios. Não pague nem clique. Ele já está arquivado.
+
+Também chegou hoje uma notificação de que o app "Meusatlas" foi conectado ao seu Dropbox às 18h26. Se foi você ou o Felipe, está tudo certo; se não, precisamos revogar esse acesso.
+
+O restante é propaganda, aviso automático (Airbnb, Kodland) ou convite de loja (Temu), sem nada urgente.

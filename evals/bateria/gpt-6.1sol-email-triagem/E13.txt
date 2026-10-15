@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Sim. Hoje, quarta-feira, 14/10, às 9h50 de Manaus, chegou um e-mail do Consulado dos Estados Unidos no Rio.
+
+- O processo administrativo foi concluído. Pediram seu passaporte para continuar a solicitação — ainda não é confirmação de visto emitido.
+
+- Você precisa agendar a entrega no Centro de Atendimento ao Solicitante de Visto, escolhendo “A Seção Consular me orientou a enviar documentação complementar”: https://ais.usvisa-info.com/pt-br/niv
+
+- Pediram também que imprima e leve uma cópia desse e-mail. A mensagem estava arquivada no seu Gmail.
+
+session_id: 20261015_021556_cac0ab

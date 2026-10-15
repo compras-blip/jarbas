@@ -1,0 +1,13 @@
+
+session_id: 20261015_011704_1ae5b2
+Sim, um e-mail de golpe provável: "Receita Federal" com DARF de 2025, de contato@filipilg.com.br, com link de pagamento em outro domínio e vencimento antigo (06/11/2025). Não pague e não clique no link. Ele está arquivado; se quiser, eu o apago depois do seu sim.
+
+Outros pontos de atenção, que não são golpe com certeza:
+
+Alertas do Google (13 e 14/10) dizem que o app "ShuttleCloud Migration" ganhou acesso à conta bpsimoesnews@gmail.com. Se você não reconhece esse app, revogue o acesso nas configurações de segurança da conta.
+
+Na quarta, 14/10 (entre 11h38 e 11h39, horário de Manaus), a Apple avisou que duas senhas de app foram geradas para a sua conta bpsimoes@me.com, e também houve um login no iCloud pelo navegador. Se não foi você, troque a senha da Apple e revise os dispositivos conectados.
+
+Um e-mail de "hostmaster@registro.br" (terça, 13/10) pede pagamento do domínio assessoratlas.com.br, sem valor. Não pague pelo link do e-mail. Se quiser conferir, entre direto no site do Registro.br.
+
+Quer que eu veja o que é o app ShuttleCloud ou que eu apague o e-mail da DARF?

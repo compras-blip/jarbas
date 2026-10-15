@@ -1,0 +1,13 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261014_174641_0b9bb2
+Sim — encontrei uma cobrança nova nesta semana, de 12 a 18/10, e uma anterior sem comprovante de pagamento no e-mail.
+
+- Registro.br: R$ 40,00 pelo domínio assessoratlas.com.br, cobrado na terça, 13/10. O site oficial ainda apresenta o pagamento disponível; não encontrei confirmação por e-mail. Não há prazo final informado na mensagem.
+
+- Caio/Aplix: R$ 2.741,94 pelos honorários da Amazon Vital de julho a setembro, enviados na segunda, 05/10. Li a apuração: o pagamento é previsto para até 5 dias úteis após o aceite. Não localizei aceite, recibo ou comprovante; portanto, não posso afirmar que esteja atrasado.
+
+- Google Cloud: há um aviso de conta encerrada em 07/10, por problema no meio de pagamento ou valores atrasados. O e-mail não informa valor nem confirma dívida; isso precisa ser conferido pelo Felipe.
+
+- Desconsiderei Wellhub e o serviço de conexão do WhatsApp, com pagamento confirmado. A suposta cobrança da Receita recebida hoje tem remetente e link fora dos domínios oficiais, além de vencimento de 2025: forte indício de golpe, não uma conta a pagar.

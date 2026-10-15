@@ -1,0 +1,8 @@
+# Ajustes após as 3 rodadas — B2 e B6 (11/10/2026 16:54–16:56 UTC, GPT-6.1 Sol)
+
+| # | Ajuste testado | Antes (3 rodadas) | Depois (1 rodada) | Tempo | API | Tokens máx. | O que aconteceu |
+|---|---|---|---|---|---|---|---|
+| B2 | AGENTS.md, princípio 1, +1 frase: "quando a resposta é não, traga junto a alternativa que serve, verificada na mesma data e hora" (+176 B; prompt 20,1 KB) | 0,5 × 3 (nunca trouxe alternativa) | **1** | 46 s | 5 | 20,0 mil | "Não, não abre nesta segunda, 12/10" + O Lenhador (self-service, nota 4,6, preço médio) conferido para segunda 12h no mapas, endereço e link. Consultou a memória antes de escolher. |
+| B6 | Skill do WhatsApp: teto de 3 páginas também em `read_conversation`, mensagem inteira só a que decide | 6 páginas + 13–14 mensagens inteiras, 48–50 mil tokens | **sem efeito**: 6 páginas + 11 mensagens inteiras, 48,6 mil tokens | 93 s | 10 | 48,6 mil | Leu a skill e ignorou o teto: para "o que o Williams falou esta semana" ele quer a semana inteira (120 mensagens em páginas de 20). Resposta continuou nota 1 (decisão na 1ª linha, fatos com hora, comprovante de US\$ 1.000). |
+
+**Decisão:** o ajuste de B2 fica (1 frase, funcionou na 1ª tentativa). O de B6 foi desfeito: regra ignorada só gasta tokens, e cortar a leitura a 60 mensagens de uma semana de grupo deixaria a resposta incompleta. O custo de B6 é do tamanho da página da ferramenta, não do modelo: `read_conversation` devolve 20 mensagens por página e `review_window` 60. Página de 60 em `read_conversation` (lado do n8n, `archive_query_v1`) levaria as 6 chamadas a 2. Fica como pedido para o Felipe, sem urgência: custo zero no plano, 83–93 s por resposta.

@@ -1,0 +1,7 @@
+Sim, tem estacionamento coberto com manobrista; o valor publicado é R$ 90 por dia.
+
+- O site oficial confirma o estacionamento; o preço está na Expedia e no Hoteis.com, mas não consegui confirmá-lo diretamente com o hotel.
+
+- Esse é o valor divulgado para hospedagem. Para ir apenas ao Skye ou a um evento, a tarifa pode ser diferente e não está confirmada.
+
+session_id: 20261011_043407_4920ab

@@ -1,0 +1,17 @@
+{
+  "name": "atlas-mcp-agenda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servidor MCP do Atlas para a Google Agenda do Bruno (Calendar API v3): listar, livre, criar, mudar, cancelar.",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.3.1",
+    "zod": "4.6.5"
+  }
+}

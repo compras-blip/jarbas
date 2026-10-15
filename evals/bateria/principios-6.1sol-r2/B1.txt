@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Eu iria de Pobre Juan: carne na brasa, no mesmo shopping da Bodytech, sem precisar sair de carro.
+
+- Amanhã, segunda-feira, 12/10, às 12h30, horário de Manaus: aberto pelo Google Maps, com fechamento às 22h45. A consulta considera o feriado; mesa disponível não está confirmada.
+
+- Nota 4,5/5. É uma opção de preço alto; não consegui confirmar os valores atuais do cardápio.
+
+- Shopping Ponta Negra, piso L2, lojas 9/10.2 — Av. Coronel Teixeira, 5705. Mapa e fotos: https://maps.google.com/?cid=2055071668488640004
+
+session_id: 20261011_162752_23972e

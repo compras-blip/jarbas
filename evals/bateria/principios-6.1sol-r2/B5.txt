@@ -1,0 +1,16 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261011_163212_c0b865
+Encontrei voos diretos para as datas, mas não consegui confirmar o preço fechado da ida com a volta escolhida na companhia.
+
+- 1. Minha recomendação: LATAM para Guarulhos, sexta 16/10, saída às 11h30 de Manaus e chegada às 16h25, horário de São Paulo; duração de 3h55. O Google Voos mostra ida e volta a partir de R$ 3.982, para 1 adulto em econômica.
+
+- 2. Menor preço anunciado: GOL, sexta 16/10, saída às 2h20 de Manaus e chegada às 7h25, horário de São Paulo; duração de 4h05. Ida e volta a partir de R$ 3.957, mas exige viajar de madrugada.
+
+- Para voltar domingo 18/10 sem chegar na madrugada: LATAM, saída de Guarulhos às 18h50, horário de São Paulo, e chegada às 21h50, horário de Manaus; direto, 4h. Não confirmei quanto essa volta altera os totais acima.
+
+- Consulta em 11/10 às 12h33, horário de Manaus, no Google Voos. Os valores incluem taxas obrigatórias; bagagem, remarcação e disponibilidade final na companhia não foram confirmadas. Não trate esses valores como preço garantido para compra.
+
+- Busca pronta para selecionar ida e volta e seguir à compra:
+https://www.google.com/travel/flights/search?hl=pt-BR&curr=BRL&q=Flights%20from%20MAO%20to%20GRU%20on%202026-10-16%20through%202026-10-18%20nonstop

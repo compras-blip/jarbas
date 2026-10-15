@@ -1,0 +1,13 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+O mais importante de hoje, quarta, 14/10, é o avanço do seu visto americano: o Consulado concluiu a análise administrativa e pediu seu passaporte.
+
+- Visto: chegou às 9h50, horário de Manaus. O próximo passo é agendar a entrega do passaporte no centro de atendimento e levar uma cópia impressa do e-mail. Ainda não é confirmação de aprovação do visto.
+
+- Segurança: Apple e Google avisaram sobre acesso ao iCloud, criação de senhas para conectar o Gmail e autorização de transferência de e-mails. Se você ou Felipe fizeram essa configuração hoje, os avisos são compatíveis; se não, precisam de verificação imediata.
+
+- Cobrança suspeita da Amazon Vital: uma mensagem se apresenta como Receita Federal, mas usa remetente e link fora do domínio oficial, com vencimento em 06/11/2025. Não trate como conta a pagar nem abra o link.
+
+- Sem urgência: o rekordbox avisou que será necessário atualizar o aplicativo ou equipamento até 01/04/2027 para continuar usando Apple Music, caso você utilize essa integração.
+
+session_id: 20261014_173852_02fe42

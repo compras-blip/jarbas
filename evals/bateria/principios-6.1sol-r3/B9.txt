@@ -1,0 +1,7 @@
+Sim, o Hotel Unique tem estacionamento coberto com manobrista; a tarifa publicada é de R$ 90 por dia.
+
+- O site oficial confirma o manobrista. O preço vem do Hoteis.com, sem confirmação direta do hotel.
+
+- Para ir só ao restaurante ou a um evento, não confirmei a tarifa de visitante.
+
+session_id: 20261011_164635_aaace7

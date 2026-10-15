@@ -1,0 +1,3 @@
+Pasta Atlas testes criada na raiz do Dropbox.
+
+session_id: 20261014_230426_3d0eeb

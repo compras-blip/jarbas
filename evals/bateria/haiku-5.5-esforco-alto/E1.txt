@@ -1,0 +1,14 @@
+Hoje chegaram 8 e-mails na entrada, e nenhum parece exigir decisão urgente. Dois merecem atenção.
+
+Avisos de segurança do Gmail (12h07): alguém autorizou o app "Gmail ShuttleCloud Migration" a acessar dados da conta bpsimoesnews@gmail.com. Se você não fez uma migração de e-mail, vale revogar esse acesso nas configurações da conta Google.
+
+Airbnb (19h44): aviso para manter a conta ativa, com prazo de 7 dias. Se você usa o Airbnb, precisa entrar nela até lá.
+
+Os demais:
+- Dropbox (18h26): um novo app, "Meusatlas", foi conectado à sua conta. Pode ser a integração do Atlas; se não for, me avise.
+- TEMU (17h50): convite de prospecção para vender na plataforma. Spam, não precisa de resposta.
+- Enviado por você às 13h48: "chego às 15h". Não há destinatário no resumo.
+
+A caixa tem 38 e-mails importantes não lidos no total, e alguns podem ser de dias anteriores. Quer que eu veja esses?
+
+session_id: 20261015_000858_fa858e

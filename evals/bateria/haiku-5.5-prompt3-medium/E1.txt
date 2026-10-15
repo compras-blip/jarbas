@@ -1,0 +1,13 @@
+
+session_id: 20261015_002727_7ad473
+Hoje nada exige pagamento urgente, mas dois e-mails pedem sua atenção por segurança.
+
+1. Suposta DARF da Receita Federal para a Amazon Vital (referente a outubro de 2025, com vencimento em 06/11/2025). O remetente e o link de pagamento não são do gov.br, então parece golpe. Não clique. Se quiser confirmar, peça ao contador da Amazon Vital.
+
+2. Alertas de segurança do Google (12h07) dizem que o app "Gmail ShuttleCloud Migration" acessou os dados da conta bpsimoesnews@gmail.com. Não sei se foi você. Se não foi, revise os acessos em myaccount.google.com/connections.
+
+3. Às 18h26 apareceu um aplicativo "Meusatlas" conectado à sua conta do Dropbox. Se não foi você ou eu, desconecte nas configurações do Dropbox.
+
+Também chegou um aviso do Airbnb para confirmar a conta em até 7 dias, se você ainda usa o Airbnb. Vale confirmar.
+
+A busca trouxe 16 e-mails e só vi os 9 mais recentes. Posso abrir os outros se quiser.

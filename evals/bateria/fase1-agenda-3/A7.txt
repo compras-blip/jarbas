@@ -1,0 +1,5 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+O treino está marcado para sexta-feira, 16/10, das 8h às 9h, horário de Manaus, na Bodytech do Shopping Ponta Negra.
+
+session_id: 20261013_175312_d20ed7

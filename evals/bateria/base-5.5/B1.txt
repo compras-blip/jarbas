@@ -1,0 +1,21 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Recomendo 1) Porteira Steakhouse Dom Pedro para amanhã, domingo, 11/10, às 12h30, horário de Manaus.
+
+1) Recomendado — Porteira Steakhouse Dom Pedro: churrascaria, nota 4,8, abre 11h–23h pelo Google Maps. Mais segura para almoço sem pressa.
+Av. Pedro Teixeira, 7164 - Dom Pedro
+https://maps.google.com/?cid=6082494456307097739
+
+2) La Parrilla Grill: churrascaria, nota 4,7, caro, abre 10h30–16h pelo Google Maps.
+Av. Des. João Machado, 63 - Alvorada
+https://maps.google.com/?cid=1730004846097523707
+
+3) La Vaca Negra: cortes argentinos/parrilla, nota 4,9, muito caro, abre 11h30–23h pelo Google Maps.
+R. Belo Horizonte, 45 - Adrianópolis
+https://maps.google.com/?cid=6276500884344451912
+
+4) Churrascaria Tropeiro: churrascaria, nota 4,5, preço médio, abre 11h–15h30 pelo Google Maps.
+Av. Mário Ypiranga, 230 - Flores
+https://maps.google.com/?cid=2453162988747563863
+
+session_id: 20261011_013934_6132c5

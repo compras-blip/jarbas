@@ -1,0 +1,287 @@
+# Configuração do Hermes para o Atlas (fase 0).
+# Este arquivo é a fonte da verdade: o scripts/deploy.sh copia ele para
+# runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
+# Segredos NÃO entram aqui: ficam em .env.hermes.
+
+# Modelo principal (15/10/2026): Claude Haiku 5.5 direto pela API da Anthropic (chave ANTHROPIC_API_KEY no .env.hermes).
+# Baterias de 14–15/10: 34 de 36 contra 33 do GPT-6.1 Sol, 38 s por teste contra 54 s, e-mail 12 de 12 com a triagem em código.
+# Esforço: o padrão do modelo (medium); mudar com --reasoning ou /reasoning. Decisão do Felipe: sair do consumo do plano do ChatGPT.
+# Antes (11/10–15/10): openai/gpt-6.1-sol pela Nous (login `hermes auth add nous`), bateria 9,0 contra 7,0 do gpt-5.5.
+model:
+  provider: anthropic
+  default: claude-haiku-5-5
+
+# Reserva automática: entra quando o principal falha (chave, limite, queda, resposta vazia) e o Hermes
+# volta a tentar o principal na mensagem seguinte. Outro provedor de propósito (Nous): se a Anthropic cair, o
+# GPT-6.1 Sol pelo plano do ChatGPT segura; só gasta a cota do ChatGPT quando é acionado. Antes: google/gemini-3.8-flash (nunca testado).
+fallback_model:
+  provider: nous
+  model: openai/gpt-6.1-sol
+
+# Busca na web pela Nous (Tool Gateway): busca e leitura de página sem chave extra,
+# cobrada por uso nos créditos da Nous. Ligada em 10/10/2026 após os testes 1, 5 e 9.
+# Alternativa sem custo: brave-free (2.000 buscas/mês, só busca, precisa de chave do Brave).
+web:
+  backend: nous
+
+# A política do Atlas: ligar só o necessário.
+# Ficam ligados: web, memory, session_search, cronjob, clarify, skills,
+# vision, tts, file e terminal.
+agent:
+  disabled_toolsets:
+    - todo             # 11/10 (Felipe): lista de tarefas interna, 1,3 KB de esquema por mensagem, sem uso
+    - connections      # 11/10 (Felipe): conectores remotos da Nous, 3,6 KB por mensagem, sem uso
+    - computer_use
+    - desktop_ui
+    - project
+    - start_chat
+    - setup
+    - image_gen
+    - video_gen
+    - video
+    - kanban
+    - delegation       # sem subagentes por enquanto
+    - code_execution   # o terminal já cobre; uma forma a menos de rodar código
+    - x_search
+    - spotify
+    - discord
+    - discord_admin
+    - feishu_doc
+    - feishu_drive
+    - yuanbao
+
+# O Hermes já roda dentro de um contêiner Docker isolado do VPS,
+# então o terminal roda "local" dentro desse contêiner.
+terminal:
+  backend: local
+  timeout: 180
+
+# Lembretes do agendador chegam limpos: sem cabeçalho "Cronjob Response (job_id)"
+# nem rodapé "To stop or manage this job..." em inglês (teste 6, 10/10/2026).
+cron:
+  wrap_response: false
+
+# Compactação de contexto: compacta quando a conversa passa de 150 mil tokens. A janela do
+# gpt-5.5 pela Nous é de 1 milhão (medido 642 mil OK em 10/10/2026); sem este teto o Hermes
+# só compactaria perto de 525 mil. Mantém as 20 últimas mensagens, o último pedido pendente e
+# as mensagens do Bruno palavra por palavra. Evidências: atlas-compactacao-evidencias.md (10/10).
+compression:
+  threshold_tokens: 150000
+
+# Quem resume é o modelo principal ("auto"); raciocínio baixo evita resumo cortado (issue #135602).
+auxiliary:
+  # 10/10/2026: o Hermes roda, depois de cada tarefa, uma "revisão em segundo plano" (fork do modelo auxiliar)
+  # que pode criar ou editar skills sozinha via skill_manage. Vimos às 23:01 UTC: 4 chamadas extras à API
+  # (49 a 52 mil tokens de entrada cada) e uma tentativa de skill_manage sem ninguém pedir. O Atlas não escreve
+  # as próprias skills: quem escreve é o Felipe, no repositório. Desligado.
+  background_review:
+    enabled: false
+  compression:
+    reasoning_effort: low
+
+# Transcrição de áudio: o padrão do Hermes é inglês (stt.language: en). O Bruno fala português.
+# Hoje transcreve local (faster-whisper "base", sem chave). Quando VOICE_TOOLS_OPENAI_KEY estiver
+# no .env.hermes, trocar para `provider: openai` (modelo em STT_OPENAI_MODEL).
+stt:
+  language: pt
+  # provider: openai   # ligar quando a conta da OpenAI tiver créditos (chave já gravada em 10/10)
+
+# Comandos perigosos sempre pedem aprovação.
+approvals:
+  mode: manual
+
+# Só o Hindsight guarda fatos: ele separa a memória por pessoa (um banco por usuário do Telegram).
+# A memória embutida do Hermes (MEMORY.md/USER.md) é um arquivo único para todos e misturou os
+# testes do Felipe com fatos "do Bruno" em 10/10/2026; a documentação do plugin recomenda desligá-la.
+memory:
+  provider: hindsight
+  memory_enabled: false
+  user_profile_enabled: false
+  write_approval: false
+
+# Toda skill que o Atlas criar ou alterar sozinho espera revisão humana.
+# Skills embutidas do Hermes: só ficam as que as fases do Atlas usam (9):
+# (google-workspace religada em 13/10 para a fase 1) email-inbox-triage, pdf, docx, xlsx, document-to-action-items, grounded-citations, blocked-page-recovery, youtube-content.
+# As outras 49 ficam escondidas (não aparecem no prompt nem para o agente):
+# menos tentação de ferramenta errada e menos tokens por mensagem. Decisão do Felipe em 10/10/2026.
+skills:
+  write_approval: true
+  disabled:
+    - google-workspace   # 13/10: a agenda vai pelo MCP agenda; a skill (16 KB) volta só para Gmail/Drive nas fases 2 e 5
+    - airtable
+    - apple-notes
+    - apple-reminders
+    - architecture-diagram
+    - arxiv
+    - ascii-video
+    - baoyu-infographic
+    - box
+    - claude-code
+    - claude-design
+    - codebase-inspection
+    - codex
+    - competitor-news-monitor
+    - computer-use
+    - design-md
+    - dogfood
+    - findmy
+    - gif-search
+    - github
+    - hermes-agent
+    - hermes-agent-skill-authoring
+    - himalaya
+    - humanizer
+    - imessage
+    - inspecting-hermes-desktop-dom
+    - llm-wiki
+    - manim-video
+    - maps
+    - meeting-action-items
+    - node-inspect-debugger
+    - notion
+    - obsidian
+    - opencode
+    - p5js
+    - popular-web-designs
+    - powerpoint
+    - product-price-monitor
+    - python-debugpy
+    - requesting-code-review
+    - sdlc-review
+    - simplify-code
+    - songsee
+    - songwriting-and-ai-music
+    - spike
+    - systematic-debugging
+    - teams-meeting-pipeline
+    - test-driven-development
+    - weekly-review-planning
+    - xurl
+
+# Fase 3: lugares e horários pelo Google Maps. Servidor MCP próprio (hermes/mcp/mapas), 4 ferramentas:
+# lugares_perto, lugar_horario, link_mapa, lugar_avaliacoes (o modelo vê como mcp_mapas_<nome>).
+# A chave GOOGLE_PLACES_API_KEY vem do .env.hermes. Desenho e testes: docs/fase-3-mapas.md, evals/fase-3.md.
+mcp_servers:
+  mapas:
+    command: node
+    args: ["/opt/data/mcp/mapas/server.mjs"]
+    env:
+      GOOGLE_PLACES_API_KEY: "${GOOGLE_PLACES_API_KEY}"
+      MAPAS_LIMITE_DIARIO: "300"
+    timeout: 25
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  # Fase 1 (13/10/2026): Google Agenda do Bruno por servidor próprio (hermes/mcp/agenda). Desenho: docs/fase-1-agenda.md.
+  # Nomes ao modelo: mcp__agenda__agenda_listar, agenda_livre, agenda_criar, agenda_mudar, agenda_cancelar.
+  agenda:
+    command: node
+    args: ["/opt/data/mcp/agenda/server.mjs"]
+    env:
+      AGENDA_TOKEN_PATH: "/opt/data/google_token.json"
+      AGENDA_FUSO_PADRAO: "America/Manaus"
+      AGENDA_LIMITE_DIARIO: "300"
+    timeout: 25
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  # Fase 2 (14/10/2026): Gmail e Contatos do Bruno por servidor próprio (hermes/mcp/email). Desenho: docs/fase-2-email.md.
+  # Nomes ao modelo: mcp__email__email_buscar, email_ler, email_anexo, email_marcar, email_resumo, email_enviar, email_rascunho, contato_buscar.
+  email:
+    command: node
+    args: ["/opt/data/mcp/email/server.mjs"]
+    env:
+      EMAIL_TOKEN_PATH: "/opt/data/google_token.json"
+      AGENDA_FUSO_PADRAO: "America/Manaus"
+      EMAIL_LIMITE_DIARIO: "2000"
+      EMAIL_LIMITE_ENVIOS: "50"
+      EMAIL_PASTA_ANEXOS: "/opt/data/cache/anexos"
+      EMAIL_RUIDO: "asaas,u-star,skilltree"   # remetentes que o Bruno chamou de propaganda (preferência F); ficam fora da busca padrão
+    timeout: 40
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  # Fase 5 (14/10/2026): Dropbox do Bruno por servidor próprio, só leitura (hermes/mcp/arquivos). Desenho: docs/fase-5-dropbox.md.
+  # App key/secret em /opt/data/dropbox_app.json (Felipe digita), refresh token em /opt/data/dropbox_token.json (autorizar.mjs).
+  # Nomes ao modelo: mcp__arquivos__arquivo_buscar, arquivo_listar, arquivo_info, arquivo_ler, arquivo_link, arquivo_espaco;
+  # escrita (5b, 14/10): arquivo_salvar, arquivo_copiar, arquivo_mover, pasta_criar, arquivo_apagar (lixeira).
+  arquivos:
+    command: node
+    args: ["/opt/data/mcp/arquivos/server.mjs"]
+    env:
+      DROPBOX_APP_PATH: "/opt/data/dropbox_app.json"
+      DROPBOX_TOKEN_PATH: "/opt/data/dropbox_token.json"
+      AGENDA_FUSO_PADRAO: "America/Manaus"
+      ARQUIVOS_LIMITE_DIARIO: "1000"
+      ARQUIVOS_PASTA_CACHE: "/opt/data/cache/anexos"
+      ARQUIVOS_RAIZ_LOCAL: "/opt/data"          # só arquivos daqui podem ser salvos no Dropbox
+      ARQUIVOS_LIMITE_ESCRITAS: "100"          # gravações por dia (salvar, copiar, mover, criar pasta, apagar)
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  # Fase 6 (10/10/2026): WhatsApp do Bruno pelos servidores MCP do próprio n8n (réplica webhook, rede interna).
+  # Tokens no .env.hermes. Desenho: docs/fase-6-whatsapp.md. Nomes ao modelo: mcp__wa_consultas__whatsapp_read_conversation_v1 etc.
+  wa_consultas:
+    url: http://orbe-n8n-n8n-webhook-1:5678/mcp/orbe-archive-query-v1
+    headers:
+      Authorization: "Bearer ${ORBE_N8N_MCP_TOKEN}"
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+  wa_envio:
+    url: http://orbe-n8n-n8n-webhook-1:5678/mcp/orbe-whatsapp-send-v1
+    headers:
+      Authorization: "Bearer ${ORBE_N8N_MCP_ENVIO_TOKEN}"
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+      exclude: [mail_send_text_v1]   # e-mail não é WhatsApp; entra em fase própria
+  wa_despacho:
+    url: http://orbe-n8n-n8n-webhook-1:5678/mcp/orbe-authorized-dispatch-v1
+    headers:
+      Authorization: "Bearer ${ORBE_N8N_MCP_DESPACHO_TOKEN}"
+    timeout: 60
+    connect_timeout: 20
+    tools:
+      prompts: false
+      resources: false
+
+# 10/10/2026: o Hermes esconde TODA ferramenta MCP atrás do tool_search (tools/tool_search.py: toolset "mcp-*" é sempre
+# adiável; não há lista de exceção). Com isso o modelo não veria as 4 ferramentas de mapas e tenderia a responder horário
+# pela web (F3-1). Desligado: tudo fica visível. Custo medido em 10/10: +1.006 tokens (4 de mapas) +1.684 (4 nativas que
+# ficavam adiadas: session_search, todo_list, process_manage, cronjob_manage) −839 (a ponte) ≈ +1.851 tokens por mensagem.
+tools:
+  tool_search:
+    enabled: "off"
+  connectors:
+    enabled: false   # chave documentada dos conectores da Nous; redundante com disabled_toolsets, de propósito
+
+# Curador de skills criadas pelo agente (manutenção em segundo plano): sem skills do agente, não há o que curar.
+curator:
+  enabled: false
+
+# Fase 4a (11/10/2026): navegador sem login. Chromium da imagem dirigido pelo agent-browser (instalado no volume pelo
+# deploy.sh, porque a imagem Docker não o traz: bug #135732 do Hermes). Desenho: docs/fase-4-navegador.md.
+browser:
+  backend: "off"              # ferramentas nativas browser_*; o modo "Browser Use" exigiria o CLI browser-use, ausente
+  cloud_provider: local       # Chromium do servidor (Google Voos abre em 1 s). Alternativa pronta: "atlas-nuvem" (plugin nosso em /opt/data/plugins, Browser Use pela Nous, IP residencial): abre a home da LATAM e da GOL, mas a busca de voos da LATAM falha mesmo assim (11/10, IP dos EUA e do Brasil); 11 s por página, cobrado no plano Nous. Trocar aqui e reiniciar o container.
+  snapshot_threshold: 8000    # "foto" da página no contexto: até 8 mil caracteres (padrão 15 mil); o resto vai para arquivo
+  inactivity_timeout: 120     # fecha o navegador ocioso em 2 min, libera memória
+  allow_private_urls: false   # nada de endereços internos do servidor (padrão, explícito)
+  record_sessions: false
+  restrict_evaluate: true     # bloqueia primitivas sensíveis de JavaScript em páginas hostis
+
+# Plugins da pasta /opt/data/plugins (fora do pacote do Hermes) são opt-in por nome.
+# O hindsight não entra aqui: é provedor de memória, ativado por memory.provider.
+plugins:
+  enabled:
+    - atlas-nuvem
