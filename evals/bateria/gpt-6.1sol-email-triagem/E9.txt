@@ -1,0 +1,9 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Sim — encontrei 1 cobrança sem confirmação de pagamento nos e-mails desta semana, de 12 a 14/10.
+
+- Registro.br: registro do domínio assessoratlas.com.br, recebido na terça, 13/10. Não encontrei comprovante nem confirmação de pagamento; o e-mail não informa valor ou vencimento. Esses dados precisam ser conferidos no site oficial antes de pagar.
+
+- Também chegou uma suposta cobrança da Receita Federal com fortes sinais de golpe: remetente e link não oficiais, além de vencimento em 06/11/2025. Não pague nem use o link desse e-mail.
+
+session_id: 20261015_021343_24f240

@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+
+session_id: 20261015_021511_b60984
+Sim, encontrei dois e-mails com fortes sinais de golpe nesta semana, de segunda, 12/10, até hoje, quarta, 14/10.
+
+- Quarta, 14/10, às 12h08: falsa cobrança da Receita Federal para a Amazon Vital. O remetente não é da Receita, o link está fora do domínio oficial e cobra um imposto com vencimento em 06/11/2025. Não pague nem abra o link.
+
+- Terça, 13/10, às 10h48: “Your Free Oral-B Kit is Ready!”. Promete um kit Oral-B, mas o texto fala de senha da Amazon, chama você de “Andy” e vem de um endereço sem relação com essas marcas. Não clique nem responda.
+
+- Conferi 39 e-mails no Gmail, fora spam e lixeira. Os dois já estão arquivados; não alterei nada.

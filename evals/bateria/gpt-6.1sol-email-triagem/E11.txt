@@ -1,0 +1,7 @@
+
+session_id: 20261015_021427_f55fb7
+Sim, tem cobrança do Registro.br; a mais recente está sem confirmação de pagamento no e-mail.
+
+- assessoratlas.com.br: cobrança recebida na terça, 13/10/2026. Não encontrei comprovante nem aviso de quitação; o e-mail não informa valor ou vencimento. Não dá para afirmar que já foi paga.
+
+- azbpsim.com.br: já foi paga. São R$ 40,00, com aviso de quitação de 19/06/2026, referente ao período até 18/06/2027.

@@ -64,3 +64,5 @@ Decisão pendente do Felipe: manter o GPT-6.1 Sol como padrão e usar o Haiku 5.
 ### Haiku 5.5 com a triagem em código (15/10/2026)
 
 Bloco de e-mail E1–E9 + E11–E13: 12 de 12 (E1 e E9 saíram de 0,5 para 1 com 1 chamada). Detalhe em `haiku-5.5-email-triagem/RESULTADO.md`. A profundidade passou do modelo para a ferramenta (`email_triagem`, prévia na busca, fim do corte de 1.800 caracteres).
+
+GPT-6.1 Sol com a mesma ferramenta (15/10, 02:07 UTC): 12 de 12, 46 s por teste (`gpt-6.1sol-email-triagem/RESULTADO.md`). Empate com o Haiku (12 de 12, 36 s). A ferramenta nivelou os dois.
