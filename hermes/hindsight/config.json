@@ -4,7 +4,7 @@
   "bank_id": "atlas-1890418170",
   "bank_id_template": "",
   "auto_recall": true,
-  "auto_retain": true,
+  "auto_retain": false,
   "recall_types": "observation",
   "recall_budget": "mid",
   "recall_indicator": false,
