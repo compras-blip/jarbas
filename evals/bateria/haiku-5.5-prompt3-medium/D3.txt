@@ -1,0 +1,5 @@
+Achei: "Apólice seguro carro Raissa.pdf", na pasta Raissa, modificado em 7 de novembro de 2025.
+
+Quer que eu leia a apólice e te diga a vigência, o valor e o que vence?
+
+session_id: 20261015_003350_6fae28

@@ -1,0 +1,18 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+Achei o direto da LATAM ida e volta por R$ 4.494 para 16 e 18/10, mas ainda não comprei. Qual horário de ida você quer?
+
+Opções de ida, direto, saindo de Manaus (horário local de cada cidade), pelo Google Voos, consultado agora:
+
+1. 11h30, chega 16h25 em Guarulhos (3h55). Recomendo: é o mais cedo e sobra a tarde em São Paulo.
+2. 16h45, chega 21h45 (4h).
+3. 18h25, chega 23h10 (3h45).
+4. 01h20, chega 06h10 (madrugada, não recomendo).
+
+Os preços estão altos, segundo a própria tela. Não confirmei a volta de domingo nem a tarifa final, que só aparece na tela da companhia. O R$ 2.745 que aparece para 19 a 21/10 é de outras datas, então não serve de comparação.
+
+Link da busca pronta para você conferir: https://www.google.com/travel/flights/search?hl=pt-BR&curr=BRL&q=Flights%20from%20MAO%20to%20GRU%20on%202026-10-16%20through%202026-10-18%20nonstop
+
+Não compro nem reservo sem sua ordem. Não conferi a disponibilidade na LATAM, a bagagem despachada nem as regras de remarcação.
+
+session_id: 20261015_001748_0416ef

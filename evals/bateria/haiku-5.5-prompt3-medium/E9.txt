@@ -1,0 +1,7 @@
+
+session_id: 20261015_003215_9f4ceb
+Não encontrei cobrança legítima em aberto esta semana. O único e-mail que parece cobrança é suspeito de golpe, então não pague nem clique no link.
+
+O e-mail de quarta, 14/10, 12h08, diz vir da "Receita Federal", mas o remetente é de um domínio que não é do governo. O link leva a um endereço de CDN, não ao site oficial, e o vencimento citado (06/11/2025) já passou há quase um ano. Se quiser, verifico no Dropbox ou no e-mail se existe alguma DARF real da Amazon Vital.
+
+Os outros e-mails da semana são propaganda ou golpe ("você tem dinheiro para receber"), e um aviso de que o domínio assessoratlas.com.br foi cadastrado. Se você não fez esse cadastro, me avise que eu confiro.

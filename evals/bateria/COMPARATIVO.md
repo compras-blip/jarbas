@@ -56,3 +56,7 @@ Mesmos 36 pedidos (B1–B10, A1–A9, E1–E9, D1–D8), mesmo prompt e ferramen
 | Melhor em | triagem profunda de e-mail (E1, E9) | alternativas e honestidade (B2, B9), velocidade, menos chamadas |
 
 Decisão pendente do Felipe: manter o GPT-6.1 Sol como padrão e usar o Haiku 5.5 como reserva no lugar do Gemini 3.8 Flash, ou trocar o padrão.
+
+### Rodada 2 do Haiku (15/10/2026): prompt v3 + esforço medium
+
+34 de 36, igual à rodada 1 (v2, low). Ganhou A8 e B10, perdeu B6 e E3. Ponto fraco estável: triagem de e-mail rasa (E1, E9 nas duas rodadas e em `high`). Detalhe em `haiku-5.5-prompt3-medium/RESULTADO.md`; esforço alto isolado em `haiku-5.5-esforco-alto/`.

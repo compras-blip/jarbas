@@ -115,7 +115,7 @@ server.registerTool('email_buscar', {
     ate: z.string().optional().describe('Último dia (inclusive), AAAA-MM-DD.'),
     so_nao_lidos: z.boolean().optional(),
     com_anexo: z.boolean().optional(),
-    onde: z.enum(['entrada', 'arquivados', 'enviados', 'tudo']).optional().describe('Padrão "entrada" (caixa de entrada).'),
+    onde: z.enum(['entrada', 'arquivados', 'enviados', 'tudo']).optional().describe('Padrão "entrada" (caixa de entrada). Para triagem do dia, "o que chegou" e cobranças use "tudo": e-mail importado ou arquivado por filtro fica fora da entrada.'),
     incluir_propaganda: z.boolean().optional().describe('true inclui promoções, redes sociais e remetentes de ruído.'),
     quantos: z.number().int().min(1).max(30).optional().describe('Padrão 15.'),
     fuso: z.string().max(40).optional(),

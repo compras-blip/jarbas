@@ -1,0 +1,11 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+É a nota fiscal de serviço (NFS-e) nº 65523, competência outubro/2026, no valor de R$ 99,99. Foi emitida em 09/10/2026 e está regular.
+
+- Prestador: Four Pixel Tecnologia da Informação Ltda, de Maringá/PR. Ela aparece como a emissora, mas o e-mail veio do faturamento da Z-API.
+- Serviço: cessão de direito de uso de programa de computação, plano Ultimate da instância Midas (conexão WhatsApp via Z-API), fatura 301090.
+- Imposto: ISSQN de R$ 3,00, não retido na fonte. Não há retenção federal.
+
+Não há nada a pagar aqui, só guardar para o registro. Se quiser, eu salvo o PDF no Dropbox.
+
+session_id: 20261015_003027_6e200c

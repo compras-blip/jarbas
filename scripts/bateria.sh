@@ -6,6 +6,8 @@ cd /opt/atlas
 OUT="evals/bateria/$1"; MODELO="${2:-}"; shift; shift || true
 # Provedor opcional (ex.: PROVEDOR=anthropic bateria.sh pasta claude-haiku-5-5 D1): sem ele o Hermes usa o provedor do config (nous).
 PROV="${PROVEDOR:-}"
+# Esforço de raciocínio opcional (RACIOCINIO=high): sem ele vale agent.reasoning_effort do config (low em 14/10).
+RAC="${RACIOCINIO:-}"
 mkdir -p "$OUT"
 declare -A T=(
  [B1]="Almoço amanhã, 12h30, carne, perto da Bodytech Ponta Negra"
@@ -57,7 +59,7 @@ LISTA=("$@"); [ ${#LISTA[@]} -eq 0 ] && LISTA=(B1 B2 B3 B4 B5 B6 B7 B8 B9 B10)
 for k in "${LISTA[@]}"; do
   msg="${T[$k]}"; ini=$(date -u +%s); iniTs=$(date -u +%H:%M:%S)
   if [ -n "$MODELO" ]; then
-    sudo -n docker exec -u 10000 -w /opt/data -e HERMES_HOME=/opt/data atlas-hermes hermes chat -q "$msg" --oneshot -Q ${PROV:+--provider "$PROV"} -m "$MODELO" </dev/null > "$OUT/$k.txt" 2>&1
+    sudo -n docker exec -u 10000 -w /opt/data -e HERMES_HOME=/opt/data atlas-hermes hermes chat -q "$msg" --oneshot -Q ${PROV:+--provider "$PROV"} ${RAC:+--reasoning "$RAC"} -m "$MODELO" </dev/null > "$OUT/$k.txt" 2>&1
   else
     sudo -n docker exec -u 10000 -w /opt/data -e HERMES_HOME=/opt/data atlas-hermes hermes chat -q "$msg" --oneshot -Q </dev/null > "$OUT/$k.txt" 2>&1
   fi
