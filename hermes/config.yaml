@@ -296,10 +296,21 @@ plugins:
 # Modelo gpt-4o-mini-tts da OpenAI pelo gateway da Nous (único modelo que o gateway aceita). Voz escolhida pelo Felipe
 # ouvindo as amostras (amostras-voz-atlas/); "ash" é provisória. Desligar para uma conversa: /voice off; religar: /voice tts.
 tts:
-  provider: nous
+  # 15/10 (noite): as 8 vozes da OpenAI foram reprovadas pelo Felipe ("robóticas"). Voz passa a ser a Soniox (tts-rt-v2),
+  # a mesma do Jarbas, por provedor próprio (hermes/mcp/voz/soniox-tts.mjs) que ainda conserta a leitura em português
+  # (reais, horas, datas) e emenda partes longas. Chave SONIOX_API_KEY no .env.hermes. Para voltar à OpenAI pela Nous: provider: nous.
+  provider: soniox
   speed: 1.0
   openai:
     model: gpt-4o-mini-tts
     voice: ash
+  providers:
+    soniox:
+      type: command
+      command: "node /opt/data/mcp/voz/soniox-tts.mjs --in {input_path} --out {output_path} --voice Adrian --speed {speed} --lang pt"
+      format: ogg
+      voice_compatible: true
+      timeout: 90
+      env_passthrough: ["SONIOX_API_KEY"]
 voice:
   auto_tts: true
