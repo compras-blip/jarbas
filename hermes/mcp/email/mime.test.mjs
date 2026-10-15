@@ -43,3 +43,11 @@ test('montar mensagem simples e com anexo, com acentos no assunto', () => {
   assert.equal(cabecalhoCodificado('ascii'), 'ascii');
   assert.equal(base64urlParaBytes(bytesParaBase64url(Buffer.from([0, 255, 62, 63]))).toString('hex'), '00ff3e3f');
 });
+
+test('corpo declarado ISO-8859-1 mas em UTF-8 vem com acentos certos; Latin-1 de verdade também', () => {
+  const b64 = (buf) => bytesParaBase64url(buf);
+  const utf8 = { mimeType: 'text/plain', headers: [{ name: 'Content-Type', value: 'text/plain; charset=ISO-8859-1' }], body: { data: b64(Buffer.from('Caro usuário, domínio ativo.', 'utf8')) } };
+  assert.equal(extrairMensagem(utf8).corpo, 'Caro usuário, domínio ativo.');
+  const latin = { mimeType: 'text/plain', headers: [{ name: 'Content-Type', value: 'text/plain; charset=ISO-8859-1' }], body: { data: b64(Buffer.from('Caro usuário, domínio ativo.', 'latin1')) } };
+  assert.equal(extrairMensagem(latin).corpo, 'Caro usuário, domínio ativo.');
+});

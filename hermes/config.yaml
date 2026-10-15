@@ -3,18 +3,20 @@
 # runtime/hermes/config.yaml, que o contêiner lê em /opt/data/config.yaml.
 # Segredos NÃO entram aqui: ficam em .env.hermes.
 
-# Modelo principal: ChatGPT pela Nous Portal (plano do ChatGPT conectado na Nous).
-# Login no servidor: `hermes auth add nous` (código de dispositivo).
+# Modelo principal (15/10/2026): Claude Haiku 5.5 direto pela API da Anthropic (chave ANTHROPIC_API_KEY no .env.hermes).
+# Baterias de 14–15/10: 34 de 36 contra 33 do GPT-6.1 Sol, 38 s por teste contra 54 s, e-mail 12 de 12 com a triagem em código.
+# Esforço: o padrão do modelo (medium); mudar com --reasoning ou /reasoning. Decisão do Felipe: sair do consumo do plano do ChatGPT.
+# Antes (11/10–15/10): openai/gpt-6.1-sol pela Nous (login `hermes auth add nous`), bateria 9,0 contra 7,0 do gpt-5.5.
 model:
-  provider: nous
-  default: openai/gpt-6.1-sol   # 11/10/2026: bateria do Bruno 9,0 contra 7,0 do gpt-5.5 com o mesmo prompt; também   # cobrado no plano do ChatGPT (billing_mode subscription); trocar com /model se precisar
+  provider: anthropic
+  default: claude-haiku-5-5
 
-# Reserva automática: entra quando o principal falha (login/cobrança, limite, queda,
-# resposta vazia) e o Hermes volta a tentar o principal na mensagem seguinte.
-# Nunca modelo da OpenAI aqui: cairia junto com o plano do ChatGPT.
+# Reserva automática: entra quando o principal falha (chave, limite, queda, resposta vazia) e o Hermes
+# volta a tentar o principal na mensagem seguinte. Outro provedor de propósito (Nous): se a Anthropic cair, o
+# GPT-6.1 Sol pelo plano do ChatGPT segura; só gasta a cota do ChatGPT quando é acionado. Antes: google/gemini-3.8-flash (nunca testado).
 fallback_model:
   provider: nous
-  model: google/gemini-3.8-flash
+  model: openai/gpt-6.1-sol
 
 # Busca na web pela Nous (Tool Gateway): busca e leitura de página sem chave extra,
 # cobrada por uso nos créditos da Nous. Ligada em 10/10/2026 após os testes 1, 5 e 9.

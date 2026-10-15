@@ -60,3 +60,7 @@ Decisão pendente do Felipe: manter o GPT-6.1 Sol como padrão e usar o Haiku 5.
 ### Rodada 2 do Haiku (15/10/2026): prompt v3 + esforço medium
 
 34 de 36, igual à rodada 1 (v2, low). Ganhou A8 e B10, perdeu B6 e E3. Ponto fraco estável: triagem de e-mail rasa (E1, E9 nas duas rodadas e em `high`). Detalhe em `haiku-5.5-prompt3-medium/RESULTADO.md`; esforço alto isolado em `haiku-5.5-esforco-alto/`.
+
+### Haiku 5.5 com a triagem em código (15/10/2026)
+
+Bloco de e-mail E1–E9 + E11–E13: 12 de 12 (E1 e E9 saíram de 0,5 para 1 com 1 chamada). Detalhe em `haiku-5.5-email-triagem/RESULTADO.md`. A profundidade passou do modelo para a ferramenta (`email_triagem`, prévia na busca, fim do corte de 1.800 caracteres).

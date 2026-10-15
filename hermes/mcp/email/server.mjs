@@ -1,5 +1,7 @@
 // server.mjs — servidor MCP "email": o Gmail e os Contatos do Bruno para o Atlas, em 8 ferramentas:
-//   email_buscar, email_ler, email_anexo, email_marcar, email_resumo, email_enviar, email_rascunho, contato_buscar.
+//   email_buscar, email_ler, email_anexo, email_marcar, email_resumo, email_triagem, email_enviar, email_rascunho, contato_buscar.
+// Fase 2c (15/10): a busca traz o começo do texto de cada e-mail e olha a caixa toda por padrão; email_triagem lê todos os
+// e-mails do período em código (classifica, extrai valores e vencimentos, procura comprovante): profundidade sem depender do modelo.
 // Regras em código: datas da busca em segundos desde 1970 no fuso do Bruno (o Gmail interpreta "after:" na
 // Califórnia); propaganda e remetentes de ruído fora por padrão; sem apagar definitivo; envio só por texto,
 // com teto diário; corpo e anexos nunca em log. Princípio 7 (quando pedir o sim) fica com o modelo.
@@ -12,6 +14,7 @@ import * as z from 'zod/v4';
 import { chamar, GMAIL, PEOPLE, ErroGoogle, chamadasHoje, FONTE } from './google.mjs';
 import { FUSO_PADRAO, ErroTempo, fusoValido, lerData, localParaUtc, somarDias, hojeNoFuso, fmtDia, fmtHora, fmtDiaLongo, dataIso } from './tempo.mjs';
 import { cabecalho, lerEnderecos, extrairMensagem, montarMensagem, bytesParaBase64url, base64urlParaBytes, tipoPorNome } from './mime.mjs';
+import { classificar, dominioBase, dominiosDosLinks, trecho, TITULOS } from './triagem.mjs';
 
 const limiteDiario = Number(process.env.EMAIL_LIMITE_DIARIO) || 2000;
 const LIMITE_ENVIOS = Number(process.env.EMAIL_LIMITE_ENVIOS) || 50;
@@ -70,16 +73,20 @@ function marcas(m) {
   if (l.has('CATEGORY_PROMOTIONS')) out.push('promoção');
   return out;
 }
-function linhaMensagem(m, zona) {
+function linhaMensagem(m, zona, ex = null) {
   const de = lerEnderecos(cabecalho(m.payload, 'From'))[0];
   const quem = de ? (de.nome ? `${de.nome} <${de.email}>` : de.email) : '?';
   const assunto = limpa(cabecalho(m.payload, 'Subject')) || '(sem assunto)';
   const partes = [quando(zona, Number(m.internalDate)), `De: ${quem}`, assunto];
-  const trecho = limpa(m.snippet).slice(0, 120); if (trecho) partes.push(`"${trecho}"`);
+  if (ex) { // prévia: começo do texto e anexos, para o modelo saber do que se trata sem abrir
+    const t = trecho(ex.corpo, 300); if (t) partes.push(`"${t}"`);
+    if (ex.anexos.length) partes.push(`anexos: ${ex.anexos.map((a) => a.nome).slice(0, 3).join(', ')}`);
+  } else { const t = limpa(m.snippet).slice(0, 120); if (t) partes.push(`"${t}"`); }
   const mk = marcas(m); if (mk.length) partes.push(mk.join(', '));
   partes.push(`[id: ${m.id}]`);
   return '• ' + partes.join(' · ');
 }
+async function obterCompleto(id) { return gm({ caminho: `/messages/${encodeURIComponent(id)}`, q: { format: 'full' } }); }
 async function obterMeta(id) { return gm({ caminho: `/messages/${encodeURIComponent(id)}`, q: { format: 'metadata', metadataHeaders: ['From', 'To', 'Subject', 'Date', 'Message-ID', 'References'] } }); }
 async function emParalelo(itens, n, fn) { const out = new Array(itens.length); let i = 0; const trab = async () => { while (i < itens.length) { const k = i++; out[k] = await fn(itens[k], k); } }; await Promise.all(Array.from({ length: Math.min(n, itens.length) }, trab)); return out; }
 
@@ -106,8 +113,8 @@ const server = new McpServer({ name: 'email', version: '1.0.0' });
 
 server.registerTool('email_buscar', {
   title: 'Buscar e-mails',
-  description: 'Lista e-mails do Gmail do Bruno por texto livre (remetente, assunto, palavra), período no fuso dele e filtros, mais recentes primeiro. Por padrão olha a caixa de entrada e tira propaganda (promoções, redes sociais e remetentes de ruído). '
-    + 'Devolve por e-mail: dia e hora de Manaus, remetente, assunto, trecho, marcas (não lido, importante, estrela, arquivado) e o id para ler ou marcar (não mostre ids ao Bruno). '
+  description: 'Lista e-mails do Gmail do Bruno por texto livre (remetente, assunto, palavra), período no fuso dele e filtros, mais recentes primeiro. Por padrão olha a caixa toda (menos spam e lixeira) e tira propaganda (promoções, redes sociais e remetentes de ruído). '
+    + 'Devolve por e-mail: dia e hora de Manaus, remetente com endereço, assunto, os primeiros 300 caracteres do texto, anexos, marcas (não lido, importante, estrela, arquivado, enviado) e o id para ler ou marcar (não mostre ids ao Bruno). Para triagem de um período inteiro ("o que chegou hoje", "tem cobrança"), prefira email_triagem. '
     + 'Serve para "o que chegou hoje", "tem e-mail do Williams?", "cobrança do condomínio este mês". Aceita a sintaxe de busca do Gmail em `texto` (from:, subject:, has:attachment).',
   inputSchema: {
     texto: z.string().max(200).optional().describe('Busca livre: nome, assunto, palavra. Pode usar from:, subject:, has:attachment.'),
@@ -115,13 +122,14 @@ server.registerTool('email_buscar', {
     ate: z.string().optional().describe('Último dia (inclusive), AAAA-MM-DD.'),
     so_nao_lidos: z.boolean().optional(),
     com_anexo: z.boolean().optional(),
-    onde: z.enum(['entrada', 'arquivados', 'enviados', 'tudo']).optional().describe('Padrão "entrada" (caixa de entrada). Para triagem do dia, "o que chegou" e cobranças use "tudo": e-mail importado ou arquivado por filtro fica fora da entrada.'),
+    onde: z.enum(['entrada', 'arquivados', 'enviados', 'tudo']).optional().describe('Padrão "tudo" (caixa toda, menos spam e lixeira; e-mail importado ou arquivado por filtro fica fora da entrada). "entrada" só a caixa de entrada.'),
+    previa: z.boolean().optional().describe('Padrão true: traz o começo do texto de cada e-mail (até 20 resultados). false devolve só cabeçalhos.'),
     incluir_propaganda: z.boolean().optional().describe('true inclui promoções, redes sociais e remetentes de ruído.'),
     quantos: z.number().int().min(1).max(30).optional().describe('Padrão 15.'),
     fuso: z.string().max(40).optional(),
   },
   annotations: { readOnlyHint: true },
-}, async ({ texto, de, ate, so_nao_lidos, com_anexo, onde = 'entrada', incluir_propaganda = false, quantos = 15, fuso }) => protegido(async () => {
+}, async ({ texto, de, ate, so_nao_lidos, com_anexo, onde = 'tudo', incluir_propaganda = false, quantos = 15, previa = true, fuso }) => protegido(async () => {
   const zona = fusoOu(fuso);
   const partes = [];
   if (texto) partes.push(limpa(texto));
@@ -136,9 +144,11 @@ server.registerTool('email_buscar', {
   const ids = (r.messages || []).map((m) => m.id);
   const periodo = de || ate ? ` entre ${de ? fmtDia(zona, localParaUtc(zona, lerData(de))) : 'o início'} e ${ate ? fmtDia(zona, localParaUtc(zona, lerData(ate))) : 'hoje'}` : '';
   if (!ids.length) return fim('email_buscar', `Nenhum e-mail${texto ? ` com "${limpa(texto)}"` : ''}${periodo} em ${onde === 'tudo' ? 'toda a caixa' : onde}${incluir_propaganda ? '' : ' (sem propaganda)'}. Fonte: ${FONTE}.`, `q=${q}`);
-  const metas = await emParalelo(ids, 5, (id) => obterMeta(id));
-  const cab = `${metas.length} e-mail${metas.length > 1 ? 's' : ''}${r.resultSizeEstimate > metas.length ? ` (de uns ${r.resultSizeEstimate})` : ''}${texto ? ` com "${limpa(texto)}"` : ''}${periodo}, ${onde === 'tudo' ? 'toda a caixa' : onde}${incluir_propaganda ? '' : ', sem propaganda'}, horário de ${zona}. Fonte: ${FONTE}.`;
-  return fim('email_buscar', [cab, ...metas.map((m) => linhaMensagem(m, zona))].join('\n'), `q=${q}`, `n=${metas.length}`);
+  const comPrevia = previa && ids.length <= 20;
+  const msgs = await emParalelo(ids, 5, (id) => (comPrevia ? obterCompleto(id) : obterMeta(id)));
+  const cab = `${msgs.length} e-mail${msgs.length > 1 ? 's' : ''}${r.resultSizeEstimate > msgs.length ? ` (de uns ${r.resultSizeEstimate})` : ''}${texto ? ` com "${limpa(texto)}"` : ''}${periodo}, ${onde === 'tudo' ? 'toda a caixa' : onde}${incluir_propaganda ? '' : ', sem propaganda'}, horário de ${zona}${comPrevia ? ', com o começo do texto' : ''}. Fonte: ${FONTE}.`;
+  log('email_buscar', `q=${q}`, `n=${msgs.length}`, `previa=${comPrevia}`, `chamadas_hoje=${chamadasHoje()}`);
+  return okLongo([cab, ...msgs.map((m) => linhaMensagem(m, zona, comPrevia ? extrairMensagem(m.payload) : null))].join('\n'), 9000); // sem o corte de 1.800: com 16 e-mails o modelo via só 9 (achado em 15/10)
 }));
 
 server.registerTool('email_ler', {
@@ -230,6 +240,82 @@ server.registerTool('email_resumo', {
   linhas.push(`Fonte: ${FONTE}.`);
   void porId;
   return fim('email_resumo', linhas.join('\n'), `inbox_nao_lidos=${inbox.messagesUnread}`);
+}));
+
+// ---- triagem em código (fase 2c) ----
+function dadosDoEmail(m, zona) {
+  const ex = extrairMensagem(m.payload);
+  const de = lerEnderecos(cabecalho(m.payload, 'From'))[0] || { nome: '', email: '' };
+  return { id: m.id, ms: Number(m.internalDate), quando: quando(zona, Number(m.internalDate)), deNome: de.nome || '', deEmail: de.email || '', assunto: limpa(cabecalho(m.payload, 'Subject')) || '(sem assunto)', corpo: ex.corpo, links: ex.links, anexos: ex.anexos.map((a) => a.nome), rotulos: m.labelIds || [], marcas: marcas(m), listaDeDescadastro: Boolean(cabecalho(m.payload, 'List-Unsubscribe')) };
+}
+// Para uma cobrança, procura comprovante ou confirmação (mesmo valor ou mesmo remetente + pago/recibo/comprovante) nos 60 dias anteriores.
+async function procurarComprovante(c, zona) {
+  const chaves = [];
+  const v = c.valores[0]; if (v) chaves.push(`"${v.replace(/^(R\$|US\$)\s?/, '')}"`);
+  const base = dominioBase(c.dominio); if (base) chaves.push(`from:${base}`);
+  if (!chaves.length) return { achou: false };
+  const q = `{${chaves.join(' ')}} {pago comprovante recibo "pagamento confirmado" "pagamento recebido" "pagamento efetuado" confirmação} after:${epoch(c.ms - 60 * 86400000)} -in:spam -in:trash`;
+  const r = await gm({ caminho: '/messages', q: { q, maxResults: 6 } });
+  const ids = (r.messages || []).map((x) => x.id).filter((id) => id !== c.id);
+  if (!ids.length) return { achou: false };
+  const m = await obterMeta(ids[0]);
+  return { achou: true, quando: quando(zona, Number(m.internalDate)), assunto: limpa(cabecalho(m.payload, 'Subject')).slice(0, 70), id: m.id };
+}
+
+server.registerTool('email_triagem', {
+  title: 'Triagem de um período',
+  description: 'Lê TODOS os e-mails de um período (padrão: hoje) na caixa toda, menos spam e lixeira, e devolve um relatório pronto em grupos: cobranças (valor, vencimento, links, anexos e se já há comprovante ou confirmação de pagamento), golpe provável (com os motivos), segurança e conta, pessoal e trabalho (com o começo do texto), pagamentos e recibos, avisos automáticos, propaganda (só quem mandou). '
+    + 'Use para "o que chegou hoje", "o que é importante", "tem cobrança em aberto", "tem golpe", "o que preciso resolver". Até 60 e-mails por chamada. A classificação é por regras e o julgamento final é seu: cada item traz o id para email_ler quando precisar do texto inteiro. Cobrança só é pendência se não houver comprovante; golpe é para avisar, nunca pagar.',
+  inputSchema: {
+    de: z.string().optional().describe('Primeiro dia, AAAA-MM-DD, no fuso do Bruno. Padrão: hoje.'),
+    ate: z.string().optional().describe('Último dia (inclusive), AAAA-MM-DD. Padrão: o mesmo dia de `de`.'),
+    fuso: z.string().max(40).optional(),
+  },
+  annotations: { readOnlyHint: true },
+}, async ({ de, ate, fuso }) => protegido(async () => {
+  const zona = fusoOu(fuso);
+  const d1 = de ? lerData(de) : hojeNoFuso(zona); const d2 = ate ? lerData(ate) : d1;
+  const ini = localParaUtc(zona, d1), fimMs = localParaUtc(zona, somarDias(d2, 1));
+  const rotulo = dataIso(d1) === dataIso(d2) ? `${de ? '' : 'hoje, '}${fmtDiaLongo(zona, ini)}` : `${fmtDia(zona, ini)} a ${fmtDia(zona, localParaUtc(zona, d2))}`;
+  const q = `after:${epoch(ini)} before:${epoch(fimMs)} -in:spam -in:trash`;
+  const r = await gm({ caminho: '/messages', q: { q, maxResults: 60 } });
+  const ids = (r.messages || []).map((m) => m.id);
+  if (!ids.length) return fim('email_triagem', `Nenhum e-mail ${rotulo} (caixa toda, menos spam e lixeira). Fonte: ${FONTE}.`, `q=${q}`);
+  const msgs = await emParalelo(ids, 5, obterCompleto);
+  const itens = msgs.map((m) => { const d = dadosDoEmail(m, zona); return { ...d, ...classificar({ deEmail: d.deEmail, deNome: d.deNome, assunto: d.assunto, corpo: d.corpo, links: d.links, rotulos: d.rotulos, ruido: RUIDO, listaDeDescadastro: d.listaDeDescadastro }) }; });
+  const cobrancas = itens.filter((i) => i.categoria === 'cobranca').slice(0, 8);
+  await emParalelo(cobrancas, 3, async (c) => { c.comprovante = await procurarComprovante(c, zona); });
+  const grupos = {}; for (const i of itens) (grupos[i.categoria] ||= []).push(i);
+  const ordem = ['cobranca', 'golpe', 'seguranca', 'pessoal', 'pagamento', 'automatico', 'propaganda'];
+  const semComprovante = cobrancas.filter((c) => !c.comprovante?.achou).length;
+  const SING = { cobranca: 'cobrança', golpe: 'golpe provável', seguranca: 'aviso de conta', pessoal: 'pessoal ou trabalho', pagamento: 'pagamento ou recibo', automatico: 'aviso automático', propaganda: 'propaganda' };
+  const PLUR = { cobranca: 'cobranças', golpe: 'golpes prováveis', seguranca: 'avisos de conta', pessoal: 'pessoais ou de trabalho', pagamento: 'pagamentos ou recibos', automatico: 'avisos automáticos', propaganda: 'propagandas' };
+  const resumo = ordem.filter((c) => grupos[c]?.length).map((c) => `${grupos[c].length} ${grupos[c].length === 1 ? SING[c] : PLUR[c]}${c === 'cobranca' ? ` (${semComprovante} sem comprovante)` : ''}`).join(', ');
+  const linhas = [`Triagem de ${rotulo}, horário de ${zona}: ${itens.length} e-mail${itens.length > 1 ? 's' : ''} lido${itens.length > 1 ? 's' : ''} por completo${r.resultSizeEstimate > itens.length ? ` (os ${itens.length} mais recentes de uns ${r.resultSizeEstimate})` : ''}, caixa toda menos spam e lixeira. Resumo: ${resumo}. Fonte: ${FONTE}.`];
+  for (const cat of ordem) {
+    const g = grupos[cat]; if (!g?.length) continue;
+    linhas.push('', `${TITULOS[cat]} (${g.length}):`);
+    if (cat === 'propaganda') { const quem = [...new Set(g.map((i) => i.deNome || i.deEmail))].slice(0, 8); linhas.push(`• ${quem.join(', ')}${g.length > quem.length ? ' e outros' : ''}`); continue; }
+    for (const i of g.sort((a, b) => b.ms - a.ms)) {
+      const p = [`${i.quando} · ${i.deNome ? `${i.deNome} <${i.deEmail}>` : i.deEmail} · "${i.assunto}"`];
+      if (cat === 'cobranca') {
+        p.push(i.valores.length ? `valores: ${i.valores.slice(0, 3).join(', ')}` : 'sem valor no texto');
+        const v = i.datas.find((d) => d.vencimento); if (v) p.push(`vencimento ${v.texto}`);
+        const ld = dominiosDosLinks(i.links); if (ld.length) p.push(`links: ${ld.slice(0, 2).join(', ')}`);
+        p.push(i.comprovante?.achou ? `comprovante ou confirmação: ${i.comprovante.quando} "${i.comprovante.assunto}" [id: ${i.comprovante.id}]` : 'sem comprovante encontrado (busquei valor e remetente com pago, recibo, comprovante nos 60 dias anteriores)');
+      }
+      if (cat === 'golpe') { p.push(`motivos: ${i.golpe.motivos.join('; ')}`); if (i.valores.length) p.push(`valores citados: ${i.valores.slice(0, 2).join(', ')}`); }
+      if (cat === 'pagamento' && i.valores.length) p.push(`valores: ${i.valores.slice(0, 2).join(', ')}`);
+      const n = cat === 'pessoal' || cat === 'cobranca' || cat === 'golpe' ? 320 : 160;
+      const t = trecho(i.corpo, n); if (t) p.push(`"${t}"`);
+      if (i.anexos.length) p.push(`anexos: ${i.anexos.slice(0, 3).join(', ')}`);
+      if (i.marcas.length) p.push(i.marcas.join(', '));
+      p.push(`[id: ${i.id}]`);
+      linhas.push('• ' + p.join(' · '));
+    }
+  }
+  log('email_triagem', `q=${q}`, `n=${itens.length}`, `cobrancas=${cobrancas.length}`, `chamadas_hoje=${chamadasHoje()}`);
+  return okLongo(linhas.join('\n'), 12000);
 }));
 
 function validarEnderecos(lista, campo) {

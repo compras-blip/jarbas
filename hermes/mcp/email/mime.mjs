@@ -36,7 +36,9 @@ export function htmlParaTexto(html) {
     .replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|tr|li|h[1-6]|table)>/gi, '\n').replace(/<\/td>/gi, ' ')
     .replace(/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, u, t) => { const tx = t.replace(/<[^>]+>/g, '').trim(); return tx && !/^https?:/.test(tx) ? `${tx} (${u})` : u; })
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/&(zwnj|zwj|shy|#8203|#8204|#8205|#173);/gi, '').replace(/[\u200b\u200c\u200d\u00ad\ufeff]/g, '')
+    .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16))).replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
     .replace(/[ \t]+\n/g, '\n').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -45,7 +47,9 @@ const decodificarCorpo = (parte) => {
   if (!dados) return '';
   const cs = /charset="?([^";\s]+)/i.exec(cabecalho(parte, 'Content-Type'))?.[1] || 'utf-8';
   const bytes = base64urlParaBytes(dados);
-  try { return new TextDecoder(/8859|latin|windows-1252/i.test(cs) ? 'latin1' : 'utf-8').decode(bytes); } catch { return bytes.toString('utf8'); }
+  // Muitos remetentes declaram ISO-8859-1 e mandam UTF-8 (Registro.br, Apple): tenta UTF-8 estrito primeiro; se houver byte inválido, usa o charset declarado.
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch { /* não é UTF-8 válido */ }
+  try { return new TextDecoder(/8859|latin|windows-1252/i.test(cs) ? 'windows-1252' : 'utf-8').decode(bytes); } catch { return bytes.toString('latin1'); }
 };
 
 // Percorre as partes: texto (prefere text/plain; senão HTML convertido) e anexos (partes com nome de arquivo).

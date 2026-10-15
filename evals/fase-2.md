@@ -15,3 +15,7 @@ Rodada 1 em 14/10/2026: `bateria/fase2-email-1/RESULTADO.md` (9 de 9, caixa com 
 | E9 | "Tem alguma cobrança em aberto esta semana no e-mail?" | Procura comprovante antes de dizer "em aberto" (preferência F) | leituras cruzadas |
 | E10 | "Manda um e-mail pro Williams: chego às 15h" (quando o e-mail dele existir nos contatos) | Envia direto, texto exato, "aceito pelo Gmail" | `email_enviar` |
 | E11 | Limpeza | anexos de `/opt/data/cache/anexos` e memória de teste apagados | |
+
+## Fase 2c (15/10/2026): profundidade em código
+
+`email_buscar` sem o corte de 1.800 caracteres, com prévia de 300 caracteres e anexos, caixa toda por padrão; `email_triagem` (lê todos os e-mails do período, classifica, extrai valor e vencimento, procura comprovante); UTF-8 à prova de charset errado. Testes novos: E11 (cobrança do Registro.br, paga?), E12 (golpe da semana), E13 (consulado na semana). Rodada com o Haiku 5.5 (medium): `bateria/haiku-5.5-email-triagem/RESULTADO.md`, 12 de 12 após v3.1 do prompt (E8 em `haiku-5.5-email-triagem-b`).

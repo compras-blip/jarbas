@@ -1,0 +1,15 @@
+/opt/hermes/pm/shell.py:13: SyntaxWarning: "\W" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\W"? A raw string is also an option.
+  minus C:\Windows\System32\bash.exe (the WSL launcher stub, first on PATH
+O último e-mail com PDF é a nota fiscal de serviço (NFS-e 65523, competência outubro/2026), e o PDF já está lido. Ele foi baixado para o servidor, mas não o mostro por caminho técnico.
+
+Quem emitiu: Four Pixel Tecnologia da Informação Ltda, de Maringá/PR, com você como tomador. Chegou por e-mail da Z-API em sexta, 09/10, às 14h45, horário de Manaus.
+
+Serviço: plano Ultimate da instância Midas de conexão WhatsApp via Z-API, fatura 301090.
+
+Valor: R$ 99,99. Sem retenções. O ISSQN de R$ 3,00 é só informativo, "não retido".
+
+Nota regular, emitida em 09/10/2026 às 15h44.
+
+Não encontrei no e-mail a confirmação de pagamento, então não sei se já está paga. Se quiser, verifico se há comprovante de cobrança da Z-API no seu Gmail.
+
+session_id: 20261015_011340_a4c07c

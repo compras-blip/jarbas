@@ -1,0 +1,11 @@
+Sim, uma cobrança em aberto esta semana, e ela não tem comprovante de pagamento.
+
+É o registro.br, de ter, 13/10 às 11h22, sobre o domínio assessoratlas.com.br, que diz ter sido cadastrado e pede o pagamento do serviço por um link. Não achei valor no texto nem pagamento anterior. Não cliquei no link. Se o domínio é seu, entre no site do registro.br digitando o endereço você mesmo e veja se há cobrança pendente.
+
+Dois alertas, que não são cobranças:
+
+O golpe: um e-mail de hoje (14/10, 12h08) se passa pela Receita Federal com uma DARF de 2025 e um link de pagamento em outro domínio. É golpe. Não pague e pode ignorar.
+
+Segurança, que merece atenção: hoje, entre 11h32 e 11h39 (horário de Manaus), sua conta Apple teve um login pelo navegador e duas senhas de aplicativo geradas. Você não reconhece isso? Se não reconhece, eu te digo o passo a passo para proteger a conta.
+
+session_id: 20261015_011547_1bb911
